@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+.swiper {
+    width: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 300px;
+    height: 300px;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+}
+
+@font-face {
+    font-family: Satoshi;
+    src: url(../src/assets/fonts/Satoshi-Variable.ttf);
+}
+
+@font-face {
+    font-family: IntegralCF;
+    src: url(../src/assets/fonts/IntegralCF-Regular.ttf);
+}
+
+@theme {
+    --color-primary: #000;
+    --font-Satoshi: Satoshi;
+    --font-IntegralCF: IntegralCF;
+    --container-840S: 840px;
+}
+
+@layer utilities {
+    .defaultPadding {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    @media (min-width: 640px) {
+        .defaultPadding {
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+    }
+}
