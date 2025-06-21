@@ -30,6 +30,7 @@
 
 @theme {
     --color-primary: #000;
+    --color-contrast: #fff;
     --font-Satoshi: Satoshi;
     --font-IntegralCF: IntegralCF;
     --container-840S: 840px;
@@ -46,5 +47,29 @@
             padding-left: 100px;
             padding-right: 100px;
         }
+    }
+
+    .buttonBlack {
+        @apply transition-all duration-300;
+        background-color: var(--color-primary);
+        color: var(--color-contrast);
+    }
+
+    .buttonBlack:hover {
+        background-color: var(--color-contrast);
+        color: var(--color-primary);
+        cursor: pointer;
+    }
+
+    .buttonWhite {
+        @apply transition-all duration-300;
+        background-color: var(--color-contrast);
+        color: var(--color-primary);
+    }
+
+    .buttonWhite:hover {
+        background-color: var(--color-primary);
+        color: var(--color-contrast);
+        cursor: pointer;
     }
 }
