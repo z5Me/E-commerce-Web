@@ -31,6 +31,7 @@
 @theme {
     --color-primary: #000;
     --color-contrast: #fff;
+    --color-danger: #FF3333;
     --font-Satoshi: Satoshi;
     --font-IntegralCF: IntegralCF;
     --container-840S: 840px;

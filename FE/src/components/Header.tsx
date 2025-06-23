@@ -16,14 +16,20 @@ const Header = () => {
     useEffect(() => {
         if (openMenu) {
             document.body.classList.add('overflow-hidden');
-            smallMenuChildrenRef.current?.classList.remove('w-0')
-            smallMenuChildrenRef.current?.classList.add('w-1/2');
+            smallMenuRef.current?.classList.remove('hidden');
+            smallMenuRef.current?.classList.add('flex');
+            setTimeout(() => {
+                smallMenuChildrenRef.current?.classList.remove('w-0')
+                smallMenuChildrenRef.current?.classList.add('w-1/2');
+            }, 1)
         } else {
-            // smallMenuChildrenRef.current?.classList.remove('w-1/2')
-            // smallMenuChildrenRef.current?.classList.add('w-0');
-            // setTimeout(() => {
-            document.body.classList.remove('overflow-hidden');
-            // }, 300)
+            smallMenuChildrenRef.current?.classList.remove('w-1/2')
+            smallMenuChildrenRef.current?.classList.add('w-0');
+            setTimeout(() => {
+                smallMenuRef.current?.classList.remove('flex');
+                smallMenuRef.current?.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 100)
         }
     }, [openMenu]);
 
@@ -35,19 +41,19 @@ const Header = () => {
             </section>
             <header className='bg-white defaultPadding py-6 select-none relative z-10'>
                 <div className='NAV flex justify-between items-center lg:gap-x-10 gap-x-4 z-10'>
-                    <div
+                    <button
                         onClick={() => setOpenMenu(!openMenu)}
-                        className='inline md:hidden'
+                        className='inline md:hidden cursor-pointer'
                     >
                         <Menu />
-                    </div>
+                    </button>
                     <div className='LOGO cursor-pointer flex md:flex-none flex-1'>
                         <img className='' src={Logo} alt="Logo" />
                     </div>
                     <nav>
                         <ul className='md:flex hidden lg:gap-x-6 gap-x-4 *:cursor-pointer *:text-nowrap'>
-                            <li className='flex justify-center items-center lg:gap-x-[6px] gap-x-1'>
-                                <div className='hover:underline'>
+                            <li className='flex justify-center items-center lg:gap-x-[6px] gap-x-1 group'>
+                                <div className='group-hover:underline'>
                                     <Link to=''>Shop</Link>
                                 </div>
                                 <ChevronDown className='pt-[1px]' size={20} color='#000000' strokeWidth={2} />
@@ -80,21 +86,21 @@ const Header = () => {
                         <CircleUserRound />
                     </div>
                 </div>
-            </header>
+            </header >
             {/* Menu con */}
-            <div
+            < div
                 ref={smallMenuRef}
                 onClick={() => setOpenMenu(!openMenu)}
-                className={`${openMenu ? 'z-20' : '-z-10'} flex cursor-pointer w-full left-0 absolute top-0 transition-all duration-300 bg-white/50 backdrop-blur-xs h-screen overflow-hidden`}
+                className={`${openMenu ? 'z-20' : '-z-10'} cursor-pointer w-full left-0 absolute top-0 transition-all duration-300 bg-white/50 backdrop-blur-xs h-screen overflow-hidden`}
             >
                 <div
                     ref={smallMenuChildrenRef}
                     onClick={(e) => e.stopPropagation()}
-                    className={`${openMenu ? 'bg-white w-1/2' : 'bg-transparent w-0'} transition-all duration-300 h-screen px-4 py-6 shadow-2xl z-30`}
+                    className={`${openMenu ? 'bg-white z-30' : 'bg-transparent -z-10'} w-0 transition-all duration-300 h-screen px-4 py-6 shadow-2xl`}
                 >
                     <X />
                 </div>
-            </div>
+            </div >
         </>
     )
 }

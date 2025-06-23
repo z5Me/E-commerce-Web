@@ -52,7 +52,7 @@ const Evaluate = () => {
                 <div className='pt-[80px] flex flex-col gap-10 mb-[80px]'>
                     <div className='flex justify-between defaultPadding'>
                         <p className='uppercase font-IntegralCF lg:text-5xl text-4xl font-bold'>Our happy Customers</p>
-                        <div className='flex items-end gap-x-4'>
+                        <div className='flex items-end gap-x-4 *:hover:cursor-pointer'>
                             <button onClick={() => prevSlice()}>
                                 <ArrowLeft />
                             </button>
@@ -61,7 +61,7 @@ const Evaluate = () => {
                             </button>
                         </div>
                     </div>
-                    <div className='defaultPadding'>
+                    <div className='defaultPadding select-none'>
                         <Swiper
                             effect={'coverflow'}
                             grabCursor={true}
