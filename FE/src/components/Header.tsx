@@ -48,7 +48,9 @@ const Header = () => {
                         <Menu />
                     </button>
                     <div className='LOGO cursor-pointer flex md:flex-none flex-1'>
-                        <img className='' src={Logo} alt="Logo" />
+                        <Link to={''} >
+                            <img className='' src={Logo} alt="Logo" />
+                        </Link>
                     </div>
                     <nav>
                         <ul className='md:flex hidden lg:gap-x-6 gap-x-4 *:cursor-pointer *:text-nowrap'>

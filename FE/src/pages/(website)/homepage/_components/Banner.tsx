@@ -5,6 +5,7 @@ import Gucci from '@/assets/logo_brands/gucci.svg';
 import Prada from '@/assets/logo_brands/prada.svg';
 import Versace from '@/assets/logo_brands/versace.svg';
 import Zara from '@/assets/logo_brands/zara.svg';
+import DefaultButton from '@/components/DefaultButton';
 
 const Banner = () => {
     return (
@@ -17,10 +18,8 @@ const Banner = () => {
                     <p className='xl:w-[545px] w-auto md:text-base text-sm inline xl:block font-Satoshi text-black/60 lg:text-start text-center'>
                         Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.
                     </p>
-                    <div>
-                        <button className='px-[68px] py-[15px] bg-primary rounded-full lg:w-auto w-full'>
-                            <p className='font-medium font-Satoshi text-white'>Shop Now</p>
-                        </button>
+                    <div className='flex lg:justify-start justify-center'>
+                        <DefaultButton title='Shop now' classNameButton='bg-primary hover:cursor-pointer lg:w-auto md:w-[50%] w-full text-center' classNameText='text-white' />
                     </div>
                     <div className='pt-4 font-Satoshi flex lg:flex-row flex-col gap-x-[17px] lg:items-start items-center'>
                         <div className='flex gap-x-[17px]'>

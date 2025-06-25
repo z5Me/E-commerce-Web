@@ -2,10 +2,12 @@
 import { Facebook, Github, Instagram, Twitter } from 'lucide-react';
 //Image
 import Logo from '@/assets/logo.svg';
+import Subscribe from './Subscribe';
 
 const Footer = () => {
     return (
         <>
+            <Subscribe />
             <footer>
                 <div className='bg-[#F0F0F0] py-[50px] defaultPadding'>
                     <div className='lg:flex grid grid-cols-2 lg:gap-12 gap-6 justify-between'>
