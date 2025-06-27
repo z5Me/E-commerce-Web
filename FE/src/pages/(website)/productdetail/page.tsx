@@ -21,11 +21,13 @@ import type { Swiper as SwiperClass } from 'swiper';
 import { Swiper, SwiperSlide } from "swiper/react";
 import CustomerEvaluation from "@/components/CustomerEvaluation";
 import ProductsList from "@/components/ProductsList";
+import DiscountIcon from "@/components/Discount";
+import ShowRatingStar from "@/components/ShowRatingStar";
 
 const ProductDetail = () => {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
     const swiperRef = useRef<SwiperClass | null>(null);
-    const [quantity, setQuantity] = useState<number>(10);
+    const [quantity, setQuantity] = useState<number>(1);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
     useEffect(() => {
@@ -78,7 +80,7 @@ const ProductDetail = () => {
     console.log('quantity: ', quantity)
 
     return (
-        <section className='flex items-center'>
+        <section className='flex justify-center'>
             <div className='max-w-[1920px] w-full defaultPadding'>
                 {/* điều hướng */}
                 <div className='w-full flex flex-col gap-6 mb-9'>
@@ -135,21 +137,6 @@ const ProductDetail = () => {
                             <SwiperSlide>
                                 <img src={Product_Image5} alt="Product_Image" />
                             </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={Product_Image} alt="Product_Image" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={Product_Image2} alt="Product_Image" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={Product_Image3} alt="Product_Image" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={Product_Image4} alt="Product_Image" />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <img src={Product_Image5} alt="Product_Image" />
-                            </SwiperSlide>
                         </Swiper>
 
                         {/* Danh sách ảnh */}
@@ -186,21 +173,6 @@ const ProductDetail = () => {
                                 <SwiperSlide>
                                     <img src={Product_Image5} alt="Product_Image" />
                                 </SwiperSlide>
-                                <SwiperSlide>
-                                    <img src={Product_Image} alt="Product_Image" />
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <img src={Product_Image2} alt="Product_Image" />
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <img src={Product_Image3} alt="Product_Image" />
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <img src={Product_Image4} alt="Product_Image" />
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <img src={Product_Image5} alt="Product_Image" />
-                                </SwiperSlide>
                             </Swiper>
                             <button onClick={() => swiperRef.current?.slideNext()} className='hover:cursor-pointer xl:rotate-0 -rotate-90'>
                                 <ChevronDown size={28} />
@@ -211,20 +183,20 @@ const ProductDetail = () => {
                         <div className="flex flex-col sm:gap-[14px] gap-3">
                             <p className='font-IntegralCF uppercase sm:text-[40px] text-2xl font-bold text-primary'>One Life Graphic T-shirt</p>
                             <div className='flex gap-4 items-center'>
-                                <div className="flex text-[#FFC633] gap-[7px] sm:*:text-2xl text-lg">
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStarHalf />
+                                <div className="flex text-[#FFC633] gap-[7px] ">
+                                    <ShowRatingStar className="gap-[7px] sm:*:text-2xl text-lg" size={28} rating={4.5} />
                                 </div>
                                 <p className="sm:text-base text-sm">4.5/<span className="text-primary/60">5</span></p>
                             </div>
-                            <div className="flex gap-3 items-center">
-                                <p className="sm:text-[32px] text-2xl font-bold">$260</p>
-                                <p className="sm:text-[32px] text-2xl font-bold text-primary/30 line-through">$300</p>
-                                <p className="text-danger font-medium sm:text-base text-sm px-[14px] py-[6px] bg-danger/10 rounded-full">-40%</p>
-                            </div>
+                            <DiscountIcon
+                                className="gap-3"
+                                classNamePrice="sm:text-[32px] text-2xl"
+                                classNameOldPrice="sm:text-[32px] text-2xl"
+                                classNameDPercent="sm:text-base text-sm"
+                                price={260}
+                                oldPrice={300}
+                                discountPercent={40}
+                            />
                             <span className="sm:text-base text-sm text-primary/60 pt-2">
                                 This graphic t-shirt which is perfect for any occasion. Crafted from a soft and breathable fabric, it offers superior comfort and style.
                             </span>
@@ -232,7 +204,7 @@ const ProductDetail = () => {
                         <div className="w-full h-[1px] bg-primary/10 my-6"></div>
                         <div className="flex flex-col sm:gap-[21px] gap-4">
                             <p className="font-Satoshi sm:text-base text-sm text-primary/60">Select Colors</p>
-                            <div className="flex sm:gap-[21px] gap-3">
+                            <div className="flex sm:gap-[21px] gap-3 *:cursor-pointer">
                                 <button className="bg-[#4F4631] ms:p-6 p-5 rounded-full relative">
                                     <Check color="#fff" className="absolute top-1/2 left-1/2 -translate-1/2" />
                                 </button>
@@ -264,7 +236,7 @@ const ProductDetail = () => {
                         </div>
                         <div className="w-full h-[1px] bg-primary/10 my-6"></div>
                         <div className="flex sm:gap-5 gap-3">
-                            <div className="flex sm:py-4 py-3 sm:px-5 px-4 sm:min-w-[170px] w-auto sm:gap-0 gap-4 justify-between items-center bg-[#F0F0F0] rounded-full relative">
+                            <div className="flex sm:py-4 py-3 sm:px-5 px-4 sm:min-w-[170px] w-auto sm:gap-0 gap-[18px] justify-between items-center bg-[#F0F0F0] rounded-full relative">
                                 <Minus
                                     onClick={() => (quantity > 1) && setQuantity((prev) => prev - 1)}
                                     className="cursor-pointer sm:text-2xl text-xl select-none"
@@ -273,12 +245,12 @@ const ProductDetail = () => {
                                     type="number"
                                     className="hide-spinner font-Satoshi font-medium sm:text-base text-sm text-primary text-center border-none outline-none w-1/3 sm:absolute static sm:top-1/2 sm:left-1/2 sm:-translate-1/2"
                                     min={1}
-                                    max={100}
+                                    max={99}
                                     value={quantity}
                                     onChange={(e) => onChangeValue(e.target.value)}
                                 />
                                 <Plus
-                                    onClick={() => (quantity < 100 && setQuantity((prev) => prev + 1))}
+                                    onClick={() => (quantity < 99 && setQuantity((prev) => prev + 1))}
                                     className="cursor-pointer sm:text-2xl text-xl select-none"
                                 />
                             </div>
@@ -294,8 +266,8 @@ const ProductDetail = () => {
                 <div className="mt-[104px] mb-[64px]">
                     <div className="w-full relative">
                         <div className="flex w-full items-center *:transition-all *:duration-200 *:pb-6 *:w-1/3 *:text-center *:cursor-pointer font-Satoshi md:text-[20px] text-base border-b border-b-primary/10">
-                            <button onClick={() => setSelectButton(1)} className={`${selectButton === 1 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>Product Details</button>
-                            <button onClick={() => setSelectButton(2)} className={`${selectButton === 2 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>Rating & Review</button>
+                            <button onClick={() => setSelectButton(1)} className={`${selectButton === 1 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>{screenWidth > 639 ? 'Product Details' : 'Details'}</button>
+                            <button onClick={() => setSelectButton(2)} className={`${selectButton === 2 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>{screenWidth > 639 ? 'Rating & Review' : 'Review'}</button>
                             <button onClick={() => setSelectButton(3)} className={`${selectButton === 3 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>FAQs</button>
                         </div>
                         <div

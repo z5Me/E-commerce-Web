@@ -21,7 +21,7 @@ const Banner = () => {
                     <div className='flex lg:justify-start justify-center'>
                         <DefaultButton title='Shop now' classNameButton='bg-primary hover:cursor-pointer lg:w-auto md:w-[50%] w-full text-center' classNameText='text-white' />
                     </div>
-                    <div className='pt-4 font-Satoshi flex lg:flex-row flex-col gap-x-[17px] lg:items-start items-center'>
+                    <div className='pt-4 font-Satoshi flex xl:flex-row flex-col gap-x-[17px] xl:items-start items-center'>
                         <div className='flex gap-x-[17px]'>
                             <div className='flex flex-col'>
                                 <p className='text-primary font-bold text-2xl md:text-[40px]'>200+</p>
@@ -44,8 +44,8 @@ const Banner = () => {
                         </div>
                     </div>
                 </div>
-                <div className='lg:w-1/2 w-full  h-[428px]'>
-                    <img className="object-cover" src={Customer} alt="Banner" />
+                <div className='lg:w-1/2 w-full xl:max-h-[674px] h-auto'>
+                    <img className="object-cover xl:h-auto w-full h-full" src={Customer} alt="Banner" />
                 </div>
             </section>
             <section>

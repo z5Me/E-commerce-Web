@@ -12,6 +12,25 @@ const Header = () => {
     const [openMenu, setOpenMenu] = useState<boolean>(false);
     const smallMenuRef = useRef<HTMLDivElement>(null);
     const smallMenuChildrenRef = useRef<HTMLDivElement>(null);
+    const [openSearch, setOpenSearch] = useState<boolean>(false);
+    const inputSearchRef = useRef<HTMLInputElement>(null);
+    const navRef = useRef<HTMLElement>(null);
+    const duration = 500;
+
+    useEffect(() => {
+        if (openSearch === true) {
+            navRef.current?.classList.remove('flex');
+            navRef.current?.classList.add('hidden');
+            return;
+
+        } else {
+            setTimeout(() => {
+                navRef.current?.classList.remove('hidden');
+                navRef.current?.classList.add('flex');
+                return;
+            }, duration - 200)
+        }
+    }, [openSearch])
 
     useEffect(() => {
         if (openMenu) {
@@ -22,6 +41,8 @@ const Header = () => {
                 smallMenuChildrenRef.current?.classList.remove('w-0')
                 smallMenuChildrenRef.current?.classList.add('w-1/2');
             }, 1)
+
+            return;
         } else {
             smallMenuChildrenRef.current?.classList.remove('w-1/2')
             smallMenuChildrenRef.current?.classList.add('w-0');
@@ -52,7 +73,7 @@ const Header = () => {
                             <img className='' src={Logo} alt="Logo" />
                         </Link>
                     </div>
-                    <nav>
+                    <nav ref={navRef} className={`flex justify-center transition-all duration-1000`}>
                         <ul className='md:flex hidden lg:gap-x-6 gap-x-4 *:cursor-pointer *:text-nowrap'>
                             <li className='flex justify-center items-center lg:gap-x-[6px] gap-x-1 group'>
                                 <div className='group-hover:underline'>
@@ -82,10 +103,27 @@ const Header = () => {
                         <Search />
                         <input className='w-full py-3 border-0 outline-0' type="text" placeholder='Search for product...' />
                     </div>
-                    <div className='CART flex gap-x-[14px]'>
-                        <Search className='lg:hidden flex' />
-                        <ShoppingCart />
-                        <CircleUserRound />
+                    <div className={`CART flex items-center justify-end gap-x-[14px] ${openSearch === true ? 'w-full' : 'w-[100px] lg:w-auto'} transition-all duration-${duration} lg:self-auto self-end`}>
+                        <button
+                            onClick={() => setOpenSearch(!openSearch)}
+                            className={`SEARCH transition-all duration-${duration} ${openSearch === true ? 'bg-[#F0F0F0] gap-x-2 px-[18px] w-full' : 'bg-transparent gap-x-0 px-0 w-6'} flex lg:hidden items-center rounded-full`}
+                        >
+                            <Search className='lg:hidden flex cursor-pointer' />
+                            <input
+                                ref={inputSearchRef}
+                                onClick={(e) => e.stopPropagation()}
+                                className={`${openSearch === true ? 'w-full' : 'w-0'} transition-all duration-${duration} py-3 border-0 outline-0`}
+                                type="text"
+                                placeholder='Search for product...'
+                            />
+                        </button>
+                        <div className='block cursor-pointer'>
+                            <ShoppingCart />
+                        </div>
+                        <div className='block cursor-pointer'>
+                            <CircleUserRound />
+                        </div>
+
                     </div>
                 </div>
             </header >
@@ -100,7 +138,9 @@ const Header = () => {
                     onClick={(e) => e.stopPropagation()}
                     className={`${openMenu ? 'bg-white z-30' : 'bg-transparent -z-10'} w-0 transition-all duration-300 h-screen px-4 py-6 shadow-2xl`}
                 >
-                    <X />
+                    <button onClick={() => setOpenMenu(false)}>
+                        <X />
+                    </button>
                 </div>
             </div >
         </>

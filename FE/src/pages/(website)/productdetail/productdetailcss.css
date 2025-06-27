@@ -98,6 +98,12 @@
     font-family: 'Satoshi', sans-serif;
 }
 
+@media (width < 640px) {
+    .product-swiper .swiper-pagination-horizontal {
+        font-size: 14px;
+    }
+}
+
 /* Ẩn nút tăng giảm input number */
 /* input.css */
 .hide-spinner::-webkit-inner-spin-button,

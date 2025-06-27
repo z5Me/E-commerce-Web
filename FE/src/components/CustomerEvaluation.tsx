@@ -3,7 +3,7 @@ import { Ellipsis } from "lucide-react";
 import { FaStar } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 
-const CustomerEvaluation = ({ historyPosted = false, moreOptions = false }: { historyPosted?: boolean, moreOptions?: boolean }) => {
+const CustomerEvaluation = ({ historyPosted = false, moreOptions = false, index }: { historyPosted?: boolean, moreOptions?: boolean, index?: number }) => {
     return (
         <div className='flex flex-col sm:gap-y-6 gap-y-4 border border-primary/10 rounded-[20px] lg:px-8 lg:py-7 px-6 py-6'>
             <div className="flex flex-col sm:gap-y-4 gap-y-3">
@@ -19,7 +19,7 @@ const CustomerEvaluation = ({ historyPosted = false, moreOptions = false }: { hi
                 </div>
                 <div className='flex flex-col sm:gap-y-3 gap-y-2'>
                     <div className='flex gap-x-1 items-center'>
-                        <p className='font-Satoshi font-bold lg:text-xl text-base'>Sarah 1.</p>
+                        <p className='font-Satoshi font-bold lg:text-xl text-base'>Sarah {index ? index + 1 : 1}.</p>
                         <FaCircleCheck size={20} color='#01AB31' className='pb-[2px]' />
                     </div>
                     <p className='font-Satoshi font-base lg:text-base text-sm text-primary/60'>

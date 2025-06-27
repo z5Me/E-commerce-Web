@@ -14,33 +14,22 @@ import type { Swiper as SwiperType } from 'swiper';
 
 const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
     const swiperRef = useRef<SwiperType | null>(null);
-    const [slideCount, setSlideCount] = useState(0);
-    const totleSlide = 9;
-    const maxSlideChanges = totleSlide - 4;
+    const [isBeginning, setIsBeginning] = useState<boolean>(true);
+    const [isEnd, setIsEnd] = useState<boolean>(false);
 
     const prevSlice = () => {
-        swiperRef.current?.slidePrev();
-        if (slideCount > 0) {
-            setSlideCount((prev) => prev - 1);
-            return;
-        }
-
-        if (slideCount === 0) {
-            setSlideCount(totleSlide - 4);
-            // useSwiperSlide
-            // swiperRef.current?.slideTo(totleSlide - 2);
+        if (isBeginning === false) {
+            // console.log('prev slide');
+            swiperRef.current?.slidePrev();
             return;
         }
     }
 
     const nextSlice = () => {
-        if (slideCount < maxSlideChanges) {
+        if (isEnd === false) {
+            // console.log('next slide');
             swiperRef.current?.slideNext();
-            setSlideCount(slideCount + 1);
             return;
-        } else {
-            // swiperRef.current?.slideTo(0);
-            setSlideCount(0)
         }
     }
 
@@ -48,11 +37,12 @@ const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
         const swiper = swiperRef.current;
         if (!swiper) return;
 
-        const { slides, activeIndex, params } = swiper;
+        const { slides, activeIndex, params, isBeginning, isEnd } = swiper;
         const visibleStart = activeIndex;
         const slidesPerView = typeof params.slidesPerView === 'number' ? params.slidesPerView : Number(params.slidesPerView ?? 1);
         const visibleEnd = activeIndex + slidesPerView - 1;
 
+        //tạo blur
         slides.forEach((slide: HTMLElement, index: number) => {
             // console.log('index: ', index)
             //width 640px thì ko blur nữa
@@ -71,6 +61,10 @@ const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
                 }, 1)
             }
         });
+
+        //xác định đang ở đầu hoặc cuối trong slide
+        setIsBeginning(isBeginning);
+        setIsEnd(isEnd);
     };
 
     return (
@@ -79,11 +73,17 @@ const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
                 <div className='pt-[80px] flex flex-col gap-10 mb-[80px]'>
                     <div className='flex justify-between defaultPadding'>
                         <p className='uppercase font-IntegralCF lg:text-5xl text-3xl font-bold'>Our happy Customers</p>
-                        <div className='flex items-end gap-x-4 *:hover:cursor-pointer'>
-                            <button onClick={() => prevSlice()}>
+                        <div className='flex items-end gap-x-4'>
+                            <button
+                                className={`${isBeginning === true ? 'opacity-50' : 'opacity-100 cursor-pointer'}`}
+                                onClick={() => prevSlice()}
+                            >
                                 <ArrowLeft />
                             </button>
-                            <button onClick={() => nextSlice()}>
+                            <button
+                                className={`${isEnd === true ? 'opacity-50' : 'opacity-100 cursor-pointer'}`}
+                                onClick={() => nextSlice()}
+                            >
                                 <ArrowRight />
                             </button>
                         </div>
@@ -93,12 +93,10 @@ const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
                         <div className="absolute top-0 right-0 w-[100px] h-full z-10 pointer-events-none bg-gradient-to-l from-white/70 to-transparent"></div> */}
                         <Swiper
                             grabCursor={true}
-                            centeredSlides={false}
                             spaceBetween={20}
                             slidesPerView={screenWidth > 1536 ? 4 : screenWidth > 1280 ? 3 : screenWidth > 768 ? 2 : 1}
                             initialSlide={0}
                             allowTouchMove={true}
-
                             onSwiper={(swiper: any) => {
                                 swiperRef.current = swiper;
                                 updateBlur()
@@ -107,33 +105,11 @@ const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
                             onResize={updateBlur}
                             className="mySwiper"
                         >
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <CustomerEvaluation />
-                            </SwiperSlide>
+                            {[...Array(20)].map((_, index) => (
+                                <SwiperSlide key={index}>
+                                    <CustomerEvaluation index={index} />
+                                </SwiperSlide>
+                            ))}
                         </Swiper>
                     </div>
                 </div>
