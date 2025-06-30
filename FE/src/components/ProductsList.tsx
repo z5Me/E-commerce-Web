@@ -5,7 +5,7 @@ import Image_Product4 from '@/assets/product4.svg';
 import Image_Product5 from '@/assets/product5.svg';
 import DefaultButton from '@/components/DefaultButton';
 
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import DiscountIcon from './Discount';
 import ShowRatingStar from './ShowRatingStar';
 
@@ -49,6 +49,7 @@ const products = [
 ]
 
 const ProductsList = ({ caption, className, loadMoreProducts = true }: { caption: string, className?: string, loadMoreProducts?: boolean }) => {
+    const navigate = useNavigate();
 
     return (
         <div className={`bg-white ${className}`}>
@@ -61,20 +62,16 @@ const ProductsList = ({ caption, className, loadMoreProducts = true }: { caption
                     <Link to={`/detail`} key={product.id}>
                         <div className='w-full h-full group hover:bg-primary/15 rounded-[20px] hover:cursor-pointer'>
                             <div className='flex flex-col h-full gap-y-4 transition-all duration-150 group-hover:scale-95'>
-                                {/* <div className='w-full h-full aspect-[4/5] max-md:min-w-[146px] max-md:min-h-[148px] max-w-[415px] max-h-[419px] flex items-center justify-center overflow-hidden bg-[#F0EEED] rounded-[20px]'> */}
-                                <div className='w-full aspect-[4/5] flex items-center justify-center overflow-hidden bg-[#F0EEED] rounded-[20px]'>
+                                <div className='w-full aspect-[23/24] flex items-center justify-center overflow-hidden bg-[#F0EEED] rounded-[20px]'>
                                     <img className='rounded-[20px] object-contain w-full' src={product.image} alt={product.name} />
                                 </div>
                                 <div className='flex flex-col h-fit gap-y-2 font-Satoshi'>
                                     <p className='lg:text-xl text-base font-bold group-hover:text-blue-600'>{product.name}</p>
-                                    <div className='flex flex-wrap gap-x-[13px] lg:items-center items-start'>
+                                    <div className='flex flex-wrap gap-x-[13px] items-center'>
                                         <div className='flex gap-x-[5px]'>
-                                            {/* {[...Array(5)].map((_, index) => (
-                                                <FaStar key={index} className='w-[18px] h-[18px]' color='#FFC633' />
-                                            ))} */}
                                             <ShowRatingStar rating={product.rating} />
                                         </div>
-                                        <div className='flex lg:text-sm text-xs'>
+                                        <div className='flex lg:text-sm text-xs pt-1'>
                                             <p className='text-primary'>{product.rating}</p>
                                             <p className='text-primary'>/</p>
                                             <p className='text-primary/60'>5</p>
@@ -105,6 +102,7 @@ const ProductsList = ({ caption, className, loadMoreProducts = true }: { caption
                         title='View All'
                         classNameButton='transition-all duration-200 sm:w-auto w-full border border-primary/10 hover:border-primary hover:bg-primary hover:text-white cursor-pointer'
                         classNameText='font-medium lg:text-base text-sm'
+                        onClick={() => navigate('/category')}
                     />
                 </div>
             }

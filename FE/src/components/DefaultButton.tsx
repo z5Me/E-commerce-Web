@@ -1,7 +1,10 @@
 
-const DefaultButton = ({ title, classNameButton, classNameText }: { title: string, classNameButton?: string, classNameText?: string }) => {
+const DefaultButton = ({ title, classNameButton, classNameText, onClick }: { title: string, classNameButton?: string, classNameText?: string, onClick?: () => void }) => {
     return (
-        <button className={`px-[54px] py-4 rounded-full ${classNameButton}`}>
+        <button
+            onClick={onClick}
+            className={`px-[54px] py-4 rounded-full ${classNameButton}`}
+        >
             <p className={`font-Satoshi font-medium lg:text-base text-sm ${classNameText}`}>
                 {title}
             </p>
