@@ -36,7 +36,7 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
     return (
         <div className="mt-[104px] mb-[64px]">
             <div className="w-full relative">
-                <div className="flex w-full items-center *:transition-all *:duration-200 *:pb-6 *:w-1/3 *:text-center *:cursor-pointer font-Satoshi md:text-[20px] text-base border-b border-b-primary/10">
+                <div className="flex w-full items-center *:transition-all *:duration-200 *:sm:pb-6 *:pb-3 *:w-1/3 *:text-center *:cursor-pointer font-Satoshi md:text-[20px] text-base border-b border-b-primary/10">
                     <button onClick={() => setSelectButton(1)} className={`${selectButton === 1 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>{screenWidth > 639 ? 'Product Details' : 'Details'}</button>
                     <button onClick={() => setSelectButton(2)} className={`${selectButton === 2 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>{screenWidth > 639 ? 'Rating & Review' : 'Review'}</button>
                     <button onClick={() => setSelectButton(3)} className={`${selectButton === 3 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>FAQs</button>

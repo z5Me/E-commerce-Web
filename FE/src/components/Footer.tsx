@@ -8,8 +8,8 @@ const Footer = () => {
     return (
         <>
             <Subscribe />
-            <footer>
-                <div className='bg-[#F0F0F0] py-[50px] defaultPadding'>
+            <footer className='flex justify-center bg-[#F0F0F0]'>
+                <div className='bg-transparent py-[50px] defaultPadding w-full max-w-[1920px]'>
                     <div className='lg:flex grid grid-cols-2 lg:gap-12 gap-6 justify-between'>
                         <div className='flex flex-col justify-between lg:gap-y-[35px] gap-y-5 col-span-full'>
                             <div className='flex flex-col lg:gap-y-[25px] gap-y-[14px]'>

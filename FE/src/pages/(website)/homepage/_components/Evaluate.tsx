@@ -69,48 +69,50 @@ const Evaluate = ({ screenWidth }: { screenWidth: number }) => {
 
     return (
         <>
-            <section>
-                <div className='pt-[80px] flex flex-col gap-10 mb-[80px]'>
-                    <div className='flex justify-between defaultPadding'>
-                        <p className='uppercase font-IntegralCF lg:text-5xl text-3xl font-bold'>Our happy Customers</p>
-                        <div className='flex items-end gap-x-4'>
-                            <button
-                                className={`${isBeginning === true ? 'opacity-50' : 'opacity-100 cursor-pointer'}`}
-                                onClick={() => prevSlice()}
-                            >
-                                <ArrowLeft />
-                            </button>
-                            <button
-                                className={`${isEnd === true ? 'opacity-50' : 'opacity-100 cursor-pointer'}`}
-                                onClick={() => nextSlice()}
-                            >
-                                <ArrowRight />
-                            </button>
+            <section className='flex justify-center'>
+                <div className='w-full max-w-[1920px]'>
+                    <div className='pt-[80px] flex flex-col gap-10 mb-[80px]'>
+                        <div className='flex justify-between defaultPadding'>
+                            <p className='uppercase font-IntegralCF lg:text-5xl text-3xl font-bold'>Our happy Customers</p>
+                            <div className='flex items-end gap-x-4'>
+                                <button
+                                    className={`${isBeginning === true ? 'opacity-50' : 'opacity-100 cursor-pointer'}`}
+                                    onClick={() => prevSlice()}
+                                >
+                                    <ArrowLeft />
+                                </button>
+                                <button
+                                    className={`${isEnd === true ? 'opacity-50' : 'opacity-100 cursor-pointer'}`}
+                                    onClick={() => nextSlice()}
+                                >
+                                    <ArrowRight />
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div className='select-none relative'>
-                        {/* <div className="absolute top-0 left-0 w-[100px] h-full z-10 pointer-events-none bg-gradient-to-r from-white/70 to-transparent"></div>
+                        <div className='select-none relative'>
+                            {/* <div className="absolute top-0 left-0 w-[100px] h-full z-10 pointer-events-none bg-gradient-to-r from-white/70 to-transparent"></div>
                         <div className="absolute top-0 right-0 w-[100px] h-full z-10 pointer-events-none bg-gradient-to-l from-white/70 to-transparent"></div> */}
-                        <Swiper
-                            grabCursor={true}
-                            spaceBetween={20}
-                            slidesPerView={screenWidth > 1536 ? 4 : screenWidth > 1280 ? 3 : screenWidth > 768 ? 2 : 1}
-                            initialSlide={0}
-                            allowTouchMove={true}
-                            onSwiper={(swiper: any) => {
-                                swiperRef.current = swiper;
-                                updateBlur()
-                            }}
-                            onSlideChange={updateBlur}
-                            onResize={updateBlur}
-                            className="mySwiper"
-                        >
-                            {[...Array(20)].map((_, index) => (
-                                <SwiperSlide key={index}>
-                                    <CustomerEvaluation index={index} />
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
+                            <Swiper
+                                grabCursor={true}
+                                spaceBetween={20}
+                                slidesPerView={screenWidth > 1536 ? 4 : screenWidth > 1280 ? 3 : screenWidth > 768 ? 2 : 1}
+                                initialSlide={0}
+                                allowTouchMove={true}
+                                onSwiper={(swiper: any) => {
+                                    swiperRef.current = swiper;
+                                    updateBlur()
+                                }}
+                                onSlideChange={updateBlur}
+                                onResize={updateBlur}
+                                className="mySwiper"
+                            >
+                                {[...Array(20)].map((_, index) => (
+                                    <SwiperSlide key={index}>
+                                        <CustomerEvaluation index={index} />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        </div>
                     </div>
                 </div>
             </section >
