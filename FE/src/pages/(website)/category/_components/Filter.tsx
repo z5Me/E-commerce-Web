@@ -16,6 +16,7 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
     }
 
     useEffect(() => {
+        //mở filter
         if (openFilter) {
             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
@@ -51,14 +52,42 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
             divChildrenRef.current?.classList.add('rounded-br-0');
         }
 
-        if (screenWidth >= 1024 || !openFilter) {
-            divChildrenRef.current?.classList.remove('opacity-100');
-            divChildrenRef.current?.classList.add('opacity-10');
-            if (screenWidth >= 1024) divChildrenRef.current?.classList.add('opacity-100');
+        //Đóng filter
+        if (!openFilter) {
+            //Tự đóng khi screen >= 1024
+            if (screenWidth >= 1024) {
+                divChildrenRef.current?.classList.add('opacity-100');
+                document.body.classList.remove('overflow-hidden');
+                document.body.classList.remove('relative');
 
+                divParentRef.current?.classList.add('hidden');
+                divParentRef.current?.classList.remove('grid');
+                divParentRef.current?.classList.remove('absolute');
+                divParentRef.current?.classList.remove('w-full');
+                divParentRef.current?.classList.remove('h-screen');
+                divParentRef.current?.classList.remove('inset-0');
+                divParentRef.current?.classList.remove('z-50');
+                divParentRef.current?.classList.remove('bg-primary/50');
+                divParentRef.current?.classList.remove('place-items-end');
+                divParentRef.current?.classList.remove('overflow-y-scroll');
+
+                divChildrenRef.current?.classList.add('hidden');
+                divChildrenRef.current?.classList.add('rounded-[20px]');
+                divChildrenRef.current?.classList.remove('grid');
+                divChildrenRef.current?.classList.remove('rounded-tl-[20px]');
+                divChildrenRef.current?.classList.remove('rounded-tr-[20px]');
+                divChildrenRef.current?.classList.remove('rounded-bl-0');
+                divChildrenRef.current?.classList.remove('rounded-br-0');
+                setOpenFilter(false);
+                return
+            }
+
+            //Đóng filter (màn nhỏ)
+            divParentRef.current?.classList.remove('pt-[10%]');
+            divParentRef.current?.classList.add('pt-[200%]');
             setTimeout(() => {
-                divParentRef.current?.classList.remove('pt-[10%]');
-                divParentRef.current?.classList.add('pt-[200%]');
+                divChildrenRef.current?.classList.remove('opacity-100');
+                divChildrenRef.current?.classList.add('opacity-10');
                 setTimeout(() => {
                     document.body.classList.remove('overflow-hidden');
                     document.body.classList.remove('relative');

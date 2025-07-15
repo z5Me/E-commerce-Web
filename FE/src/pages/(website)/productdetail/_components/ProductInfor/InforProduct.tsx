@@ -10,6 +10,9 @@ import ShowRatingStar from "@/components/ShowRatingStar";
 import ChangeQuantity from '@/components/ChangeQuantity';
 import { extractAttribute, findFitVariant } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '@/store/store';
+import { logOut } from '@/store/slices/userSlice';
 
 const attribute = [
     {
@@ -364,6 +367,8 @@ const InforProduct = () => {
 
     }, [chooseVariant])
 
+    const dispatch = useDispatch<AppDispatch>();
+
     return (
         <div className='flex flex-col font-Satoshi'>
             <div className="flex flex-col sm:gap-[14px] gap-3">
@@ -430,6 +435,7 @@ const InforProduct = () => {
             <div className="flex sm:gap-5 gap-3">
                 <ChangeQuantity />
                 <DefaultButton
+                    onClick={() => dispatch(logOut())}
                     title="Add to Card"
                     classNameButton="bg-primary rounded-full w-full cursor-pointer max-sm:px-0"
                     classNameText="text-white"

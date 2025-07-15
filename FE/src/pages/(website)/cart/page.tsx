@@ -382,7 +382,6 @@ const cart = {
 
 const CartPage = () => {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-
     useEffect(() => {
         const handdleResize = () => {
             setScreenWidth(window.innerWidth)
@@ -391,6 +390,10 @@ const CartPage = () => {
         window.addEventListener('resize', handdleResize);
 
         return () => window.removeEventListener('resize', handdleResize);
+    }, [])
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     }, [])
 
     const [changeStatus, setChangeStatus] = useState<number>(1);

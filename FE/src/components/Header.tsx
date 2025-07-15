@@ -1,12 +1,16 @@
 // Icons
-import { ChevronDown, CircleUserRound, Menu, Search, ShoppingCart, X } from 'lucide-react';
+import { ChevronDown, CircleUserRound, LogOut, Menu, Search, ShoppingCart, UserRoundPen, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 //Image
 import Logo from '@/assets/logo.svg';
 
 //React
+import { type AppDispatch } from '@/store/store';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
+import { reSignIn } from '@/store/thunks/userThunk';
+import { logOut, resetStatus } from '@/store/slices/userSlice';
 
 const Header = () => {
     const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -17,6 +21,7 @@ const Header = () => {
     const navRef = useRef<HTMLElement>(null);
     const headerRef = useRef<HTMLHeadElement>(null);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+    const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
         const handdleResize = () => {
@@ -74,7 +79,39 @@ const Header = () => {
         if (screenWidth >= 1024) {
             setOpenSearch(false);
         }
-    }, [screenWidth])
+    }, [screenWidth]);
+
+    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
+    const [openAccount, setOpenAccount] = useState<boolean>(false);
+
+    const userStatus = useSelector((state: any) => state.user.status, shallowEqual);
+
+    useEffect(() => {
+        dispatch(reSignIn());
+    }, [])
+
+    useEffect(() => {
+        if (userStatus === 'reSignIn.fulfilled') {
+            setTimeout(() => {
+                dispatch(resetStatus());
+            }, 1000)
+        }
+    }, [userStatus])
+
+    const accountRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleCloseOpenAccount = (event: MouseEvent) => {
+            if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
+                setOpenAccount(false);
+            }
+        };
+        if (openAccount) {
+            document.addEventListener('click', handleCloseOpenAccount);
+        }
+
+        return () => document.removeEventListener('click', handleCloseOpenAccount);
+
+    }, [openAccount])
 
     return (
         <>
@@ -140,11 +177,44 @@ const Header = () => {
                                     placeholder='Search for product...'
                                 />
                             </button>
-                            <div className='block cursor-pointer'>
-                                <ShoppingCart />
-                            </div>
-                            <div className='block cursor-pointer'>
-                                <CircleUserRound />
+                            <Link to={'/cart'}>
+                                <div className='block cursor-pointer'>
+                                    <ShoppingCart />
+                                </div>
+                            </Link>
+                            <div className='block'>
+                                {dataUser?.avatar !== ''
+                                    ?
+                                    <div ref={accountRef}
+                                        onClick={() => setOpenAccount(!openAccount)}
+                                        className='relative'
+                                    >
+                                        <img className='min-w-6 min-h-6 max-w-7 max-h-7 rounded-full cursor-pointer' src={`${dataUser?.avatar}`} alt='Avatar' />
+                                        <div onClick={(e) => e.stopPropagation()} className={`absolute transition-all duration-300 origin-right ease-out ${openAccount ? 'top-[120%] scale-100 opacity-100' : '-top-[120%] scale-0 opacity-0'} flex flex-col gap-4 p-2 right-0 w-fit border border-primary/5 rounded-lg shadow-xl bg-white`}>
+                                            <div className='flex w-auto gap-2'>
+                                                <img className='min-w-12 min-h-12 rounded-full' src={`${dataUser?.avatar}`} alt="Avatar" />
+                                                <div className='flex flex-col justify-center items-start'>
+                                                    <p>{dataUser.userName}</p>
+                                                    <p className='truncate max-w-[250px] text-primary/50 text-xs'>{dataUser.email}</p>
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between items-center gap-2 text-sm'>
+                                                <button className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-primary hover:text-white bg-gray-100 hover:bg-primary font-medium'>
+                                                    <UserRoundPen size={16} />
+                                                    <p>Edit</p>
+                                                </button>
+                                                <button onClick={() => dispatch(logOut())} className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-danger hover:text-white bg-gray-100 hover:bg-danger font-medium'>
+                                                    <LogOut size={16} />
+                                                    <p>Logout</p>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    :
+                                    <Link to={'/auth'}>
+                                        <CircleUserRound className='cursor-pointer' />
+                                    </Link>
+                                }
                             </div>
 
                         </div>

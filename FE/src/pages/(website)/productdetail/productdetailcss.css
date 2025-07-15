@@ -65,7 +65,8 @@
 
 .product-swiper .mySwiper .swiper-slide-thumb-active {
     opacity: 1;
-    border: 1px solid #000;
+    border: 2px solid #000;
+    /* outline: 1px solid #000; */
 }
 
 .product-swiper .swiper-slide img {
