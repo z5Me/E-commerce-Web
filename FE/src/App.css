@@ -4,6 +4,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
+    font-family: MJSatoshi;
+    src: url(../src/assets/fonts/MJSatoshi-Regular.ttf);
+}
+
+@font-face {
     font-family: Satoshi;
     src: url(../src/assets/fonts/Satoshi-Variable.ttf);
 }
@@ -18,6 +23,7 @@
     --color-contrast: #fff;
     --color-danger: #FF3333;
     --font-Satoshi: Satoshi;
+    --font-MJSatoshi: MJSatoshi;
     --font-IntegralCF: IntegralCF;
     --container-840S: 840px;
 }
@@ -255,10 +261,11 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+
+    body {
+        @apply bg-background text-foreground;
     }
 }

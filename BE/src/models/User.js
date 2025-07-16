@@ -1,5 +1,27 @@
 import mongoose from 'mongoose';
 
+const addressSchema = new mongoose.Schema({
+    receiver: {
+        type: String
+    },
+    phone: {
+        type: String
+    },
+    addressName: {
+        type: String,
+    },
+    lat: {
+        type: String,
+    },
+    lng: {
+        type: String,
+    },
+    selected: {
+        type: Boolean,
+        default: false
+    }
+});
+
 const userSchema = new mongoose.Schema({
     userNameFile: {
         type: String
@@ -7,15 +29,7 @@ const userSchema = new mongoose.Schema({
     userName: {
         type: String
     },
-    address: {
-        type: String
-    },
-    lat: {
-        type: String
-    },
-    lng: {
-        type: String
-    },
+    address: [addressSchema],
     email: {
         type: String,
         unique: true,
@@ -25,7 +39,8 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     phone: {
-        type: String
+        type: String,
+        default: ''
     },
     gender: {
         type: String,
@@ -33,7 +48,8 @@ const userSchema = new mongoose.Schema({
         default: ''
     },
     birthday: {
-        type: Date
+        type: Date,
+        default: new Date()
     },
     password: {
         type: String,

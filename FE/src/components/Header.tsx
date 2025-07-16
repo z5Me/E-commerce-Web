@@ -119,7 +119,7 @@ const Header = () => {
                 <p className='flex-1 text-center font-light'>Sign up and get 20% off to your first order. <span className='font-normal underline underline-offset-4 cursor-pointer'>Sign Up Now</span></p>
                 <X className='hidden sm:inline' />
             </section>
-            <header ref={headerRef} className='bg-white py-6 flex justify-center select-none'>
+            <header ref={headerRef} className='bg-white py-6 flex justify-center select-none font-Satoshi'>
                 <div className='defaultPadding max-w-[1920px] w-full'>
                     <div className='NAV flex justify-between items-center lg:gap-x-10 gap-x-4 z-10'>
                         <button
@@ -199,10 +199,15 @@ const Header = () => {
                                                 </div>
                                             </div>
                                             <div className='flex justify-between items-center gap-2 text-sm'>
-                                                <button className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-primary hover:text-white bg-gray-100 hover:bg-primary font-medium'>
-                                                    <UserRoundPen size={16} />
-                                                    <p>Edit</p>
-                                                </button>
+                                                <Link to={'/user'}>
+                                                    <button
+                                                        onClick={() => setOpenAccount(false)}
+                                                        className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-primary hover:text-white bg-gray-100 hover:bg-primary font-medium'
+                                                    >
+                                                        <UserRoundPen size={16} />
+                                                        <p>Edit</p>
+                                                    </button>
+                                                </Link>
                                                 <button onClick={() => dispatch(logOut())} className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-danger hover:text-white bg-gray-100 hover:bg-danger font-medium'>
                                                     <LogOut size={16} />
                                                     <p>Logout</p>

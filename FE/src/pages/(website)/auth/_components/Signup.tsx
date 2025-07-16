@@ -52,10 +52,16 @@ const Signup = () => {
         }
     }, [userState]);
 
-    const isLoading =
-        userState === 'signUp.pending' ||
-        userState === 'signUp.fulfilled' ||
-        userState === 'signIn.pending';
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    useEffect(() => {
+        if (['signIn.pending', 'signIn.fulfilled', 'signUp.pending', 'signUp.fulfilled'].includes(userState)) {
+            // console.log('chạy vào đây', userState)
+            setIsLoading(true);
+        } else {
+            setIsLoading(false)
+        }
+        return;
+    }, [userState]);
 
     return (
         <>

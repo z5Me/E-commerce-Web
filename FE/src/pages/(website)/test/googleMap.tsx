@@ -1,8 +1,13 @@
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
-import { useEffect, useState } from "react";
+import type { IUser } from "@/interfaces/user";
+import type { AppDispatch } from "@/store/store";
+import { saveAddress } from "@/store/thunks/userThunk";
 import axios from "axios";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Save, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { useDispatch } from "react-redux";
 
 // Fix lỗi icon marker không hiển thị đúng
 delete L.Icon.Default.prototype._getIconUrl;
@@ -12,12 +17,13 @@ L.Icon.Default.mergeOptions({
     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-const GoogleMapPage = () => {
+const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value: boolean) => void, dataUser: IUser }) => {
     const [position, setPosition] = useState({ lat: 21.0283334, lng: 105.854041 });
     const [address, setAddress] = useState("");
     const [inputAddress, setInputAddress] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [debouncedQuery, setDebouncedQuery] = useState("");
+    const dispatch = useDispatch<AppDispatch>();
 
     //tìm kiếm sau khi người dùng ngừng gõ 300ms
     useEffect(() => {
@@ -69,7 +75,7 @@ const GoogleMapPage = () => {
         useMapEvents({
             click(e: any) {
                 setPosition(e.latlng);
-                fetchAddress(e.latlng.lat, e.latlng.lng);
+                fetchAddress({ lat: e.latlng.lat, lng: e.latlng.lng });
             },
         });
         return <Marker position={position} />;
@@ -103,11 +109,7 @@ const GoogleMapPage = () => {
     const handleSearch = async () => {
         if (!inputAddress) return;
         try {
-            const res = await axios.get(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-                    inputAddress
-                )}`
-            );
+            const res = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(inputAddress)}`);
             if (res.data && res.data.length > 0) {
                 const first = res.data[0];
                 const newPos = { lat: parseFloat(first.lat), lng: parseFloat(first.lon) };
@@ -122,21 +124,33 @@ const GoogleMapPage = () => {
     };
 
     const handleSave = async () => {
-        console.log({
-            address,
+        // console.log({
+        //     addressName: address,
+        //     lat: position.lat,
+        //     lng: position.lng,
+        // })
+        if (dataUser.address !== undefined && dataUser.address?.length > 1) {
+            alert('Chỉ được lưu được tối đa 2 địa chỉ');
+            setOpenAddAddress(false);
+            return;
+        }
+        if (!address) return alert('Vui lòng nhập địa chỉ')
+        dispatch(saveAddress({
+            _id: dataUser._id as string,
+            addressName: address,
             lat: position.lat,
             lng: position.lng,
-        })
+        }))
     };
 
     return (
-        <div className="space-y-4 font-sans">
+        <div className="space-y-2 font-MJSatoshi">
             {/* Input địa chỉ */}
             <div className="flex gap-2">
                 <div className="relative flex-1">
                     <input
                         type="text"
-                        placeholder="Nhập địa chỉ để tìm"
+                        placeholder="Enter address to search"
                         className="border p-2 w-full"
                         value={inputAddress}
                         onChange={handleInputChange}
@@ -186,14 +200,24 @@ const GoogleMapPage = () => {
             {/* <p><strong>Địa chỉ chọn:</strong> {address || "Chưa có địa chỉ"}</p> */}
 
             {/* Nút lưu */}
-            <button
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-                onClick={(e) => { e.preventDefault(); handleSave() }}
-            >
-                Xác nhận và lưu địa chỉ
-            </button>
+            <div className="flex gap-2 justify-end my-4">
+                <button
+                    className='flex items-center gap-1 px-3 py-1 border border-danger bg-danger hover:bg-white text-white hover:text-danger rounded-[6px] cursor-pointer'
+                    onClick={(e) => { e.preventDefault(); setOpenAddAddress(false) }}
+                >
+                    <X size={16} />
+                    <p className='text-base'>Cancel</p>
+                </button>
+                <button
+                    className='flex items-center gap-1 px-3 py-1 border border-primary bg-primary hover:bg-white text-white hover:text-primary rounded-[6px] cursor-pointer'
+                    onClick={(e) => { e.preventDefault(); handleSave() }}
+                >
+                    <Save size={16} />
+                    <p className='text-base'>Save</p>
+                </button>
+            </div>
         </div>
     );
 }
 
-export default GoogleMapPage
+export default GoogleMap

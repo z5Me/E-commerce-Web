@@ -22,7 +22,7 @@ const Signin = () => {
     const dispatch = useDispatch<AppDispatch>();
     const userState = useSelector((state: any) => state.user.status);
 
-    console.log(userState);
+    // console.log(userState);
 
     const onSubmit = (data: any) => {
         // console.log('data: ', data)
@@ -43,10 +43,13 @@ const Signin = () => {
         }
     }, [userState]);
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     useEffect(() => {
-        if (userState !== 'idle' || userState !== 'reSignIn.rejected') {
-            setIsLoading(false);
+        if (['signIn.pending', 'signIn.fulfilled'].includes(userState)) {
+            // console.log('chạy vào đây', userState)
+            setIsLoading(true);
+        } else {
+            setIsLoading(false)
         }
         return;
     }, [userState])

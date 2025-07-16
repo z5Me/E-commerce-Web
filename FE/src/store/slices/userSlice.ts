@@ -1,17 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { reSignIn, signIn, signUp } from '../thunks/userThunk';
 import Cookies from 'js-cookie';
+import { reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
+import type { IUser } from '@/interfaces/user';
 
-const initialState = {
+const initialState: IUser = {
     _id: '',
-    email: '',
-    password: '',
-    avatar: '',
     userNameFile: '',
     userName: '',
-    address: '',
-    lat: '',
-    lng: ''
+    address: [],
+    email: '',
+    avatar: '',
+    phone: '',
+    gender: '',
+    birthday: undefined,
+    password: '',
+    role: undefined,
 }
 
 const userSlice = createSlice({
@@ -30,6 +33,14 @@ const userSlice = createSlice({
         },
         resetStatus: (state) => {
             state.status = 'idle';
+        },
+        setSelected: (state, action) => {
+            if (state.dataUser.address) {
+                state.dataUser.address = state.dataUser.address.map((item, i) => ({
+                    ...item,
+                    selected: i === action.payload.index
+                }))
+            }
         }
     },
     extraReducers: (builder) => {
@@ -78,15 +89,42 @@ const userSlice = createSlice({
                 }
             })
             .addCase(reSignIn.rejected, (state, action) => {
-                // console.log('action: ', action);
                 state.status = 'reSignIn.rejected';
-                // Cookies.remove('auth_token', { path: '/' });
-                // state.dataUser = initialState;
-                // state.status = 'idle';
-                // state.error = '';
+                state.error = action.payload as string;
+            })
+
+            .addCase(saveUserInformation.pending, (state) => {
+                state.status = 'saveUserInformation.pending';
+            })
+            .addCase(saveUserInformation.fulfilled, (state, action) => {
+                state.status = 'saveUserInformation.fulfilled';
+                state.dataUser = {
+                    ...state.dataUser,
+                    ...action.payload
+                }
+            })
+            .addCase(saveUserInformation.rejected, (state, action) => {
+                state.status = 'saveUserInformation.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(saveAddress.pending, (state) => {
+                state.status = 'saveAddress.pending';
+            })
+            .addCase(saveAddress.fulfilled, (state, action) => {
+                state.status = 'saveAddress.fulfilled';
+                state.error = '';
+                if (!state.dataUser.address) {
+                    state.dataUser.address = []
+                }
+                state.dataUser.address.push(action.payload);
+            })
+            .addCase(saveAddress.rejected, (state, action) => {
+                state.status = 'saveAddress.rejected';
+                state.error = action.payload as string;
             })
     }
 })
 
-export const { logOut, resetStatus } = userSlice.actions
+export const { logOut, resetStatus, setSelected } = userSlice.actions
 export default userSlice.reducer;

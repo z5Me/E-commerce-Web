@@ -45,3 +45,29 @@ export const reSignIn = createAsyncThunk('user/reSignIn', async (_, { rejectWith
         return rejectWithValue(error.response.data.error);
     }
 })
+
+export const saveUserInformation = createAsyncThunk('user/saveUserInformation', async (data, { rejectWithValue }) => {
+    // console.log('data_userThunk: ', data);
+    try {
+        const response = await axios.post(`${API}/saveUserInformation`, data);
+        // console.log('response: ', response);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở user/saveUserInformation');
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
+export const saveAddress = createAsyncThunk('user/saveAddress', async (data: { _id: string, addressName: string, lat: number, lng: number }, { rejectWithValue }) => {
+    // console.log('data_user/saveAddress');
+    try {
+        const response = await axios.post(`${API}/saveAddress`, data);
+        // console.log('response: ', response);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở user/saveAddress');
+        return rejectWithValue(error.response.data.error);
+    }
+})
