@@ -1,12 +1,11 @@
-import type { IUser } from '@/interfaces/user';
+import { useAccountForm } from '@/common/hooks/useAccountForm';
+import type { IUser } from '@/common/types/user';
+import { setSelected } from '@/store/slices/userSlice';
 import type { AppDispatch } from '@/store/store';
-import { saveUserInformation } from '@/store/thunks/userThunk';
 import { AlignJustify, MapPinPlus, Save, UserRoundPen, X } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import GoogleMap from '../../test/googleMap';
-import { setSelected } from '@/store/slices/userSlice';
+import DeliveryAddress from '../../../../components/DeliveryAddress';
 
 interface AccountSettingProps {
     openAccountManage: boolean;
@@ -19,6 +18,7 @@ interface AccountSettingProps {
 }
 
 const AccountSetting = ({ ...props }: AccountSettingProps) => {
+    //props
     const {
         openAccountManage,
         setOpenAccountManage,
@@ -29,45 +29,11 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
         dataUser,
     } = props;
 
+    //redux
     const dispatch = useDispatch<AppDispatch>();
-    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<IUser>({ mode: 'onChange' });
-    const selectedGender = watch('gender');
-    const isFirstLoad = useRef(true);
 
-    //reset form
-    useEffect(() => {
-        if (dataUser && dataUser._id && isFirstLoad.current) {
-            reset({
-                userName: dataUser.userName,
-                userNameFile: dataUser.userNameFile,
-                email: dataUser.email,
-                phone: dataUser.phone,
-                gender: dataUser.gender,
-                birthday: dataUser.birthday ? new Date(dataUser.birthday).toISOString().split("T")[0] : new Date()
-            });
-            isFirstLoad.current = false;
-        }
-    }, [dataUser]);
-
-    //submit
-    const onSubmit = (value: any) => {
-        const data = {
-            ...value,
-            _id: dataUser._id,
-            address: dataUser.address || []
-        }
-        // console.log(data)
-        dispatch(saveUserInformation(data))
-        setOpenEdit(false);
-    }
-
-    //close address
-    useEffect(() => {
-        if (openEdit === false) {
-            return setOpenAddAddress(false)
-        }
-        return
-    }, [openEdit])
+    //Xử lý form
+    const { register, handleSubmit, errors, selectedGender, onSubmit } = useAccountForm({ dataUser, openEdit, setOpenEdit, setOpenAddAddress, });
 
     return (
         <div className='w-full flex flex-col gap-4 pb-12'>
@@ -244,6 +210,25 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                         {(dataUser.address && dataUser.address.length > 0) &&
                             <>
                                 {dataUser.address.map((item: any, index: number) => (
+                                    // <div
+                                    //     onClick={() => {
+                                    //         if (openEdit) {
+                                    //             dispatch(setSelected({ index }))
+                                    //         }
+                                    //         return
+                                    //     }}
+                                    //     key={index}
+                                    //     className={`flex font-MJSatoshi flex-col gap-1 px-4 py-2 border ${item.selected && 'border-primary'} rounded-lg ${openEdit ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer text-primary' : 'bg-gray-200 text-gray-600'}  focus:bg-gray-50 focus:outline-primary`}
+                                    // >
+                                    //     <p>Receiver: {item.receiver}</p>
+                                    //     <span>Phone: {item.phone}</span>
+                                    //     <p>Address: {item.addressName}</p>
+                                    //     {item.selected &&
+                                    //         <div>
+                                    //             <span className='font-Satoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
+                                    //         </div>
+                                    //     }
+                                    // </div>
                                     <div
                                         onClick={() => {
                                             if (openEdit) {
@@ -252,16 +237,9 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                                             return
                                         }}
                                         key={index}
-                                        className={`flex font-MJSatoshi flex-col gap-1 px-4 py-2 border ${item.selected && 'border-primary'} rounded-lg ${openEdit ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer text-primary' : 'bg-gray-200 text-gray-600'}  focus:bg-gray-50 focus:outline-primary`}
+                                        className={`border ${item.selected && 'border-primary'} rounded-lg overflow-hidden`}
                                     >
-                                        <p>Receiver: {item.receiver}</p>
-                                        <span>Phone: {item.phone}</span>
-                                        <p>Address: {item.addressName}</p>
-                                        {item.selected &&
-                                            <div>
-                                                <span className='font-Satoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
-                                            </div>
-                                        }
+                                        <DeliveryAddress item={item} openEdit={openEdit} />
                                     </div>
                                 ))}
                             </>

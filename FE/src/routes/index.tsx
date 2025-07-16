@@ -9,6 +9,9 @@ import Signup from "@/pages/(website)/auth/_components/Signup"
 import Signin from "@/pages/(website)/auth/_components/Signin"
 import TestPage from "@/pages/(website)/test/page"
 import UserPage from "@/pages/(website)/user/page"
+import ShoppingCart from "@/pages/(website)/cart/_components/ShoppingCart"
+import Checkout from "@/pages/(website)/cart/_components/Checkout"
+import OrderComplete from "@/pages/(website)/cart/_components/OrderComplete"
 
 const Router = () => {
     return (
@@ -18,7 +21,11 @@ const Router = () => {
                 <Route path="test" element={<TestPage />} />
                 <Route path="detail" element={<ProductDetail />} />
                 <Route path="category" element={<CategoryPage />} />
-                <Route path="cart" element={<CartPage />} />
+                <Route path="cart" element={<CartPage />} >
+                    <Route index element={<ShoppingCart />} />
+                    <Route path="checkout" element={<Checkout />} />
+                    <Route path="order" element={<OrderComplete />} />
+                </Route>
                 <Route path="user" element={<UserPage />} />
             </Route>
             <Route path="auth" element={<AuthPage />}>

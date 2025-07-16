@@ -76,7 +76,7 @@ const Signup = () => {
                 </div>
                 <div className='flex-1 grid place-items-center'>
                     <div className='flex flex-col items-center gap-8'>
-                        <h1 className='font-bold text-3xl'>Welcome Back</h1>
+                        <h1 className='font-bold text-3xl'>Welcome</h1>
                         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
                             <div className='relative *:rounded-[5px]'>
                                 <input {...register('email', {
@@ -91,7 +91,7 @@ const Signup = () => {
                                     className={`${errors?.email ? 'outline-danger border-danger border' : 'focus:outline-primary border border-gray-300'} disabled:bg-gray-50 px-4 peer z-10 py-2 min-w-[320px]`} />
                                 <label
                                     htmlFor="email"
-                                    className={`absolute transition-all duration-300 ${errors?.email ? 'text-danger' : emailFilled ? 'text-primary' : 'text-gray-500 peer-focus:text-primary'} top-1/2 ${emailFilled ? 'left-0' : 'left-2 peer-focus:left-0'} ${emailFilled ? '-translate-y-[130%]' : '-translate-y-1/2 peer-focus:-translate-y-[130%]'} px-2 ${emailFilled ? 'scale-75' : 'peer-focus:scale-75 scale-100'} ${email ? 'bg-white' : 'bg-transparent peer-focus:bg-white'}`}
+                                    className={`absolute cursor-text transition-all duration-300 ${errors?.email ? 'text-danger' : emailFilled ? 'text-primary' : 'text-gray-500 peer-focus:text-primary'} top-1/2 ${emailFilled ? 'left-0' : 'left-2 peer-focus:left-0'} ${emailFilled ? '-translate-y-[130%]' : '-translate-y-1/2 peer-focus:-translate-y-[130%]'} px-2 ${emailFilled ? 'scale-75' : 'peer-focus:scale-75 scale-100'} ${email ? 'bg-white' : 'bg-transparent peer-focus:bg-white'}`}
                                 >
                                     Email address
                                 </label>
@@ -107,11 +107,11 @@ const Signup = () => {
                                 })}
                                     disabled={['signUp.pending', 'signUp.fulfilled', 'signIn.pending'].includes(userState)}
                                     id='password' type="text"
-                                    className={` ${errors?.password ? 'border border-danger outline-danger' : 'border border-gray-300'}  px-4 peer z-10 py-2 min-w-[320px]`}
+                                    className={` ${errors?.password ? 'border border-danger outline-danger' : 'focus:outline-primary border border-gray-300'}  px-4 peer z-10 py-2 min-w-[320px]`}
                                 />
                                 <label
                                     htmlFor="password"
-                                    className={`absolute transition-all duration-300 ${errors?.password ? 'text-danger' : passwordFilled ? 'text-primary' : 'peer-focus:text-primary text-gray-500'} top-1/2 ${passwordFilled ? 'left-[1%]' : 'peer-focus:left-[1%] left-2'} ${passwordFilled ? '-translate-y-[130%]' : 'peer-focus:-translate-y-[130%] -translate-y-1/2'} px-2 ${passwordFilled ? 'scale-75' : 'peer-focus:scale-75 scale-100'} z-20 ${passwordFilled ? 'bg-white' : 'peer-focus:bg-white bg-transparent'}`}
+                                    className={`absolute cursor-text transition-all duration-300 ${errors?.password ? 'text-danger' : passwordFilled ? 'text-primary' : 'peer-focus:text-primary text-gray-500'} top-1/2 ${passwordFilled ? 'left-[1%]' : 'peer-focus:left-[1%] left-2'} ${passwordFilled ? '-translate-y-[130%]' : 'peer-focus:-translate-y-[130%] -translate-y-1/2'} px-2 ${passwordFilled ? 'scale-75' : 'peer-focus:scale-75 scale-100'} z-20 ${passwordFilled ? 'bg-white' : 'peer-focus:bg-white bg-transparent'}`}
                                 >
                                     Password
                                 </label>
@@ -125,9 +125,12 @@ const Signup = () => {
                                 })}
                                     disabled={['signUp.pending', 'signUp.fulfilled', 'signIn.pending'].includes(userState)}
                                     id='confirmPassword' type="text"
-                                    className={`${errors?.confirmPassword ? 'border border-danger outline-danger' : 'border border-gray-300'} px-4 peer z-10 py-2 min-w-[320px] disabled:bg-gray-100 disabled:cursor-not-allowed`}
+                                    className={`${errors?.confirmPassword ? 'border border-danger outline-danger' : 'focus:outline-primary border border-gray-300'} px-4 peer z-10 py-2 min-w-[320px] disabled:bg-gray-100 disabled:cursor-not-allowed`}
                                 />
-                                <label htmlFor="confirmPassword" className={`absolute transition-all duration-300 ${errors?.confirmPassword ? 'text-danger' : confirmPasswordFilled ? 'text-primary' : 'peer-focus:text-primary text-gray-500'} top-1/2 ${confirmPasswordFilled ? '-left-[1%]' : 'peer-focus:-left-[1%] left-2'} ${confirmPasswordFilled ? '-translate-y-[130%]' : 'peer-focus:-translate-y-[130%] -translate-y-1/2'} px-2 ${confirmPasswordFilled ? 'scale-75' : 'peer-focus:scale-75 scale-100'} z-20 ${confirmPasswordFilled ? 'bg-white' : 'peer-focus:bg-white bg-transparent'}`}>
+                                <label
+                                    htmlFor="confirmPassword"
+                                    className={`absolute cursor-text transition-all duration-300 ${errors?.confirmPassword ? 'text-danger' : confirmPasswordFilled ? 'text-primary' : 'peer-focus:text-primary text-gray-500'} top-1/2 ${confirmPasswordFilled ? '-left-[1%]' : 'peer-focus:-left-[1%] left-2'} ${confirmPasswordFilled ? '-translate-y-[130%]' : 'peer-focus:-translate-y-[130%] -translate-y-1/2'} px-2 ${confirmPasswordFilled ? 'scale-75' : 'peer-focus:scale-75 scale-100'} z-20 ${confirmPasswordFilled ? 'bg-white' : 'peer-focus:bg-white bg-transparent'}`}
+                                >
                                     Confirm Password
                                 </label>
                             </div>

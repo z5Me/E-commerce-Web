@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 import { reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
-import type { IUser } from '@/interfaces/user';
+import type { IUser } from '@/common/types/user';
 
 const initialState: IUser = {
     _id: '',

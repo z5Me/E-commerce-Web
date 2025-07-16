@@ -1,4 +1,4 @@
-import type { IUser } from "@/interfaces/user";
+import type { IUser } from "@/common/types/user";
 import type { AppDispatch } from "@/store/store";
 import { saveAddress } from "@/store/thunks/userThunk";
 import axios from "axios";
