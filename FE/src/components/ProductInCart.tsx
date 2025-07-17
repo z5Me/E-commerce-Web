@@ -63,7 +63,6 @@ const ProductInCart = ({ item, checkout = false }: any) => {
                                     className="sm:min-w-[126px] sm:py-3 py-2 sm:px-5 px-4"
                                     sizeMinus={screenWidth > 639 ? 16 : 14}
                                     sizePlus={screenWidth > 639 ? 16 : 14}
-                                    screenWidth={screenWidth}
                                 />
                             }
                         </div>

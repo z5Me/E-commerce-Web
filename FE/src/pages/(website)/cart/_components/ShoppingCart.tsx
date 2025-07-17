@@ -2,6 +2,7 @@ import Product_Image from '@/assets/product2.svg';
 import ProductInCart from '@/components/ProductInCart';
 import PriceList from './PriceList';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
+import { Tag } from 'lucide-react';
 
 const cart = {
     id: 'cartid1',
@@ -106,8 +107,20 @@ const ShoppingCart = () => {
                         </div>
                     ))}
                 </div>
+                <div className="flex sm:flex-row flex-col-reverse justify-between sm:items-center items-end gap-4 pb-5">
+                    <div className="flex gap-x-3 w-full max-w-[783px]">
+                        <div className="w-full bg-[#F0F0F0] text-primary/40 rounded-[62px] flex items-center gap-x-3 py-3 px-4">
+                            <Tag size={screenWidth >= 640 ? 24 : 20} />
+                            <input type="text" className="sm:text-base text-sm outline-0 w-full text-primary" placeholder="Add promo code" defaultValue={'VOUCHER_CODE_2025'} />
+                        </div>
+                        <button className="font-medium sm:py-3 py-2 sm:px-8 px-6 sm:text-base text-sm bg-primary hover:bg-white border border-primary hover:border-primary/40 text-white hover:text-primary rounded-[62px] cursor-pointer">
+                            <p>Apply</p>
+                        </button>
+                    </div>
+                    <p className='sm:text-base text-sm font-semibold underline cursor-pointer text-nowrap'>Clear cart</p>
+                </div>
             </div>
-            <PriceList screenWidth={screenWidth} />
+            <PriceList />
         </>
     )
 }

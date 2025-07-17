@@ -1,7 +1,7 @@
 import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 
-const ChangeQuantity = ({ className = 'sm:min-w-[170px] sm:py-4 py-3 sm:px-5 px-4', sizeMinus, sizePlus, screenWidth }: { className?: string, sizeMinus?: number, sizePlus?: number, screenWidth: number }) => {
+const ChangeQuantity = ({ className = 'sm:min-w-[170px] sm:py-4 py-3 sm:px-5 px-4', sizeMinus, sizePlus }: { className?: string, sizeMinus?: number, sizePlus?: number }) => {
     const [quantity, setQuantity] = useState<number>(1);
 
     //Xử lý số lượng sản phẩm muốn mua

@@ -1,9 +1,10 @@
-import { Check, PackageCheck, ShoppingBasket, Wallet } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react';
+import { useChangeStatusCart } from '@/common/hooks/useChangeStatusCart';
+import { Check, PackageCheck, ShoppingBasket, Wallet } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 const ShoppingStatus = ({ screenWidth }: any) => {
     //Sau này thay bằng theo dõi url
-    const [changeStatus, setChangeStatus] = useState<number>(1);
+    const { changeStatus } = useChangeStatusCart();
 
     const pCartRef = useRef<HTMLParagraphElement>(null);
     const pCheckoutRef = useRef<HTMLParagraphElement>(null);
@@ -113,4 +114,4 @@ const ShoppingStatus = ({ screenWidth }: any) => {
     )
 }
 
-export default ShoppingStatus
+export default ShoppingStatus;

@@ -181,7 +181,7 @@ const Checkout = () => {
 
                 </div>
             </div>
-            <PriceList screenWidth={screenWidth} />
+            <PriceList />
         </>
     )
 }

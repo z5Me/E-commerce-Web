@@ -1,6 +1,6 @@
 import Product_Image from '@/assets/product2.svg';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Headset, Package, Wallet } from "lucide-react";
 import { Outlet } from 'react-router';
 import PriceList from './_components/PriceList';
 import ShoppingStatus from './_components/ShoppingStatus';
@@ -404,14 +404,41 @@ const CartPage = () => {
                 </div>
             </div>
             <ShoppingStatus screenWidth={screenWidth} />
-            <div className='max-w-[1920px] min-h-[750px] w-full defaultPadding flex xl:flex-row flex-col gap-x-16 pt-8 font-Satoshi mb-12'>
+            <div className='max-w-[1920px] w-full defaultPadding flex xl:flex-row flex-col sm:gap-16 gap-8 py-10 font-Satoshi'>
                 {/* YOUR CART  */}
-                {/* <div className="xl:w-[60%] w-full"> */}
                 <Outlet />
-                {/* </div> */}
-                {/* SUBTOTAL  */}
-                {/* <PriceList screenWidth={screenWidth} /> */}
             </div>
+            {/* <div className='max-w-[1920px] w-full defaultPadding my-12'>
+                <div className='w-full flex justify-between items-center *:w-full'>
+                    <div className='flex justify-center'>
+                        <div className='flex items-center gap-4 px-4 py-2'>
+                            <Package size={48} />
+                            <div className='flex flex-col'>
+                                <p className='font-semibold text-lg'>Free Shipping</p>
+                                <span className='text-sm text-gray-500'>Free shipping for order above $50</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='flex justify-center border-l border-r'>
+                        <div className='flex items-center gap-4 px-4 py-2'>
+                            <Wallet size={48} />
+                            <div className='flex flex-col'>
+                                <p className='font-semibold text-lg'>Flexible Payment</p>
+                                <span className='text-sm text-gray-500'>Mutiple secure payment options</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='flex justify-center border-l'>
+                        <div className='flex items-center gap-4 px-4 py-2'>
+                            <Headset size={48} />
+                            <div className='flex flex-col'>
+                                <p className='font-semibold text-lg'>24x7 Support</p>
+                                <span className='text-sm text-gray-500'>We support online all days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> */}
         </section >
     )
 }
