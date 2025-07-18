@@ -1,22 +1,24 @@
 import { lazy, Suspense } from "react"
 
-import { Navigate, Route, Routes } from "react-router"
-import LayoutWebsite from "../pages/(website)/layout"
-import HomePage from "../pages/(website)/homepage/page"
-import ProductDetail from "@/pages/(website)/productdetail/page"
-import CategoryPage from "@/pages/(website)/category/page"
-import CartPage from "@/pages/(website)/cart/page"
-import AuthPage from "@/pages/(website)/auth/page"
-import Signup from "@/pages/(website)/auth/_components/Signup"
+import LoadingScreen from "@/components/LoadingScreen"
+import DashBoardPage from "@/pages/(dashboard)/dashboard/page"
+import LayoutAdmin from "@/pages/(dashboard)/layout"
+import AdminProductsList from "@/pages/(dashboard)/products/_components/ProductsList"
+import LayoutAdminProductsPage from "@/pages/(dashboard)/products/page"
 import Signin from "@/pages/(website)/auth/_components/Signin"
-import UserPage from "@/pages/(website)/user/page"
-import ShoppingCart from "@/pages/(website)/cart/_components/ShoppingCart"
+import Signup from "@/pages/(website)/auth/_components/Signup"
+import AuthPage from "@/pages/(website)/auth/page"
 import Checkout from "@/pages/(website)/cart/_components/Checkout"
 import OrderComplete from "@/pages/(website)/cart/_components/OrderComplete"
-import LoadingScreen from "@/components/LoadingScreen"
-import LayoutAdmin from "@/pages/(dashboard)/layout"
-import DashBoardPage from "@/pages/(dashboard)/dashboard/page"
-import AdminProductsPage from "@/pages/(dashboard)/products/page"
+import ShoppingCart from "@/pages/(website)/cart/_components/ShoppingCart"
+import CartPage from "@/pages/(website)/cart/page"
+import CategoryPage from "@/pages/(website)/category/page"
+import ProductDetail from "@/pages/(website)/productdetail/page"
+import UserPage from "@/pages/(website)/user/page"
+import { Navigate, Route, Routes } from "react-router"
+import HomePage from "../pages/(website)/homepage/page"
+import LayoutWebsite from "../pages/(website)/layout"
+import AdminAttributesPage from "@/pages/(dashboard)/attributes/page"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -46,7 +48,10 @@ const Router = () => {
             </Route>
             <Route path="admin" element={<LayoutAdmin />}>
                 <Route index element={<DashBoardPage />} />
-                <Route path="products" element={<AdminProductsPage />} />
+                <Route path="products" element={<LayoutAdminProductsPage />}>
+                    <Route index element={<AdminProductsList />} />
+                    <Route path="attributes" element={<AdminAttributesPage />} />
+                </Route>
             </Route>
         </Routes>
     )

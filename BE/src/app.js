@@ -6,6 +6,9 @@ import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import { connectDB } from './config/db';
 import userRouter from './routers/User';
+import variantRouter from './routers/Variant';
+import attributeRouter from './routers/Attribute';
+import attributeValueRouter from './routers/AttributeValue';
 
 config();
 
@@ -33,6 +36,9 @@ const port = process.env.PORT || 8080;
 
 // Router
 app.use('/api', userRouter);
+app.use('/api/variant', variantRouter);
+app.use('/api/attribute', attributeRouter);
+app.use('/api/attributeValue', attributeValueRouter);
 
 // Check connect
 app.listen(port, () => {

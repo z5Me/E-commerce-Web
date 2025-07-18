@@ -1,0 +1,53 @@
+import Attribute from "../models/Attribute"
+
+export const getAllAttribute = async (req, res) => {
+    const { filterDelete } = req.body;
+    try {
+        const findAttribute = await Attribute.find().populate([
+            { path: 'terms' },
+            { path: 'value' }
+        ]);
+
+        if (filterDelete && filterDelete === true) {
+            const newAttributeList = findAttribute.filter((item) => item.isDelete === false);
+            return res.status(200).json(newAttributeList);
+        }
+
+        return res.status(200).json(findAttribute);
+    } catch (error) {
+        console.log('Lỗi ở getAllAttribute');
+        return res.status(200).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
+export const CreateAttribute = async (req, res) => {
+    const { name, type } = req.body;
+    try {
+        const existed = await Attribute.findOne({ name });
+        if (existed) return res.status(409).json({ message: 'Tên thuộc tính đã tồn tại' });
+
+        const newAttribute = await Attribute.create({ name, type });
+        return res.status(201).json(newAttribute);
+    } catch (error) {
+        console.log('Lỗi ở CreateAttribute');
+        return res.status(500).json({ message: 'Lỗi server', error: error.message })
+    }
+}
+
+export const AddValueAttribute = async (req, res) => {
+    const { idAttribute, idAttributeValue } = req.body;
+    try {
+        //Tìm Attribute
+        const findAttribute = await Attribute.findOne({ _id: idAttribute });
+        if (!findAttribute) return res.status(404).json({ message: 'Attribute not found' });
+
+        //Thêm AttributeValue vào value của Attribute
+        findAttribute.value.push(idAttributeValue);
+        await findAttribute.save();
+
+        return res.status(200).json(findAttribute);
+    } catch (error) {
+        console.log('Lỗi ở AddValueAttribute');
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}

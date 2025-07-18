@@ -31,8 +31,8 @@ import {
 
 const data = {
     user: {
-        name: "shadcn",
-        email: "m@example.com",
+        name: "Admin",
+        email: "Admin@gmail.com",
         avatar: "/avatars/shadcn.jpg",
     },
     navMain: [
@@ -49,15 +49,15 @@ const data = {
             items: [
                 {
                     title: "List Products",
-                    url: "#",
+                    url: "/admin/products",
                 },
                 {
                     title: "Add Products",
                     url: "#",
                 },
                 {
-                    title: "Settings",
-                    url: "#",
+                    title: "Attributes",
+                    url: "products/attributes",
                 },
             ],
         },
