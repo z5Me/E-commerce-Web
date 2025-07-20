@@ -1,6 +1,6 @@
 "use client"
 
-import type { IAttribute } from "@/common/types/attribute";
+import type { IAttributeValue } from "@/common/types/attributeValue";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { Link } from "react-router";
 
-export const columns: ColumnDef<IAttribute>[] = [
+//Làm interface và thay thế IAttrbute
+export const columns: ColumnDef<IAttributeValue>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -48,35 +48,26 @@ export const columns: ColumnDef<IAttribute>[] = [
         header: "Name",
     },
     {
-        accessorKey: "type",
-        header: "Type",
-    },
-    {
-        accessorKey: "terms",
-        header: "Terms",
+        accessorKey: "value",
+        header: "Value",
         cell: ({ row }) => {
-            const attribute = row.original
+            const value = row.original;
 
+            if (value.type === 'color') {
+                return (
+                    <div className="w-6 h-6 rounded" style={{ backgroundColor: value.value }}></div>
+                )
+            }
             return (
-                <div className="w-fit flex flex-col justify-between gap-1">
-                    {(attribute.terms && attribute.terms.length > 0)
-                        ?
-                        <div className="flex gap-1">
-                            {attribute.terms.map((item: any) => (
-                                <Badge key={item.name}>
-                                    {item.name}
-                                </Badge>
-                            ))}
-                        </div>
-                        :
-                        <p>-</p>
-                    }
-                    <Link to={`terms?idAttribute=${attribute._id}`}>
-                        <p className="text-blue-500 underline w-fit">Configure terms</p>
-                    </Link>
-                </div>
+                <Badge >
+                    {value.value}
+                </Badge>
             )
         }
+    },
+    {
+        accessorKey: "slug",
+        header: "Slug   ",
     },
     {
         id: "actions",

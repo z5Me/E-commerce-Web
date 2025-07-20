@@ -1,9 +1,9 @@
 export type IAttribute = {
-    _id: string;
+    _id?: string;
     name: string;
     slug?: string;
     type: string;
-    terms?: string[];
+    terms?: [];
     value?: string[];
     isDelete?: boolean;
 };

@@ -1,6 +1,30 @@
 import Attribute from "../models/Attribute";
 import AttributeValue from "../models/AttributeValue"
 
+export const getAllAttributeValue = async (req, res) => {
+    const { filterDelete } = req.query;
+
+    try {
+        const findAttributeValue = await AttributeValue.find();
+
+        //Nếu không có dữ liệu
+        if (!findAttributeValue || findAttributeValue.length === 0) {
+            return res.status(404).json({ message: 'AttributeValue lits not found' });
+        }
+
+        //Lọc những giá trị bị xóa mềm
+        if (filterDelete && filterDelete === 'true') {
+            const newAttributeValueList = findAttributeValue.filter((item) => item.isDelete === false);
+            return res.status(200).json(newAttributeValueList);
+        }
+
+        return res.status(200).json(findAttributeValue);
+    } catch (error) {
+        console.log('Lỗi ở getAllAttributeValue')
+        return res.status(500).json({ message: 'Lỗi server', error: error.message })
+    }
+}
+
 export const CreateAttributeValue = async (req, res) => {
     const { name, value, idAttribute } = req.body;
     try {

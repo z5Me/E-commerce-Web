@@ -19,6 +19,8 @@ import { Navigate, Route, Routes } from "react-router"
 import HomePage from "../pages/(website)/homepage/page"
 import LayoutWebsite from "../pages/(website)/layout"
 import AdminAttributesPage from "@/pages/(dashboard)/attributes/page"
+import AdminAttributeValuesPage from "@/pages/(dashboard)/attributeValue/page"
+import AdminAttributeList from "@/pages/(dashboard)/attributes/_components/AttributeList"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -50,7 +52,10 @@ const Router = () => {
                 <Route index element={<DashBoardPage />} />
                 <Route path="products" element={<LayoutAdminProductsPage />}>
                     <Route index element={<AdminProductsList />} />
-                    <Route path="attributes" element={<AdminAttributesPage />} />
+                    <Route path="attributes" element={<AdminAttributesPage />}>
+                        <Route index element={<AdminAttributeList />} />
+                        <Route path="terms" element={<AdminAttributeValuesPage />} />
+                    </Route>
                 </Route>
             </Route>
         </Routes>

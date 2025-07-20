@@ -1,14 +1,19 @@
 import Attribute from "../models/Attribute"
 
 export const getAllAttribute = async (req, res) => {
-    const { filterDelete } = req.body;
+    const { filterDelete } = req.query;
     try {
         const findAttribute = await Attribute.find().populate([
             { path: 'terms' },
             { path: 'value' }
         ]);
+        //Nếu không có dữ liệu
+        if (!findAttribute || findAttribute.length === 0) {
+            return res.status(404).json({ message: 'Attribute list not found' })
+        }
 
-        if (filterDelete && filterDelete === true) {
+        //Lọc sản phẩm chưa xóa mềm
+        if (filterDelete && filterDelete === 'true') {
             const newAttributeList = findAttribute.filter((item) => item.isDelete === false);
             return res.status(200).json(newAttributeList);
         }
@@ -23,6 +28,7 @@ export const getAllAttribute = async (req, res) => {
 export const CreateAttribute = async (req, res) => {
     const { name, type } = req.body;
     try {
+        //kiểm tra xem có bị trùng name không
         const existed = await Attribute.findOne({ name });
         if (existed) return res.status(409).json({ message: 'Tên thuộc tính đã tồn tại' });
 

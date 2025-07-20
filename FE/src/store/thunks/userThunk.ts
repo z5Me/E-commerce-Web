@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from 'js-cookie';
-import { useNavigate } from "react-router";
 
 const API = import.meta.env.VITE_API;
 
