@@ -49,3 +49,40 @@ export const CreateAttributeValue = async (req, res) => {
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }
+
+export const EditAttributeValue = async (req, res) => {
+    const { idAttributeValue, name, value } = req.body;
+    try {
+        const attributeValue = await AttributeValue.findOne({ _id: idAttributeValue });
+
+        if (!attributeValue) return res.status(404).json({ message: 'Attribute value not found' });
+
+        attributeValue.name = name;
+        attributeValue.value = value;
+
+        await attributeValue.save();
+
+        return res.status(200).json(attributeValue);
+    } catch (error) {
+        console.log('Lỗi ở EditAttributeValue');
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
+export const removeAttributeValue = async (req, res) => {
+    const { idAttributeValue } = req.body;
+    try {
+        const attributeValue = await AttributeValue.findOne({ _id: idAttributeValue });
+
+        if (!attributeValue) return res.status(404).json({ message: 'Attribute value not found' });
+
+        attributeValue.isDelete = true;
+
+        await attributeValue.save();
+
+        return res.status(200).json(attributeValue);
+    } catch (error) {
+        console.log('Lỗi ở removeAttributeValue');
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}

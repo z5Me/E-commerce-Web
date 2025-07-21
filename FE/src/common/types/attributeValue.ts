@@ -6,4 +6,5 @@ export type IAttributeValue = {
     slug?: string;
     isDelete: boolean;
     idAttribute?: string;
+    idAttributeValue?: string;
 }

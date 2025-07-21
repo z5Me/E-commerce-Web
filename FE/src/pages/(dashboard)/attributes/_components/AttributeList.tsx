@@ -16,7 +16,7 @@ const AdminAttributeList = () => {
 
     useEffect(() => {
         if (status === 'idle') {
-            dispatch(getAllAttribute({}));
+            dispatch(getAllAttribute({ filterDelete: 'true' }));
         }
         return
     }, [status, dispatch]);

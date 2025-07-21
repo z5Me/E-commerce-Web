@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createAttribute, getAllAttribute } from "../thunks/attributeThunk";
+import { createAttribute, getAllAttribute, removeAttribute } from "../thunks/attributeThunk";
 import type { IAttribute } from "@/common/types/attribute";
+import { createAttributeValue, getAllAttributeValue, removeAttributeValue } from "../thunks/attributeValueThunk";
 
 const attributeSlice = createSlice({
     name: 'attribute',
@@ -44,6 +45,58 @@ const attributeSlice = createSlice({
             })
             .addCase(createAttribute.rejected, (state, action) => {
                 state.status = 'createAttribute.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(removeAttribute.pending, (state) => {
+                state.status = 'removeAttribute.pending';
+                state.error = '';
+            })
+            .addCase(removeAttribute.fulfilled, (state) => {
+                state.status = 'removeAttribute.fulfilled';
+                state.error = '';
+            })
+            .addCase(removeAttribute.rejected, (state, action) => {
+                state.status = 'removeAttribute.rejected';
+                state.error = action.payload as string;
+            })
+
+            //attributeValue
+            .addCase(getAllAttributeValue.pending, (state) => {
+                state.status = 'getAllAttribute.pending';
+            })
+            .addCase(getAllAttributeValue.fulfilled, (state, action) => {
+                state.status = 'getAllAttributeValue.fulfilled';
+                // console.log('action: ', action);
+            })
+            .addCase(getAllAttributeValue.rejected, (state, action) => {
+                state.status = 'getALlAttributeValue.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(createAttributeValue.pending, (state) => {
+                state.status = 'createAttributeValue.pending';
+                state.error = '';
+            })
+            .addCase(createAttributeValue.fulfilled, (state) => {
+                state.status = 'createAttributeValue.fulfilled';
+                state.error = '';
+            })
+            .addCase(createAttributeValue.rejected, (state, action) => {
+                state.status = 'createAttributeValue.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(removeAttributeValue.pending, (state) => {
+                state.status = 'removeAttributeValue.pending';
+                state.error = '';
+            })
+            .addCase(removeAttributeValue.fulfilled, (state) => {
+                state.status = 'removeAttributeValue.fulfilled';
+                state.error = '';
+            })
+            .addCase(removeAttributeValue.rejected, (state, action) => {
+                state.status = 'removeAttributeValue.rejected';
                 state.error = action.payload as string;
             })
     }
