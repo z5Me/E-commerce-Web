@@ -53,7 +53,7 @@ const data = {
                 },
                 {
                     title: "Add Products",
-                    url: "#",
+                    url: "products/add",
                 },
                 {
                     title: "Attributes",

@@ -12,12 +12,20 @@ import { toast } from 'sonner'
 import z from 'zod'
 
 const FormSchema = z.object({
-    name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
-    }),
-    value: z.string().min(1, {
-        message: "Value must be required."
-    })
+    name: z.string()
+        .min(2, {
+            message: "Name must be at least 2 characters.",
+        })
+        .refine(val => val === val.trim(), {
+            message: "Name must not have whietspace."
+        }),
+    value: z.string()
+        .min(1, {
+            message: "Value must be required."
+        })
+        .refine(val => val === val.trim(), {
+            message: "Value must not have whitespace."
+        })
 })
 
 const AdminAttributeValueForm = () => {
@@ -32,13 +40,13 @@ const AdminAttributeValueForm = () => {
     })
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast("You submitted the following values", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+        // toast("You submitted the following values", {
+        //     description: (
+        //         <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
+        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        //         </pre>
+        //     ),
+        // })
 
         if (!idAttribute) {
             toast.error("Attribute ID is missing. Cannot submit.");
@@ -50,16 +58,25 @@ const AdminAttributeValueForm = () => {
             idAttribute: idAttribute
         }
 
-        dispatch(createAttributeValue(filData)).unwrap().then(() => {
-            setTimeout(() => {
-                dispatch(setDefaultAttribute())
-            }, 100)
+        const promise = dispatch(createAttributeValue(filData)).unwrap().then(() => {
+            // dispatch(setDefaultAttribute());
+        })
+
+        toast.promise(promise, {
+            loading: '...Loading',
+            success: () => {
+                form.reset();
+                return 'Success'
+            },
+            error: (error) => {
+                return `Error: ${error}`
+            }
         })
     }
 
     return (
         <>
-            <h1 className="sm:text-lg text-base">Add new material</h1>
+            <h1 className="sm:text-lg text-base">Config terms</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
                     <FormField

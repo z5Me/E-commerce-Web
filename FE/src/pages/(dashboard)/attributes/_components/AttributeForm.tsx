@@ -16,47 +16,63 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useDispatch } from "react-redux"
+import { setDefaultAttribute } from "@/store/slices/attributeSlice"
 import type { AppDispatch } from "@/store/store"
 import { createAttribute } from "@/store/thunks/attributeThunk"
-import { setDefaultAttribute } from "@/store/slices/attributeSlice"
 import { memo } from "react"
+import { useDispatch } from "react-redux"
 
 const FormSchema = z.object({
-    name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
-    }),
-    type: z.string().min(2, {
-        message: "Type must be at least 2 characters."
-    })
+    name: z.string()
+        .min(2, {
+            message: "Name must be at least 2 characters.",
+        })
+        .refine(val => val === val.trim(), {
+            message: 'Name must not have whitespace.'
+        }),
+    type: z.string()
+        .min(2, {
+            message: "Type must be at least 2 characters."
+        })
+        .refine(val => val === val.trim(), {
+            message: 'Type must not have whitespace.'
+        })
 })
 
 const AttributeForm = () => {
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useDispatch<AppDispatch>();
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
             name: "",
             type: ""
         },
-    })
+    });
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast("You submitted the following values", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+        // toast("You submitted the following values", {
+        //     description: (
+        //         <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
+        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        //         </pre>
+        //     ),
+        // });
 
-        dispatch(createAttribute({ data })).unwrap().then(() => {
+        const promise = dispatch(createAttribute({ data })).unwrap().then(() => {
             setTimeout(() => {
                 form.reset();
                 dispatch(setDefaultAttribute());
             }, 100)
         });
-    }
+
+        toast.promise(promise, {
+            loading: 'Loading...',
+            success: 'Success',
+            error: (error) => {
+                return `Error: ${error}`
+            }
+        })
+    };
 
     return (
         <div className="grid gap-3">

@@ -141,7 +141,7 @@ export const columns: ColumnDef<IAttributeValue>[] = [
                                 <AlertDialogAction
                                     onClick={() => {
                                         // Xử lý xóa
-                                        dispatch(removeAttributeValue({ idAttributeValue: attributeValue._id })).unwrap().then(() => {
+                                        dispatch(removeAttributeValue({ idAttribute: idAttribute as string, idAttributeValue: attributeValue._id })).unwrap().then(() => {
                                             setDialogOpen(false);
                                             setTimeout(() => {
                                                 dispatch(setDefaultAttribute());

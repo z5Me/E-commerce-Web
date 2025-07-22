@@ -17,12 +17,21 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 const FormSchema = z.object({
-    name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
-    }),
-    value: z.string().min(1, {
-        message: "Value must be required."
-    })
+    name: z.string()
+        .min(2, {
+            message: "Name must be at least 2 characters.",
+        })
+        .refine(val => val === val.trim(), {
+            message: "Name must not have whitespace."
+        })
+    ,
+    value: z.string()
+        .min(1, {
+            message: "Value must be required."
+        })
+        .refine(val => val === val.trim(), {
+            message: "Value must not have whitespace."
+        })
 })
 
 const AdminAttributeValueEdit = () => {
@@ -61,15 +70,24 @@ const AdminAttributeValueEdit = () => {
 
         const fillData = {
             ...data,
+            idAttribute: idAttribute,
             idAttributeValue: idAttributeValue ?? ""
         };
 
-        dispatch(editAttributeValue(fillData)).unwrap().then(() => {
+        const promise = dispatch(editAttributeValue(fillData)).unwrap().then(() => {
             setTimeout(() => {
                 dispatch(setDefaultAttribute());
                 navigate(-1)
             });
         });
+
+        toast.promise(promise, {
+            loading: '...Loading',
+            success: 'Success',
+            error: (error) => {
+                return `Error: ${error}`
+            }
+        })
     }
 
     useEffect(() => {

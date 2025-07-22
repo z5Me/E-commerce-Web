@@ -28,6 +28,17 @@ export const createAttribute = createAsyncThunk('attribute/createAttribute', asy
     }
 })
 
+export const editAttribute = createAsyncThunk('attribute/editAttribute', async (data: { idAttribute: string, name: string, type: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/attribute/editAttribute`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở attribute/editAttribute');
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
 export const removeAttribute = createAsyncThunk('attribute/removeAttribute', async (data: { idAttribute: string }, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API}/attribute/removeAttribute`, data);

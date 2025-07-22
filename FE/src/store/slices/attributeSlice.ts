@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createAttribute, getAllAttribute, removeAttribute } from "../thunks/attributeThunk";
+import { createAttribute, editAttribute, getAllAttribute, removeAttribute } from "../thunks/attributeThunk";
 import type { IAttribute } from "@/common/types/attribute";
-import { createAttributeValue, getAllAttributeValue, removeAttributeValue } from "../thunks/attributeValueThunk";
+import { createAttributeValue, editAttributeValue, getAllAttributeValue, removeAttributeValue } from "../thunks/attributeValueThunk";
 
 const attributeSlice = createSlice({
     name: 'attribute',
@@ -35,7 +35,7 @@ const attributeSlice = createSlice({
             })
 
             .addCase(createAttribute.pending, (state) => {
-                state.status = 'createAttribute.pending';
+                state.status = 'pending';
                 state.error = '';
             })
             .addCase(createAttribute.fulfilled, (state, action) => {
@@ -45,16 +45,43 @@ const attributeSlice = createSlice({
             })
             .addCase(createAttribute.rejected, (state, action) => {
                 state.status = 'createAttribute.rejected';
+                console.log('action: ', action.payload)
+                state.error = action.payload as string;
+            })
+
+            .addCase(editAttribute.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(editAttribute.fulfilled, (state, action) => {
+                state.status = 'editAttribute.fulfilled';
+                state.error = '';
+                const { idAttribute, data } = action.payload;
+                const index = state.dataAttribute.findIndex(
+                    (item: any) => item._id.toString() === idAttribute.toString()
+                )
+                if (index !== -1) {
+                    state.dataAttribute[index] = {
+                        ...state.dataAttribute[index],
+                        ...data
+                    }
+                }
+            })
+            .addCase(editAttribute.rejected, (state, action) => {
+                state.status = 'editAttribute.rejected';
                 state.error = action.payload as string;
             })
 
             .addCase(removeAttribute.pending, (state) => {
-                state.status = 'removeAttribute.pending';
+                state.status = 'pending';
                 state.error = '';
             })
-            .addCase(removeAttribute.fulfilled, (state) => {
+            .addCase(removeAttribute.fulfilled, (state, action) => {
                 state.status = 'removeAttribute.fulfilled';
                 state.error = '';
+                state.dataAttribute = state.dataAttribute.filter(
+                    (item: any) => item._id !== action.payload.idAttribute.toString()
+                );
             })
             .addCase(removeAttribute.rejected, (state, action) => {
                 state.status = 'removeAttribute.rejected';
@@ -63,11 +90,10 @@ const attributeSlice = createSlice({
 
             //attributeValue
             .addCase(getAllAttributeValue.pending, (state) => {
-                state.status = 'getAllAttribute.pending';
+                state.status = 'pending';
             })
-            .addCase(getAllAttributeValue.fulfilled, (state, action) => {
+            .addCase(getAllAttributeValue.fulfilled, (state) => {
                 state.status = 'getAllAttributeValue.fulfilled';
-                // console.log('action: ', action);
             })
             .addCase(getAllAttributeValue.rejected, (state, action) => {
                 state.status = 'getALlAttributeValue.rejected';
@@ -75,25 +101,71 @@ const attributeSlice = createSlice({
             })
 
             .addCase(createAttributeValue.pending, (state) => {
-                state.status = 'createAttributeValue.pending';
+                state.status = 'pending';
                 state.error = '';
             })
-            .addCase(createAttributeValue.fulfilled, (state) => {
+            .addCase(createAttributeValue.fulfilled, (state, action) => {
                 state.status = 'createAttributeValue.fulfilled';
                 state.error = '';
+                const index = state.dataAttribute.findIndex(
+                    (item: any) => item._id.toString() === action.payload.idAttribute.toString()
+                );
+                if (index !== -1) {
+                    if (!state.dataAttribute[index].terms) {
+                        state.dataAttribute[index].terms = [];
+                    }
+                    state.dataAttribute[index].terms.push(action.payload.data);
+                }
             })
             .addCase(createAttributeValue.rejected, (state, action) => {
                 state.status = 'createAttributeValue.rejected';
                 state.error = action.payload as string;
             })
 
-            .addCase(removeAttributeValue.pending, (state) => {
-                state.status = 'removeAttributeValue.pending';
+            .addCase(editAttributeValue.pending, (state) => {
+                state.status = 'pending';
                 state.error = '';
             })
-            .addCase(removeAttributeValue.fulfilled, (state) => {
+            .addCase(editAttributeValue.fulfilled, (state, action) => {
+                state.status = 'editAttributeValue.fulfilled';
+                state.error = '';
+                const { idAttribute, idAttributeValue } = action.payload;
+                const index = state.dataAttribute.findIndex(
+                    (item: any) => item._id.toString() === idAttribute.toString()
+                )
+
+                if (index !== -1) {
+                    const indexValue = state.dataAttribute[index].terms?.findIndex(
+                        (item: any) => item._id.toString() === idAttributeValue.toString()
+                    )
+
+                    if (typeof indexValue === 'number' && indexValue !== -1) {
+                        if (!state.dataAttribute[index].terms || !state.dataAttribute[index].terms[indexValue]) return;
+                        state.dataAttribute[index].terms[indexValue] = action.payload.data;
+                    }
+                }
+            })
+            .addCase(editAttributeValue.rejected, (state, action) => {
+                state.status = 'editAttributeValue.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(removeAttributeValue.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(removeAttributeValue.fulfilled, (state, action) => {
                 state.status = 'removeAttributeValue.fulfilled';
                 state.error = '';
+                const { idAttribute, idAttributeValue } = action.payload;
+                const index = state.dataAttribute.findIndex(
+                    (item: any) => item._id.toString() === idAttribute.toString()
+                )
+                if (index !== -1 && Array.isArray(state.dataAttribute[index].terms)) {
+                    state.dataAttribute[index].terms = state.dataAttribute[index].terms.filter(
+                        (item: any) => item._id.toString() !== idAttributeValue.toString()
+                    )
+                }
             })
             .addCase(removeAttributeValue.rejected, (state, action) => {
                 state.status = 'removeAttributeValue.rejected';

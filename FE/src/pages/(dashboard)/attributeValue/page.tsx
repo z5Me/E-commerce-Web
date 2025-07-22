@@ -1,7 +1,6 @@
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router';
 
 const AdminAttributeValuesPage = () => {
-
     return (
         <Outlet />
     )

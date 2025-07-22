@@ -55,7 +55,7 @@ export const reSignIn = async (req, res) => {
 
 export const logOut = async (req, res) => {
     res.clearCookie('token');
-    res.status(200).json({ message: 'Đã đăng xuất' });
+    res.status(200).json({ error: 'Đã đăng xuất' });
 }
 
 

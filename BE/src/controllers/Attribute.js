@@ -9,7 +9,7 @@ export const getAllAttribute = async (req, res) => {
         ]).lean();
         //Nếu không có dữ liệu
         if (!findAttribute || findAttribute.length === 0) {
-            return res.status(404).json({ message: 'Attribute list not found' })
+            return res.status(404).json({ error: 'Attribute list not found' })
         }
 
         //Lọc sản phẩm chưa xóa mềm
@@ -36,8 +36,8 @@ export const CreateAttribute = async (req, res) => {
     const { name, type } = req.body;
     try {
         //kiểm tra xem có bị trùng name không
-        const existed = await Attribute.findOne({ name });
-        if (existed) return res.status(409).json({ message: 'Tên thuộc tính đã tồn tại' });
+        const existed = await Attribute.findOne({ name, isDelete: false });
+        if (existed) return res.status(409).json({ error: 'Tên thuộc tính đã tồn tại' });
 
         const newAttribute = await Attribute.create({ name, type });
         return res.status(201).json(newAttribute);
@@ -52,7 +52,7 @@ export const AddValueAttribute = async (req, res) => {
     try {
         //Tìm Attribute
         const findAttribute = await Attribute.findOne({ _id: idAttribute });
-        if (!findAttribute) return res.status(404).json({ message: 'Attribute not found' });
+        if (!findAttribute) return res.status(404).json({ error: 'Attribute not found' });
 
         //Thêm AttributeValue vào value của Attribute
         findAttribute.value.push(idAttributeValue);
@@ -65,18 +65,37 @@ export const AddValueAttribute = async (req, res) => {
     }
 }
 
+export const editAttribute = async (req, res) => {
+    const { idAttribute, name, type } = req.body;
+    try {
+        //TÌm Attribute
+        const findAttribute = await Attribute.findOne({ _id: idAttribute });
+        if (!findAttribute) return res.status(404).json({ error: 'Attribute not found' });
+
+        //Edit Attribute
+        findAttribute.name = name;
+        findAttribute.type = type;
+        await findAttribute.save();
+
+        return res.status(200).json({ data: findAttribute, idAttribute: idAttribute });
+    } catch (error) {
+        console.log('Lỗi ở editAttribute');
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
 export const removeAttribute = async (req, res) => {
     const { idAttribute } = req.body;
     try {
         //Tìm Attribute
         const findAttribute = await Attribute.findOne({ _id: idAttribute });
-        if (!findAttribute) return res.status(404).json({ message: 'Attribute not found' });
+        if (!findAttribute) return res.status(404).json({ error: 'Attribute not found' });
 
         //Chỉnh trạng thái delete
         findAttribute.isDelete = true;
         await findAttribute.save();
 
-        return res.status(200).json(findAttribute);
+        return res.status(200).json({ data: findAttribute, idAttribute: idAttribute });
     } catch (error) {
         console.log('Lỗi ở removeAttribute');
         return res.status(500).json({ message: 'Lỗi server', error: error.message });

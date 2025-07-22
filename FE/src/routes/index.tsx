@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react"
 
-import LoadingScreen from "@/components/LoadingScreen"
 import DashBoardPage from "@/pages/(dashboard)/dashboard/page"
 import LayoutAdmin from "@/pages/(dashboard)/layout"
 import AdminProductsList from "@/pages/(dashboard)/products/_components/ProductsList"
@@ -24,6 +23,7 @@ import AdminAttributeList from "@/pages/(dashboard)/attributes/_components/Attri
 import AdminAttributeValueList from "@/pages/(dashboard)/attributeValue/_components/AttributeValueList"
 import AdminAttributeValueEdit from "@/pages/(dashboard)/attributeValue/_components/AttributeValueEdit"
 import AdminAttributeEdit from "@/pages/(dashboard)/attributes/_components/AttributeEdit"
+import AdminProductsAdd from "@/pages/(dashboard)/products/_components/ProductsAdd"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -33,7 +33,7 @@ const Router = () => {
             <Route path="/" element={<LayoutWebsite />}>
                 <Route index element={<HomePage />} />
                 <Route path="test" element={
-                    <Suspense fallback={<LoadingScreen />}>
+                    <Suspense fallback={<Signin />}>
                         <TestPage />
                     </Suspense>
                 } />
@@ -55,6 +55,7 @@ const Router = () => {
                 <Route index element={<DashBoardPage />} />
                 <Route path="products" element={<LayoutAdminProductsPage />}>
                     <Route index element={<AdminProductsList />} />
+                    <Route path="add" element={<AdminProductsAdd />} />
                     <Route path="attributes" element={<AdminAttributesPage />}>
                         <Route index element={<AdminAttributeList />} />
                         <Route path="edit" element={<AdminAttributeEdit />} />

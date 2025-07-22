@@ -38,7 +38,7 @@ export const editAttributeValue = createAsyncThunk('attributeValue/editAttribute
     }
 })
 
-export const removeAttributeValue = createAsyncThunk('attributeValue/removeAttributeValue', async (data: { idAttributeValue: string }, { rejectWithValue }) => {
+export const removeAttributeValue = createAsyncThunk('attributeValue/removeAttributeValue', async (data: { idAttribute: string, idAttributeValue: string }, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API}/attributeValue/removeAttributeValue`, data);
 

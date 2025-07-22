@@ -19,21 +19,32 @@ import { Input } from "@/components/ui/input"
 import type { AppDispatch } from "@/store/store"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { useEffect, useState } from "react"
-import { getAllAttribute } from "@/store/thunks/attributeThunk"
+import { editAttribute, getAllAttribute } from "@/store/thunks/attributeThunk"
 import type { IAttribute } from "@/common/types/attribute"
 import { useGetParams } from "@/common/hooks/useGetParams"
+import { setDefaultAttribute } from "@/store/slices/attributeSlice"
+import { useNavigate } from "react-router"
 
 const FormSchema = z.object({
-    name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
-    }),
-    type: z.string().min(2, {
-        message: "Type must be at least 2 characters."
-    })
+    name: z.string()
+        .min(2, {
+            message: "Name must be at least 2 characters.",
+        })
+        .refine(val => val === val.trim(), {
+            message: "Name must not have whitespace."
+        }),
+    type: z.string()
+        .min(2, {
+            message: "Type must be at least 2 characters."
+        })
+        .refine(val => val === val.trim(), {
+            message: "Type must not have whitespace."
+        })
 })
 
 const AdminAttributeEdit = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
 
     const { idAttribute } = useGetParams(['idAttribute'])
     const data2 = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
@@ -72,15 +83,33 @@ const AdminAttributeEdit = () => {
     })
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast("You submitted the following values", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        });
+        // toast("You submitted the following values", {
+        //     description: (
+        //         <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
+        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        //         </pre>
+        //     ),
+        // });
 
-        //Làm chức năng edit bên BE rồi tích hợp vào đây
+        const filData = {
+            ...data,
+            idAttribute: idAttribute as string
+        }
+
+        const promise = dispatch(editAttribute(filData)).unwrap().then(() => {
+            setTimeout(() => {
+                dispatch(setDefaultAttribute());
+                navigate(-1);
+            }, 100)
+        })
+
+        toast.promise(promise, {
+            loading: '...Loading',
+            success: 'Success',
+            error: (error) => {
+                return `Error: ${error}`
+            }
+        })
     }
 
     return (
