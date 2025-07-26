@@ -19,7 +19,7 @@ export const getAllAttributeValue = createAsyncThunk('attributeValue/getAllAttri
 export const createAttributeValue = createAsyncThunk('attributeValue/createAttributeValue', async (data: { name: string, value: string, idAttribute: string }, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API}/attributeValue/createAttributeValue`, data);
-
+        console.log('response: ', response.data)
         return response.data;
     } catch (error: any) {
         console.log('Lỗi ở attributevalue.createAttributeValue', error);

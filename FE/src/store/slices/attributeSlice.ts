@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createAttribute, editAttribute, getAllAttribute, removeAttribute } from "../thunks/attributeThunk";
 import type { IAttribute } from "@/common/types/attribute";
 import { createAttributeValue, editAttributeValue, getAllAttributeValue, removeAttributeValue } from "../thunks/attributeValueThunk";
+import { toast } from "sonner";
 
 const attributeSlice = createSlice({
     name: 'attribute',
     initialState: {
         dataAttribute: [] as IAttribute[],
+        dataGenerateVariant: [] as IAttribute[],
         status: 'idle',
         error: ''
     },
@@ -14,7 +16,88 @@ const attributeSlice = createSlice({
         setDefaultAttribute(state) {
             state.status = 'idle';
             state.error = '';
+        },
+        setIsDeleteTrue(state, action) {
+            const { idAttribute } = action.payload;
+
+            const target = state.dataAttribute.find(item => item._id === idAttribute);
+            if (target) {
+                target.isDelete = true;
+                target.value = [];
+            }
+        },
+        setIsDeleteFalse(state, action) {
+            const { idAttribute } = action.payload;
+
+            const target = state.dataAttribute.find(item => item._id === idAttribute);
+
+            if (target) {
+                if (target.isDelete === false) toast.warning('Attribute has been added');
+                target.isDelete = false;
+            }
+        },
+        removeValue(state, action) {
+            const { idAttribute, idValue } = action.payload;
+            const findIndex = state.dataAttribute.findIndex(item => item._id === idAttribute);
+
+            if (findIndex !== -1) {
+                if (state.dataAttribute[findIndex].value) {
+                    state.dataAttribute[findIndex].value = state.dataAttribute[findIndex].value.filter((item: any) => item._id !== idValue);
+                }
+            }
+        },
+        addValue(state, action) {
+            const { idAttribute, idTerm } = action.payload;
+            const findIndex = state.dataAttribute.findIndex(item => item._id === idAttribute);
+
+            if (findIndex !== -1) {
+                const copyTerm = state.dataAttribute[findIndex].terms?.filter((item: any) => item._id === idTerm);
+                if (copyTerm && copyTerm[0]) {
+                    state.dataAttribute[findIndex].value?.push(copyTerm[0]);
+                }
+            }
+        },
+        selectAllValue(state, action) {
+            const { idAttribute } = action.payload;
+            const attribute = state.dataAttribute.find(item => item._id === idAttribute);
+
+            if (attribute) {
+                const merged = [...attribute.value || [], ...attribute.terms || []]
+
+                const map = new Map();
+                merged.forEach(item => {
+                    map.set(item._id, item);
+                });
+
+                attribute.value = Array.from(map.values());
+            }
+        },
+        clearAllValue(state, action) {
+            const { idAttribute } = action.payload;
+            const attribute = state.dataAttribute.find(item => item._id === idAttribute);
+
+            if (attribute) {
+                attribute.value = []
+            }
+        },
+        saveAttributes(state) {
+            const filterDelete = state.dataAttribute.filter(item => item.isDelete === false);
+            if (filterDelete.length === 0) {
+                toast.warning("Doesn't has any attribute to save");
+                return;
+            }
+
+            const attributeNoValue = filterDelete.some(item => item.value?.length === 0);
+
+            if (attributeNoValue) {
+                toast.warning('Have an attribute with no value, please check your attribute');
+                return;
+            }
+
+            state.dataGenerateVariant = filterDelete;
+            toast.success('success');
         }
+
     },
     extraReducers: (builder) => {
         builder
@@ -114,7 +197,11 @@ const attributeSlice = createSlice({
                     if (!state.dataAttribute[index].terms) {
                         state.dataAttribute[index].terms = [];
                     }
+                    if (!state.dataAttribute[index].value) {
+                        state.dataAttribute[index].value = [];
+                    }
                     state.dataAttribute[index].terms.push(action.payload.data);
+                    state.dataAttribute[index].value.push(action.payload.data);
                 }
             })
             .addCase(createAttributeValue.rejected, (state, action) => {
@@ -174,5 +261,5 @@ const attributeSlice = createSlice({
     }
 })
 
-export const { setDefaultAttribute } = attributeSlice.actions;
+export const { setDefaultAttribute, setIsDeleteTrue, setIsDeleteFalse, removeValue, addValue, selectAllValue, clearAllValue, saveAttributes } = attributeSlice.actions;
 export default attributeSlice.reducer;

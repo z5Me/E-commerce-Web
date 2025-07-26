@@ -1,13 +1,12 @@
-import Attribute from "../models/Attribute";
 import Variant from "../models/Variant";
 
 export const GenerateVariant = async (req, res) => {
     try {
-        const getAllAttribute = await Attribute.find().populate('value');
-        const valueList = getAllAttribute.map((attri) => attri.value.map(v => v._id));
+        const getAllAttribute = req.body;
+        const valueList = getAllAttribute.map((attri) => attri.value);
 
         if (valueList.length === 1) {
-            console.log('Chạy vào length === 1')
+            // console.log('Chạy vào length === 1')
             const newValueList = valueList.flatMap(item => item);
             const variantList = [];
             for (const item of newValueList) {
@@ -39,5 +38,14 @@ export const GenerateVariant = async (req, res) => {
     } catch (error) {
         console.log('Lỗi ở GenerateVariant');
         return res.status(500).json({ message: 'Lỗi Server', error: error.message });
+    }
+}
+
+export const editVariant = async (req, res) => {
+    try {
+        //tiếp tục ở đây
+    } catch (error) {
+        console.log('Lỗi ở editVariant', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }

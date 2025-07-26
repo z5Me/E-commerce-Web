@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const VariantSchema = new mongoose.Schema({
-    SKU: {
+    sku: {
         type: String,
         default: ''
     },
@@ -9,15 +9,12 @@ const VariantSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    oldPrice: {
-        type: Number,
-        default: 0
-    },
     typeDiscount: {
-        type: Number,
-        default: 0
+        type: String,
+        enum: ['percent', 'fixed'],
+        default: 'fixed'
     },
-    discountPercent: {
+    discount: {
         type: Number,
         default: 0
     },

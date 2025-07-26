@@ -41,6 +41,7 @@ export const CreateAttributeValue = async (req, res) => {
 
         //Thêm giá trị vừa tạo vào Attribute
         findAttribute.terms.push(newAttributeValue._id);
+        findAttribute.value.push(newAttributeValue._id);
         await findAttribute.save();
 
         return res.status(201).json({ data: newAttributeValue, idAttribute: idAttribute });

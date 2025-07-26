@@ -7,76 +7,79 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { AppDispatch } from "@/store/store";
+import { getAllAttribute } from "@/store/thunks/attributeThunk";
+import { generateVariant } from "@/store/thunks/variantThunk";
 import { Editor } from '@tinymce/tinymce-react';
+import axios from "axios";
 import { Grid2x2, ImagePlus, SquareChartGantt } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import z from "zod";
-
-const FormSchema = z.object({
-    name: z.string()
-        .min(2, {
-            message: "Name must be at least 2 characters.",
-        })
-        .refine(val => val === val.trim(), {
-            message: 'Name must not have whitespace.'
-        }),
-    type: z.string()
-        .min(2, {
-            message: "Type must be at least 2 characters."
-        })
-        .refine(val => val === val.trim(), {
-            message: 'Type must not have whitespace.'
-        }),
-    des: z.string()
-        .min(10, { message: "Description must be at least 2 characters." })
-        .refine(value => value.replace(/<[^>]*>?/gm, '').trim().length > 0, {
-            message: "Description must not be empty.",
-        }),
-    shortDesc: z.string()
-        .min(10, {
-            message: "Short Description must be at least 10 characters.",
-        })
-        .max(160, {
-            message: "Short Description must not be longer than 30 characters.",
-        }),
-    fileImage: z
-        .any()
-        .refine((file) => file instanceof File || (file && file[0] instanceof File), {
-            message: "Please upload an image.",
-        }),
-    sku: z.string(),
-    // Fix price và discount
-    // price: z.preprocess(
-    //     (val) => val === '' ? undefined : Number(val),
-    //     z.number().min(0.01, {
-    //         message: 'Price must be greater than 0',
-    //     })
-    // ),
-    // discount: z.string()
-})
+import AdminConfigAttributes from "./ConfigAttributes";
+import AdminConfigVariant from "./ConfigVariant";
+import { joiResolver } from '@hookform/resolvers/joi';
+import { ProductFormSchema } from "../schema/productSchema";
 
 const VITE_TINYMCE_KEY = import.meta.env.VITE_TINYMCE_KEY;
 
+type ProductFormData = {
+    name: string;
+    desc: string;
+    shortDesc: string;
+    productImage: File | null;
+    variants: {
+        image: File | null;
+        sku: string;
+        typeDiscount: 'percent' | 'fixed';
+        countOnStock: number;
+        price: number;
+        discount: number;
+    }[];
+};
+
 const AdminProductsAdd = () => {
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<ProductFormData>({
+        mode: 'onChange',
+        resolver: joiResolver(ProductFormSchema),
         defaultValues: {
-            name: "",
-            des: "",
-            shortDesc: "",
-            fileImage: "",
-            sku: "",
-            // price: 0,
-            // discount: '0'
+            name: '',
+            desc: '',
+            shortDesc: '',
+            productImage: null,
+            variants: [],
         },
     });
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "variants"
+    });
+
+    const uploadSingleImage = async (file: any) => {
+        const CLOUND_NAME = 'dnqj78t2f';
+        const PRESET_NAME = 'demo-upload';
+        const FOLDER_NAME = 'Test';
+        const CLOUND_API = `https://api.cloudinary.com/v1_1/${CLOUND_NAME}/image/upload`;
+
+        const formData = new FormData();
+
+        formData.append("upload_preset", PRESET_NAME);
+        formData.append("folder", FOLDER_NAME);
+        formData.append("file", file);
+
+        const response = await axios.post(`${CLOUND_API}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        })
+        // console.log(response.data.secure_url);
+        return response.data.secure_url
+    }
+
+    async function onSubmit(data: ProductFormData) {
         toast("You submitted the following values", {
             description: (
                 <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
@@ -84,19 +87,127 @@ const AdminProductsAdd = () => {
                 </pre>
             ),
         });
+
+        //Tải ảnh lên cloudinary
+        const mainImage = await uploadSingleImage(data.productImage);
+
+        const variantsWithImage = await Promise.all(
+            data.variants.map(async (item) => {
+                const url = await uploadSingleImage(item.image);
+                return {
+                    ...item,
+                    image: url
+                };
+            })
+        );
+
+        const finalData = {
+            ...data,
+            variants: variantsWithImage,
+            productImage: mainImage
+        };
+
+        console.log('data gửi backend:', finalData);
+        //Lưu variant
+        //Tạo 1 dữ liệu mới trong đó các variant chỉ lấy _id
+        //Gửi request
     };
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
+
+    const [switchCase, setSwitchCase] = useState<string>('attributes');
+
+    const dispatch = useDispatch<AppDispatch>();
+    const dataAttribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
+    const status = useSelector((state: any) => state.attribute.status, shallowEqual);
+
+    const dataGenerateVariant = useSelector((state: any) => state.attribute.dataGenerateVariant, shallowEqual);
+    const handleGenerate = () => {
+        if (dataGenerateVariant.length !== 0) {
+            dispatch(generateVariant(dataGenerateVariant));
+            return;
+        }
+        toast.warning('Choose and save attributes to continue');
+    }
+
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(getAllAttribute({ filterDelete: 'true' }));
+        }
+        return
+    }, [status, dispatch]);
+
+    //fill dữ liệu generate vào form variant
+    const dataVariant = useSelector((state: any) => state.variant.dataVariant, shallowEqual);
+    useEffect(() => {
+        if (dataVariant && dataVariant.length > 0) {
+            form.reset({
+                ...form.getValues(),
+                variants: dataVariant,
+            })
+        }
+    }, [dataVariant]);
 
     return (
         <div className="grid gap-3">
             <h1 className="sm:text-lg text-base">Add new product</h1>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+                    <div className="w-full flex flex-row-reverse gap-4">
+                        <div className="w-full max-w-[500px]">
+                            <Accordion
+                                type="single"
+                                collapsible
+                                className="w-full"
+                                defaultValue="item-1"
+                            >
+                                <AccordionItem value="item-1">
+                                    <AccordionTrigger>Product Image</AccordionTrigger>
+                                    <AccordionContent className="flex flex-col gap-4 text-balance">
+                                        <FormField
+                                            control={form.control}
+                                            name="productImage"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel htmlFor="productImage" className="border border-dashed aspect-square grid justify-center rounded-md">
+                                                        {previewImage ? (
+                                                            <img
+                                                                src={previewImage}
+                                                                alt="Preview"
+                                                                className="object-cover rounded-md border"
+                                                            />
+                                                        ) : (
+                                                            <ImagePlus size={48} />
+                                                        )}
+                                                    </FormLabel>
 
-            <div className="w-full flex flex-row-reverse gap-4">
-                <div className="min-w-[500px]"></div>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+                                                    <FormControl>
+                                                        <Input
+                                                            id="productImage"
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className="hidden"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0];
+                                                                // console.log(file);
+                                                                if (file) {
+                                                                    // Gọi onChange của React Hook Form
+                                                                    field.onChange(file);
+                                                                    // Hiển thị ảnh preview
+                                                                    const url = URL.createObjectURL(file);
+                                                                    setPreviewImage(url);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
                         <div className="w-full space-y-6">
                             <FormField
                                 control={form.control}
@@ -114,10 +225,9 @@ const AdminProductsAdd = () => {
                                     </FormItem>
                                 )}
                             />
-
                             <FormField
                                 control={form.control}
-                                name="des"
+                                name="desc"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Description</FormLabel>
@@ -159,7 +269,6 @@ const AdminProductsAdd = () => {
                                     </FormItem>
                                 )}
                             />
-
                             <FormField
                                 control={form.control}
                                 name="shortDesc"
@@ -188,191 +297,53 @@ const AdminProductsAdd = () => {
                                     <AccordionItem value="item-1">
                                         <AccordionTrigger className="p-0 mb-6 border-b rounded-none">Product data</AccordionTrigger>
                                         <AccordionContent>
-                                            <div className="w-full flex">
+                                            <div className="w-full flex gap-x-4 py-1">
                                                 <div className="w-[200px] h-[200px]">
-                                                    <div className="px-2 py-3 flex gap-2 items-center cursor-pointer bg-gray-100">
+                                                    <div onClick={() => setSwitchCase('attributes')} className={`px-2 py-3 flex gap-2 items-center cursor-pointer ${switchCase === 'attributes' ? 'bg-gray-100' : 'bg-transparent hover:bg-gray-100'} `}>
                                                         <SquareChartGantt size={20} />
                                                         <p>Attributes</p>
                                                     </div>
-                                                    <div className="px-2 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-100">
+                                                    <div onClick={() => setSwitchCase('variants')} className={`px-2 py-3 flex gap-2 items-center cursor-pointer ${switchCase === 'variants' ? 'bg-gray-100' : 'bg-transparent hover:bg-gray-100'} `}>
                                                         <Grid2x2 size={20} />
                                                         <p>Varaints</p>
                                                     </div>
-
                                                 </div>
-                                                <div className="flex flex-col gap-3 w-full">
-                                                    <div className="pl-2">
-                                                        <div className="border w-fit px-2 py-1.5 rounded-sm hover:bg-gray-100 cursor-pointer select-none">Generate variants</div>
-                                                    </div>
-                                                    <div className="flex flex-col gap-1">
-                                                        <div
-                                                            onClick={() => setOpenDropdownVariant((prev) => {
-                                                                if (prev === 'id') return '';
-                                                                return 'id';
-                                                            })}
-                                                            className="flex justify-between items-center gap-2 border-b pb-2"
-                                                        >
-                                                            <p className="font-bold">#2789</p>
-                                                            <div className="flex-1 flex gap-1 *:select-none">
-                                                                <Select>
-                                                                    <SelectTrigger className="w-[180px]">
-                                                                        <SelectValue placeholder="Theme" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        <SelectItem value="light">Light</SelectItem>
-                                                                        <SelectItem value="dark">Dark</SelectItem>
-                                                                        <SelectItem value="system">System</SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                <Select>
-                                                                    <SelectTrigger className="w-[180px]">
-                                                                        <SelectValue placeholder="Theme" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        <SelectItem value="light">Light</SelectItem>
-                                                                        <SelectItem value="dark">Dark</SelectItem>
-                                                                        <SelectItem value="system">System</SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </div>
-                                                            <div className="flex gap-4 font-medium *:hover:underline *:cursor-pointer">
-                                                                <p onClick={(e) => e.stopPropagation()} className="text-danger">Remove</p>
-                                                                <p className="text-blue-500">Edit</p>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className={`w-full p-3 ${openDropdownVariant === 'id' ? 'h-[300px] border' : 'h-0'} transition-all duration-300`}>
-                                                            <div className="grid grid-cols-2 gap-4">
-                                                                <FormField
-                                                                    control={form.control}
-                                                                    name="fileImage"
-                                                                    render={({ field }) => (
-                                                                        <FormItem>
-                                                                            <FormLabel htmlFor="fileImage">
-                                                                                {previewImage ? (
-                                                                                    <img
-                                                                                        src={previewImage}
-                                                                                        alt="Preview"
-                                                                                        className="w-24 h-24 object-cover rounded-md border"
-                                                                                    />
-                                                                                ) : (
-                                                                                    <ImagePlus size={48} />
-                                                                                )}
-                                                                            </FormLabel>
-
-                                                                            <FormControl>
-                                                                                <Input
-                                                                                    id="fileImage"
-                                                                                    type="file"
-                                                                                    accept="image/*"
-                                                                                    className="hidden"
-                                                                                    onChange={(e) => {
-                                                                                        const file = e.target.files?.[0];
-                                                                                        if (file) {
-                                                                                            // Gọi onChange của React Hook Form
-                                                                                            field.onChange(e);
-                                                                                            // Hiển thị ảnh preview
-                                                                                            const url = URL.createObjectURL(file);
-                                                                                            setPreviewImage(url);
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                            </FormControl>
-
-                                                                            <FormDescription>Image for this variant.</FormDescription>
-                                                                            <FormMessage />
-                                                                        </FormItem>
-                                                                    )}
-                                                                />
-                                                                <FormField
-                                                                    control={form.control}
-                                                                    name="sku"
-                                                                    render={({ field }) => (
-                                                                        <FormItem>
-                                                                            <FormLabel>SKU</FormLabel>
-                                                                            <FormControl>
-                                                                                <Input placeholder="abc123" {...field} />
-                                                                            </FormControl>
-                                                                            <FormDescription>
-                                                                                Custom SKU for this variant
-                                                                            </FormDescription>
-                                                                            <FormMessage />
-                                                                        </FormItem>
-                                                                    )}
-                                                                />
-                                                            </div>
-                                                            <div className="grid">
-                                                                <Select>
-                                                                    <SelectTrigger className="w-[180px]">
-                                                                        <SelectValue placeholder="Select a fruit" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        <SelectGroup>
-                                                                            <SelectLabel>Fruits</SelectLabel>
-                                                                            <SelectItem value="apple">Apple</SelectItem>
-                                                                            <SelectItem value="banana">Banana</SelectItem>
-                                                                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                                                                            <SelectItem value="grapes">Grapes</SelectItem>
-                                                                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                                                                        </SelectGroup>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                <div className="grid grid-cols-2 gap-4">
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="price"
-                                                                        render={({ field }) => (
-                                                                            <FormItem>
-                                                                                <FormLabel>Regular price</FormLabel>
-                                                                                <FormControl>
-                                                                                    <Input
-                                                                                        type="number"
-                                                                                        value={field.value ?? ''}
-                                                                                        onChange={(e) => field.onChange(e.target.value)}
-                                                                                    />
-                                                                                </FormControl>
-                                                                                <FormDescription>
-                                                                                    Origin price for this variant.
-                                                                                </FormDescription>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
-                                                                    <FormField
-                                                                        control={form.control}
-                                                                        name="discount"
-                                                                        render={({ field }) => (
-                                                                            <FormItem>
-                                                                                <FormLabel>Discount</FormLabel>
-                                                                                <FormControl>
-                                                                                    <Input
-                                                                                        type="number"
-                                                                                        value={field.value}
-                                                                                        onChange={(e) => field.onChange(e.target.value)}
-                                                                                    />
-                                                                                </FormControl>
-                                                                                <FormDescription>
-                                                                                    Discount price for this variant.
-                                                                                </FormDescription>
-                                                                                <FormMessage />
-                                                                            </FormItem>
-                                                                        )}
-                                                                    />
+                                                {(switchCase && switchCase === 'attributes')
+                                                    ?
+                                                    <>
+                                                        <AdminConfigAttributes dataAttribute={dataAttribute} />
+                                                    </>
+                                                    :
+                                                    switchCase === 'variants'
+                                                        ?
+                                                        < div className="flex flex-col gap-3 w-full">
+                                                            <div className="pl-2">
+                                                                <div
+                                                                    onClick={() => handleGenerate()}
+                                                                    className="border w-fit px-2 py-1.5 rounded-sm hover:bg-gray-100 cursor-pointer select-none"
+                                                                >
+                                                                    Generate variants
                                                                 </div>
                                                             </div>
+                                                            {/* fix here */}
+                                                            {fields.map((field, index) => (
+                                                                <AdminConfigVariant key={field.id} data={field} form={form} index={index} onRemove={() => remove(index)} />
+                                                            ))}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                        :
+                                                        <div></div>
+                                                }
+
                                             </div>
                                         </AccordionContent>
                                     </AccordionItem>
                                 </Accordion>
                             </div>
+                            <Button type="submit" className="cursor-pointer">Submit</Button>
                         </div>
-                        <Button type="submit" className="cursor-pointer">Submit</Button>
-                    </form>
-                </Form>
-            </div>
+                    </div>
+                </form>
+            </Form>
         </div >
     )
 }

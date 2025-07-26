@@ -6,6 +6,6 @@ export type IAttribute = {
     slug?: string;
     type: string;
     terms?: IAttributeValue[];
-    value?: string[];
+    value?: IAttributeValue[];
     isDelete?: boolean;
 };
