@@ -5,16 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePlus } from "lucide-react";
 import { useState } from "react";
-import { type UseFormReturn } from "react-hook-form";
-import { ProductFormSchema } from "../schema/productSchema";
+
+import type { UseFormReturn } from "react-hook-form";
 
 type Props = {
-    form: UseFormReturn<typeof ProductFormSchema>;
+    form: any;
     index: number;
     onRemove: () => void;
-    data: IVariant;
+    data: any;
 };
-
 const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
     const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
     const [previewImagesVariant, setPreviewImagesVariant] = useState<Record<number, string>>({});
@@ -46,7 +45,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                 <div className={`w-full grid px-1 ${openDropdownVariant === 'id' ? 'h-[420px] border-b pt-4' : 'h-0 p-0'} overflow-hidden transition-all duration-300`}>
                     <div className="grid grid-cols-2 gap-x-4">
                         <div>
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name={`variants.${index}.image`}
                                 render={({ field }) => (
@@ -87,7 +86,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
                         </div>
                         <div>
                             <FormField
@@ -115,18 +114,17 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                 name={`variants.${index}.countOnStock`}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Stock</FormLabel>
+                                        <FormLabel>Count on stock</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
-                                                step="1"
-                                                value={field.value ?? ""}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    field.onChange(value === "" ? "" : parseInt(value));
-                                                }}
+                                                value={field.value?.toString() ?? "0"}
+                                                onChange={(e) => field.onChange(e.target.value)}
                                             />
                                         </FormControl>
+                                        <FormDescription>
+                                            Count on stock.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
