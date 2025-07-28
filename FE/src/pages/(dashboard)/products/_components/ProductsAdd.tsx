@@ -12,36 +12,21 @@ import type { AppDispatch } from "@/store/store";
 import { getAllAttribute } from "@/store/thunks/attributeThunk";
 import { generateVariant } from "@/store/thunks/variantThunk";
 import { Editor } from '@tinymce/tinymce-react';
-import axios from "axios";
 import { Grid2x2, ImagePlus, SquareChartGantt } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import AdminConfigAttributes from "./ConfigAttributes";
 import AdminConfigVariant from "./ConfigVariant";
 import { joiResolver } from '@hookform/resolvers/joi';
 import { ProductFormSchema } from "../schema/productSchema";
+import { VariantSchema } from "../schema/variantSchema";
 
 const VITE_TINYMCE_KEY = import.meta.env.VITE_TINYMCE_KEY;
 
-type ProductFormData = {
-    name: string;
-    desc: string;
-    shortDesc: string;
-    productImage: File | null;
-    variants: {
-        image: File | null;
-        sku: string;
-        typeDiscount: 'percent' | 'fixed';
-        countOnStock: number;
-        price: number;
-        discount: number;
-    }[];
-};
-
 const AdminProductsAdd = () => {
-    const form = useForm<ProductFormData>({
+    const form = useForm<any>({
         mode: 'onChange',
         resolver: joiResolver(ProductFormSchema),
         defaultValues: {
@@ -52,34 +37,27 @@ const AdminProductsAdd = () => {
             variants: [],
         },
     });
+    // const uploadSingleImage = async (file: any) => {
+    //     const CLOUND_NAME = 'dnqj78t2f';
+    //     const PRESET_NAME = 'demo-upload';
+    //     const FOLDER_NAME = 'Test';
+    //     const CLOUND_API = `https://api.cloudinary.com/v1_1/${CLOUND_NAME}/image/upload`;
 
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "variants"
-    });
+    //     const formData = new FormData();
 
-    const uploadSingleImage = async (file: any) => {
-        const CLOUND_NAME = 'dnqj78t2f';
-        const PRESET_NAME = 'demo-upload';
-        const FOLDER_NAME = 'Test';
-        const CLOUND_API = `https://api.cloudinary.com/v1_1/${CLOUND_NAME}/image/upload`;
+    //     formData.append("upload_preset", PRESET_NAME);
+    //     formData.append("folder", FOLDER_NAME);
+    //     formData.append("file", file);
 
-        const formData = new FormData();
+    //     const response = await axios.post(`${CLOUND_API}`, formData, {
+    //         headers: {
+    //             "Content-Type": "multipart/form-data",
+    //         }
+    //     })
+    //     return response.data.secure_url
+    // }
 
-        formData.append("upload_preset", PRESET_NAME);
-        formData.append("folder", FOLDER_NAME);
-        formData.append("file", file);
-
-        const response = await axios.post(`${CLOUND_API}`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            }
-        })
-        // console.log(response.data.secure_url);
-        return response.data.secure_url
-    }
-
-    async function onSubmit(data: ProductFormData) {
+    async function onSubmit(data: any) {
         toast("You submitted the following values", {
             description: (
                 <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
@@ -88,29 +66,30 @@ const AdminProductsAdd = () => {
             ),
         });
 
-        //Tải ảnh lên cloudinary
-        const mainImage = await uploadSingleImage(data.productImage);
+        //     //Tải ảnh lên cloudinary
+        //     const mainImage = await uploadSingleImage(data.productImage);
 
-        const variantsWithImage = await Promise.all(
-            data.variants.map(async (item) => {
-                const url = await uploadSingleImage(item.image);
-                return {
-                    ...item,
-                    image: url
-                };
-            })
-        );
+        //     const variantsWithImage = await Promise.all(
+        //         data.variants.map(async (item) => {
+        //             const url = await uploadSingleImage(item.image);
+        //             return {
+        //                 ...item,
+        //                 image: url
+        //             };
+        //         })
+        //     );
 
-        const finalData = {
-            ...data,
-            variants: variantsWithImage,
-            productImage: mainImage
-        };
+        //     const finalData = {
+        //         ...data,
+        //         variants: variantsWithImage,
+        //         productImage: mainImage
+        // };
 
-        console.log('data gửi backend:', finalData);
-        //Lưu variant
-        //Tạo 1 dữ liệu mới trong đó các variant chỉ lấy _id
-        //Gửi request
+        //     console.log('data gửi backend:', finalData);
+        //     //Lưu variant
+        //     //Tạo 1 dữ liệu mới trong đó các variant chỉ lấy _id
+        //     //Gửi request
+        console.log('data: ', data)
     };
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -137,7 +116,6 @@ const AdminProductsAdd = () => {
         return
     }, [status, dispatch]);
 
-    //fill dữ liệu generate vào form variant
     const dataVariant = useSelector((state: any) => state.variant.dataVariant, shallowEqual);
     useEffect(() => {
         if (dataVariant && dataVariant.length > 0) {
@@ -147,6 +125,8 @@ const AdminProductsAdd = () => {
             })
         }
     }, [dataVariant]);
+
+    // console.log('dataVariant: ', dataVariant);
 
     return (
         <div className="grid gap-3">
@@ -255,7 +235,7 @@ const AdminProductsAdd = () => {
                                                         { value: 'First.Name', title: 'First Name' },
                                                         { value: 'Email', title: 'Email' },
                                                     ],
-                                                    ai_request: (request: any, respondWith: any) =>
+                                                    ai_request: (_: any, respondWith: any) =>
                                                         respondWith.string(() =>
                                                             Promise.reject('See docs to implement AI Assistant')
                                                         ),
@@ -325,9 +305,11 @@ const AdminProductsAdd = () => {
                                                                     Generate variants
                                                                 </div>
                                                             </div>
-                                                            {/* fix here */}
-                                                            {fields.map((field, index) => (
+                                                            {/* {fields.map((field, index) => (
                                                                 <AdminConfigVariant key={field.id} data={field} form={form} index={index} onRemove={() => remove(index)} />
+                                                            ))} */}
+                                                            {dataVariant && dataVariant.length > 0 && dataVariant.map((item: VariantSchema, index: number) => (
+                                                                <AdminConfigVariant key={item._id} data={item} form={form} index={index} />
                                                             ))}
                                                         </div>
                                                         :

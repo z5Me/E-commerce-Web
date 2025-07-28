@@ -1,20 +1,24 @@
 import type { IAttributeValue } from "@/common/types/attributeValue";
-import type { IVariant } from "@/common/types/variant";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 import { ImagePlus } from "lucide-react";
 import { useState } from "react";
-
 import type { UseFormReturn } from "react-hook-form";
+import type { ProductFormSchema } from "../schema/productSchema";
 
 type Props = {
-    form: any;
+    form: UseFormReturn<typeof ProductFormSchema>;
     index: number;
-    onRemove: () => void;
     data: any;
 };
-const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
+const AdminConfigVariant = ({ data, form, index }: Props) => {
     const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
     const [previewImagesVariant, setPreviewImagesVariant] = useState<Record<number, string>>({});
 
@@ -45,7 +49,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                 <div className={`w-full grid px-1 ${openDropdownVariant === 'id' ? 'h-[420px] border-b pt-4' : 'h-0 p-0'} overflow-hidden transition-all duration-300`}>
                     <div className="grid grid-cols-2 gap-x-4">
                         <div>
-                            {/* <FormField
+                            <FormField
                                 control={form.control}
                                 name={`variants.${index}.image`}
                                 render={({ field }) => (
@@ -86,9 +90,9 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            /> */}
+                            />
                         </div>
-                        <div>
+                        {/* <div>
                             <FormField
                                 control={form.control}
                                 name={`variants.${index}.sku`}
@@ -105,9 +109,9 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                     </FormItem>
                                 )}
                             />
-                        </div>
+                        </div> */}
                     </div>
-                    <div className="grid grid-cols-2 gap-x-4">
+                    {/* <div className="grid grid-cols-2 gap-x-4">
                         <div>
                             <FormField
                                 control={form.control}
@@ -118,7 +122,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                         <FormControl>
                                             <Input
                                                 type="number"
-                                                value={field.value?.toString() ?? "0"}
+                                                value={field.value ?? "0"}
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                         </FormControl>
@@ -156,8 +160,8 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                 )}
                             />
                         </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-x-4">
+                    </div> */}
+                    {/* <div className="grid grid-cols-2 gap-x-4">
                         <div>
                             <FormField
                                 control={form.control}
@@ -169,7 +173,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                             <Input
                                                 type="number"
                                                 step="any"
-                                                value={field.value ?? ""}
+                                                value={field.value ?? "0"}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
                                                     field.onChange(value === "" ? "" : parseFloat(value));
@@ -193,7 +197,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                             <Input
                                                 type="number"
                                                 step="any"
-                                                value={field.value ?? ""}
+                                                value={field.value ?? "0"}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
                                                     field.onChange(value === "" ? "" : parseFloat(value));
@@ -205,7 +209,7 @@ const AdminConfigVariant = ({ data, form, index, onRemove }: Props) => {
                                 )}
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </>

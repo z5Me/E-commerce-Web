@@ -2,9 +2,19 @@ import Joi from "joi";
 import { VariantSchema } from "./variantSchema";
 
 export const ProductFormSchema = Joi.object({
-    name: Joi.string().min(2).required(),
-    desc: Joi.string().min(10).required(),
-    shortDesc: Joi.string().min(5).max(160).required(),
+    name: Joi.string().min(2).required().messages({
+        'string.empty': 'Name is required',
+        'string.min': 'Name must be at least 2 characters',
+    }),
+    desc: Joi.string().min(10).required().messages({
+        'string.empty': 'Description is required',
+        'string.min': 'Description must be at least 2 characters',
+    }),
+    shortDesc: Joi.string().min(5).max(1600).required().messages({
+        'string.empty': 'Short description is required',
+        'string.min': 'Short description must be at least 5 characters',
+        'string.max': 'Short description must be at most 1600 characters',
+    }),
 
     productImage: Joi.any()
         .custom((file, helpers) => {
