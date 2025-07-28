@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { variantSchema } from "./variant";
+import { variantSchema } from "./variantSchema";
 
 export const productSchema = z.object({
     name: z.string()

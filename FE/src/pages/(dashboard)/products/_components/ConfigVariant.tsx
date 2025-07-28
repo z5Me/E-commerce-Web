@@ -1,6 +1,6 @@
 import type { IAttributeValue } from "@/common/types/attributeValue";
-import type { productSchema } from "@/common/types/product";
-import type { variantSchema } from "@/common/types/variant";
+import type { productSchema } from "@/common/schemas/productSchema";
+import type { variantSchema } from "@/common/schemas/variantSchema";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -140,9 +140,8 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                             <FormField
                                 control={form.control}
                                 name={`variants.${index}.typeDiscount`}
-                                render={({ field }) => {
-                                    console.log(field.value);
-                                    return <FormItem>
+                                render={({ field }) => (
+                                    <FormItem>
                                         <FormLabel>Type Discount</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value ?? "fixed"}>
                                             <FormControl className="w-full">
@@ -160,7 +159,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
-                                }}
+                                )}
                             />
                         </div>
                     </div>

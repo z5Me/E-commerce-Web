@@ -19,9 +19,8 @@ export const getAllProducts = async (req, res) => {
 }
 
 export const createProduct = async (req, res) => {
-    console.log(req.body);
     try {
-        const newProduct = await Product.create(req.body.data);
+        const newProduct = await Product.create(req.body);
         if (!newProduct) return res.status(400).json({ error: 'Invalid product data.' });
 
         return res.status(201).json(newProduct);

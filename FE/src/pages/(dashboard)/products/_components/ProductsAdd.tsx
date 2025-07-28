@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { AppDispatch } from "@/store/store";
 import { getAllAttribute } from "@/store/thunks/attributeThunk";
-import { generateVariant } from "@/store/thunks/variantThunk";
+import { editVariant, generateVariant } from "@/store/thunks/variantThunk";
 import { Editor } from '@tinymce/tinymce-react';
 import { Grid2x2, ImagePlus, SquareChartGantt } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,11 +21,15 @@ import AdminConfigAttributes from "./ConfigAttributes";
 import AdminConfigVariant from "./ConfigVariant";
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from "zod";
-import { productSchema } from "@/common/types/product";
+import { productSchema } from "@/common/schemas/productSchema";
+import axios from "axios";
+import { createProduct } from "@/store/thunks/productThunk";
 
 const VITE_TINYMCE_KEY = import.meta.env.VITE_TINYMCE_KEY;
 
 const AdminProductsAdd = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
     const form = useForm<z.infer<typeof productSchema>>({
         mode: 'onChange',
         resolver: zodResolver(productSchema),
@@ -37,25 +41,25 @@ const AdminProductsAdd = () => {
             variants: [],
         },
     });
-    // const uploadSingleImage = async (file: any) => {
-    //     const CLOUND_NAME = 'dnqj78t2f';
-    //     const PRESET_NAME = 'demo-upload';
-    //     const FOLDER_NAME = 'Test';
-    //     const CLOUND_API = `https://api.cloudinary.com/v1_1/${CLOUND_NAME}/image/upload`;
+    const uploadSingleImage = async (file: any) => {
+        const CLOUND_NAME = 'dnqj78t2f';
+        const PRESET_NAME = 'demo-upload';
+        const FOLDER_NAME = 'Test';
+        const CLOUND_API = `https://api.cloudinary.com/v1_1/${CLOUND_NAME}/image/upload`;
 
-    //     const formData = new FormData();
+        const formData = new FormData();
 
-    //     formData.append("upload_preset", PRESET_NAME);
-    //     formData.append("folder", FOLDER_NAME);
-    //     formData.append("file", file);
+        formData.append("upload_preset", PRESET_NAME);
+        formData.append("folder", FOLDER_NAME);
+        formData.append("file", file);
 
-    //     const response = await axios.post(`${CLOUND_API}`, formData, {
-    //         headers: {
-    //             "Content-Type": "multipart/form-data",
-    //         }
-    //     })
-    //     return response.data.secure_url
-    // }
+        const response = await axios.post(`${CLOUND_API}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        })
+        return response.data.secure_url
+    }
 
     async function onSubmit(data: any) {
         toast("You submitted the following values", {
@@ -66,37 +70,34 @@ const AdminProductsAdd = () => {
             ),
         });
 
-        //     //Tải ảnh lên cloudinary
-        //     const mainImage = await uploadSingleImage(data.productImage);
+        //Tải ảnh lên cloudinary
+        const mainImage = await uploadSingleImage(data.productImage);
 
-        //     const variantsWithImage = await Promise.all(
-        //         data.variants.map(async (item) => {
-        //             const url = await uploadSingleImage(item.image);
-        //             return {
-        //                 ...item,
-        //                 image: url
-        //             };
-        //         })
-        //     );
+        // Tải ảnh của các Variant lên cloudinary (tạo mảng mới chỉ lưu _id)
+        const variantsWithImage = await Promise.all(
+            data.variants.map(async (item: any) => {
+                const url = await uploadSingleImage(item.image);
+                //Cập nhật những chỉnh sửa và đường link ảnh
+                const getIdAfterEdit = await dispatch(editVariant({ ...item, image: url }))
+                //Trả về _id
+                return getIdAfterEdit.payload;
+            })
+        );
 
-        //     const finalData = {
-        //         ...data,
-        //         variants: variantsWithImage,
-        //         productImage: mainImage
-        // };
-
-        //     console.log('data gửi backend:', finalData);
-        //     //Lưu variant
-        //     //Tạo 1 dữ liệu mới trong đó các variant chỉ lấy _id
-        //     //Gửi request
-        console.log('data: ', data)
+        const finalData = {
+            ...data,
+            variants: variantsWithImage,
+            productImage: mainImage
+        };
+        console.log('finalData: ', finalData)
+        //Tạo product
+        dispatch(createProduct(finalData));
     };
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     const [switchCase, setSwitchCase] = useState<string>('attributes');
 
-    const dispatch = useDispatch<AppDispatch>();
     const dataAttribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
     const status = useSelector((state: any) => state.attribute.status, shallowEqual);
 
@@ -126,7 +127,7 @@ const AdminProductsAdd = () => {
         }
     }, [dataVariant]);
 
-    console.log('dataVariant: ', dataVariant);
+    // console.log('dataVariant: ', dataVariant);
 
     return (
         <div className="grid gap-3">

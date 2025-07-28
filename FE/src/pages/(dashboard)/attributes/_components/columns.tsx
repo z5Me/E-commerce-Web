@@ -141,7 +141,7 @@ export const columns: ColumnDef<IAttribute>[] = [
                                 <AlertDialogAction
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        console.log(attribute._id as string)
+                                        // console.log(attribute._id as string)
                                         dispatch(removeAttribute({ idAttribute: attribute._id as string })).unwrap().then(() => {
                                             setTimeout(() => {
                                                 dispatch(setDefaultAttribute());

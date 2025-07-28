@@ -128,7 +128,7 @@ const attributeSlice = createSlice({
             })
             .addCase(createAttribute.rejected, (state, action) => {
                 state.status = 'createAttribute.rejected';
-                console.log('action: ', action.payload)
+                // console.log('action: ', action.payload)
                 state.error = action.payload as string;
             })
 

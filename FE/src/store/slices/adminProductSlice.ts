@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createProduct, getAllProducts } from "../thunks/productThunk";
-import type { IProduct } from "@/common/types/product";
+import type { IProduct } from "@/common/schemas/productSchema";
 
 const adminProductSlice = createSlice({
     name: 'adminProduct',

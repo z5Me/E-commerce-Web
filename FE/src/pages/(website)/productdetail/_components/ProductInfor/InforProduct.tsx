@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/store/store';
 import { logOut } from '@/store/slices/userSlice';
+import { toast } from 'sonner';
 
 const attribute = [
     {
@@ -361,7 +362,7 @@ const InforProduct = () => {
             setProductInfor(fitVariant[0]);
             return;
         } else {
-            console.log('Vui lòng chọn đủ biến thể');
+            toast.warning('Vui lòng chọn đủ biến thể');
             return;
         }
 

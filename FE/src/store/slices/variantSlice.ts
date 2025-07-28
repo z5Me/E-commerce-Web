@@ -1,4 +1,4 @@
-import type { IVariant } from "@/common/types/variant";
+import type { IVariant } from "@/common/schemas/variantSchema";
 import { createSlice } from "@reduxjs/toolkit";
 import { generateVariant } from "../thunks/variantThunk";
 
