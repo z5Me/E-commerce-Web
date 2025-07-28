@@ -19,21 +19,21 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import AdminConfigAttributes from "./ConfigAttributes";
 import AdminConfigVariant from "./ConfigVariant";
-import { joiResolver } from '@hookform/resolvers/joi';
-import { ProductFormSchema } from "../schema/productSchema";
-import { VariantSchema } from "../schema/variantSchema";
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from "zod";
+import { productSchema } from "@/common/types/product";
 
 const VITE_TINYMCE_KEY = import.meta.env.VITE_TINYMCE_KEY;
 
 const AdminProductsAdd = () => {
-    const form = useForm<any>({
+    const form = useForm<z.infer<typeof productSchema>>({
         mode: 'onChange',
-        resolver: joiResolver(ProductFormSchema),
+        resolver: zodResolver(productSchema),
         defaultValues: {
             name: '',
             desc: '',
             shortDesc: '',
-            productImage: null,
+            productImage: undefined,
             variants: [],
         },
     });
@@ -126,7 +126,7 @@ const AdminProductsAdd = () => {
         }
     }, [dataVariant]);
 
-    // console.log('dataVariant: ', dataVariant);
+    console.log('dataVariant: ', dataVariant);
 
     return (
         <div className="grid gap-3">
@@ -167,7 +167,7 @@ const AdminProductsAdd = () => {
                                                             type="file"
                                                             accept="image/*"
                                                             className="hidden"
-                                                            onChange={(e) => {
+                                                            onChange={(e: any) => {
                                                                 const file = e.target.files?.[0];
                                                                 // console.log(file);
                                                                 if (file) {
@@ -297,7 +297,7 @@ const AdminProductsAdd = () => {
                                                     switchCase === 'variants'
                                                         ?
                                                         < div className="flex flex-col gap-3 w-full">
-                                                            <div className="pl-2">
+                                                            <div className="">
                                                                 <div
                                                                     onClick={() => handleGenerate()}
                                                                     className="border w-fit px-2 py-1.5 rounded-sm hover:bg-gray-100 cursor-pointer select-none"
@@ -305,10 +305,8 @@ const AdminProductsAdd = () => {
                                                                     Generate variants
                                                                 </div>
                                                             </div>
-                                                            {/* {fields.map((field, index) => (
-                                                                <AdminConfigVariant key={field.id} data={field} form={form} index={index} onRemove={() => remove(index)} />
-                                                            ))} */}
-                                                            {dataVariant && dataVariant.length > 0 && dataVariant.map((item: VariantSchema, index: number) => (
+
+                                                            {dataVariant && dataVariant.length > 0 && dataVariant.map((item: any, index: number) => (
                                                                 <AdminConfigVariant key={item._id} data={item} form={form} index={index} />
                                                             ))}
                                                         </div>

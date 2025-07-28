@@ -1,4 +1,6 @@
 import type { IAttributeValue } from "@/common/types/attributeValue";
+import type { productSchema } from "@/common/types/product";
+import type { variantSchema } from "@/common/types/variant";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,12 +13,12 @@ import {
 import { ImagePlus } from "lucide-react";
 import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import type { ProductFormSchema } from "../schema/productSchema";
+import type z from "zod";
 
 type Props = {
-    form: UseFormReturn<typeof ProductFormSchema>;
+    form: UseFormReturn<z.infer<typeof productSchema>>;
     index: number;
-    data: any;
+    data: z.infer<typeof variantSchema>;
 };
 const AdminConfigVariant = ({ data, form, index }: Props) => {
     const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
@@ -32,7 +34,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                     })}
                     className="flex justify-between items-center gap-2 border-b pb-2"
                 >
-                    <p className="font-bold">#{data.id?.slice(0, 4)}</p>
+                    <p className="font-bold">#{data._id?.slice(0, 4)}</p>
                     <div className="flex-1 flex gap-1 *:select-none">
                         {data.values?.map((item: IAttributeValue) => (
                             <div key={item._id} className="border px-4 py-1 rounded-sm font-medium">
@@ -46,7 +48,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                     </div>
                 </div>
 
-                <div className={`w-full grid px-1 ${openDropdownVariant === 'id' ? 'h-[420px] border-b pt-4' : 'h-0 p-0'} overflow-hidden transition-all duration-300`}>
+                <div className={`w-full grid px-1 ${openDropdownVariant === 'id' ? 'h-[400px] border-b pt-4' : 'h-0 p-0'} overflow-hidden transition-all duration-300`}>
                     <div className="grid grid-cols-2 gap-x-4">
                         <div>
                             <FormField
@@ -92,7 +94,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                 )}
                             />
                         </div>
-                        {/* <div>
+                        <div>
                             <FormField
                                 control={form.control}
                                 name={`variants.${index}.sku`}
@@ -109,9 +111,9 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                     </FormItem>
                                 )}
                             />
-                        </div> */}
+                        </div>
                     </div>
-                    {/* <div className="grid grid-cols-2 gap-x-4">
+                    <div className="grid grid-cols-2 gap-x-4">
                         <div>
                             <FormField
                                 control={form.control}
@@ -122,7 +124,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                         <FormControl>
                                             <Input
                                                 type="number"
-                                                value={field.value ?? "0"}
+                                                value={field.value ?? 0}
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                         </FormControl>
@@ -138,11 +140,12 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                             <FormField
                                 control={form.control}
                                 name={`variants.${index}.typeDiscount`}
-                                render={({ field }) => (
-                                    <FormItem>
+                                render={({ field }) => {
+                                    console.log(field.value);
+                                    return <FormItem>
                                         <FormLabel>Type Discount</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
+                                        <Select onValueChange={field.onChange} value={field.value ?? "fixed"}>
+                                            <FormControl className="w-full">
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a type" />
                                                 </SelectTrigger>
@@ -157,11 +160,11 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
-                                )}
+                                }}
                             />
                         </div>
-                    </div> */}
-                    {/* <div className="grid grid-cols-2 gap-x-4">
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-4">
                         <div>
                             <FormField
                                 control={form.control}
@@ -173,13 +176,16 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                             <Input
                                                 type="number"
                                                 step="any"
-                                                value={field.value ?? "0"}
+                                                value={field.value ?? 0}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
                                                     field.onChange(value === "" ? "" : parseFloat(value));
                                                 }}
                                             />
                                         </FormControl>
+                                        <FormDescription>
+                                            Price of this variant.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -197,19 +203,22 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                             <Input
                                                 type="number"
                                                 step="any"
-                                                value={field.value ?? "0"}
+                                                value={field.value ?? 0}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
                                                     field.onChange(value === "" ? "" : parseFloat(value));
                                                 }}
                                             />
                                         </FormControl>
+                                        <FormDescription>
+                                            Discount of this variant.
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-                    </div> */}
+                    </div>
                 </div>
             </div>
         </>
