@@ -1,3 +1,4 @@
+import { productSchema } from "@/common/schemas/productSchema";
 import {
     Accordion,
     AccordionContent,
@@ -8,22 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { setDefaultProduct, setStatusProductPending } from "@/store/slices/productSlice";
+import { resetForm } from "@/store/slices/variantSlice";
 import type { AppDispatch } from "@/store/store";
 import { getAllAttribute } from "@/store/thunks/attributeThunk";
+import { createProduct } from "@/store/thunks/productThunk";
 import { editVariant, generateVariant } from "@/store/thunks/variantThunk";
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Editor } from '@tinymce/tinymce-react';
+import axios from "axios";
 import { Grid2x2, ImagePlus, SquareChartGantt } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
+import z from "zod";
 import AdminConfigAttributes from "./ConfigAttributes";
 import AdminConfigVariant from "./ConfigVariant";
-import { zodResolver } from '@hookform/resolvers/zod';
-import z from "zod";
-import { productSchema } from "@/common/schemas/productSchema";
-import axios from "axios";
-import { createProduct } from "@/store/thunks/productThunk";
 
 const VITE_TINYMCE_KEY = import.meta.env.VITE_TINYMCE_KEY;
 
@@ -58,17 +60,12 @@ const AdminProductsAdd = () => {
                 "Content-Type": "multipart/form-data",
             }
         })
-        return response.data.secure_url
+        return response.data.secure_url;
     }
 
     async function onSubmit(data: any) {
-        toast("You submitted the following values", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        });
+
+        dispatch(setStatusProductPending());
 
         //Tải ảnh lên cloudinary
         const mainImage = await uploadSingleImage(data.productImage);
@@ -78,7 +75,7 @@ const AdminProductsAdd = () => {
             data.variants.map(async (item: any) => {
                 const url = await uploadSingleImage(item.image);
                 //Cập nhật những chỉnh sửa và đường link ảnh
-                const getIdAfterEdit = await dispatch(editVariant({ ...item, image: url }))
+                const getIdAfterEdit = await dispatch(editVariant({ ...item, image: url }));
                 //Trả về _id
                 return getIdAfterEdit.payload;
             })
@@ -89,9 +86,30 @@ const AdminProductsAdd = () => {
             variants: variantsWithImage,
             productImage: mainImage
         };
-        console.log('finalData: ', finalData)
+        // console.log('finalData: ', finalData)
         //Tạo product
-        dispatch(createProduct(finalData));
+        const promise = dispatch(createProduct(finalData)).unwrap().then(() => {
+            setTimeout(() => {
+                form.reset({
+                    name: '',
+                    desc: '',
+                    shortDesc: '',
+                    productImage: undefined,
+                    variants: [],
+                });
+                setPreviewImage(null);
+                dispatch(resetForm());
+                dispatch(setDefaultProduct());
+            }, 100)
+        });
+
+        toast.promise(promise, {
+            loading: '...Loading',
+            success: 'Success',
+            error: (error) => {
+                return `Error: ${error}`
+            }
+        })
     };
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);

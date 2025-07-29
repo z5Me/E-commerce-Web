@@ -34,7 +34,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                     })}
                     className="flex justify-between items-center gap-2 border-b pb-2"
                 >
-                    <p className="font-bold">#{data._id?.slice(0, 4)}</p>
+                    <p className="font-bold">#{data._id?.slice(-4)}</p>
                     <div className="flex-1 flex gap-1 *:select-none">
                         {data.values?.map((item: IAttributeValue) => (
                             <div key={item._id} className="border px-4 py-1 rounded-sm font-medium">

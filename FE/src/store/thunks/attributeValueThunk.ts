@@ -3,10 +3,10 @@ import axios from "axios";
 
 const API = import.meta.env.VITE_API;
 
-export const getAllAttributeValue = createAsyncThunk('attributeValue/getAllAttributeValue', async ({ filterDelete }: { filterDelete?: string }, { rejectWithValue }) => {
+export const getAllAttributeValue = createAsyncThunk('attributeValue/getAllAttributeValue', async ({ filterDelete = 'true' }: { filterDelete?: string } = {}, { rejectWithValue }) => {
     try {
         const response = await axios.get(`${API}/attributeValue/getAllAttributeValue`, {
-            params: filterDelete
+            params: { filterDelete }
         });
 
         return response.data;

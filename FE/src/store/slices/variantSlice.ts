@@ -1,6 +1,6 @@
-import type { IVariant } from "@/common/schemas/variantSchema";
 import { createSlice } from "@reduxjs/toolkit";
 import { generateVariant } from "../thunks/variantThunk";
+import type { IVariant } from "@/common/types/variant";
 
 const variantSlice = createSlice({
     name: 'variant',
@@ -9,7 +9,12 @@ const variantSlice = createSlice({
         status: 'idle',
         error: ''
     },
-    reducers: {},
+    reducers: {
+        resetForm(state) {
+            state.status = 'idle';
+            state.dataVariant = [];
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(generateVariant.pending, (state) => {
@@ -28,5 +33,5 @@ const variantSlice = createSlice({
     }
 })
 
-export const { } = variantSlice.actions;
+export const { resetForm } = variantSlice.actions;
 export default variantSlice.reducer;

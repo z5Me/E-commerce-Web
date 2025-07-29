@@ -1,15 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createProduct, getAllProducts } from "../thunks/productThunk";
-import type { IProduct } from "@/common/schemas/productSchema";
+import type { IProduct } from "@/common/types/product";
 
-const adminProductSlice = createSlice({
-    name: 'adminProduct',
+const productSlice = createSlice({
+    name: 'product',
     initialState: {
+        //Tiếp ở đây, tạo kiểu dữ liệu cho product, xử lý dữ liệu sau khi call API lấy toàn bộ dataProduct
         dataProducts: [] as IProduct[],
         status: 'idle',
         erorr: ''
     },
-    reducers: {},
+    reducers: {
+        setStatusProductPending(state) {
+            state.status = 'pending';
+        },
+        setDefaultProduct(state) {
+            state.status = 'idle';
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllProducts.pending, (state) => {
@@ -42,5 +50,5 @@ const adminProductSlice = createSlice({
     }
 })
 
-export const { } = adminProductSlice.actions;
-export default adminProductSlice.reducer;
+export const { setStatusProductPending, setDefaultProduct } = productSlice.actions;
+export default productSlice.reducer;

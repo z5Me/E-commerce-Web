@@ -4,6 +4,7 @@ import useAttribute from './slices/attributeSlice';
 import useCart from './slices/cartSlice';
 import userSlice from './slices/userSlice';
 import useVariant from './slices/variantSlice';
+import useProduct from './slices/productSlice';
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         attribute: useAttribute,
         cart: useCart,
         variant: useVariant,
+        product: useProduct,
     }
 })
 

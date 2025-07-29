@@ -14,9 +14,9 @@ export const createProduct = createAsyncThunk('product/createProduct', async (da
     }
 });
 
-export const getAllProducts = createAsyncThunk('product/getAllProducts', async ({ filterDelete }: { filterDelete?: string }, { rejectWithValue }) => {
+export const getAllProducts = createAsyncThunk('product/getAllProducts', async ({ filterDelete = 'true' }: { filterDelete?: string } = {}, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${API}/product/getAllProducts`, { params: filterDelete });
+        const response = await axios.get(`${API}/product/getAllProducts`, { params: { filterDelete } });
 
         return response.data;
     } catch (error: any) {
