@@ -14,7 +14,6 @@ import { useAppDispatch } from "@/store/store";
 import { useGetParams } from "@/common/hooks/useGetParams";
 import type { IProduct } from "@/common/types/product";
 import { setDataVariant } from "@/store/slices/variantSlice";
-import { set } from "zod";
 import { editProduct } from "@/store/thunks/productThunk";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";

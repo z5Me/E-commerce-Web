@@ -54,3 +54,19 @@ export const editVariant = async (req, res) => {
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }
+
+export const removeVariant = async (req, res) => {
+    const { idVariant } = req.body;
+    try {
+        const findVariant = await Variant.findOne({ _id: idVariant });
+        if (!findVariant) return res.status(404).json({ error: "Variant not found" });
+
+        findVariant.isDelete = true;
+        await findVariant.save();
+
+        return res.status(200).json(findVariant);
+    } catch (error) {
+        console.log('Lỗi ở removeVariant', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}

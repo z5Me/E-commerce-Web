@@ -10,6 +10,8 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import { useAppDispatch } from "@/store/store";
+import { removeVariant } from "@/store/thunks/variantThunk";
 import { ImagePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
@@ -21,6 +23,7 @@ type Props = {
     data: z.infer<typeof variantSchema>;
 };
 const AdminConfigVariant = ({ data, form, index }: Props) => {
+    const dispatch = useAppDispatch();
     const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
     const [previewImagesVariant, setPreviewImagesVariant] = useState<Record<number, string>>({});
 
@@ -52,7 +55,15 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                         ))}
                     </div>
                     <div className="flex gap-4 font-medium *:hover:underline *:cursor-pointer">
-                        <p onClick={(e) => e.stopPropagation()} className="text-danger">Remove</p>
+                        <p
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(removeVariant({ idVariant: data._id as string }));
+                            }}
+                            className="text-danger"
+                        >
+                            Remove
+                        </p>
                         <p className="text-blue-500">Edit</p>
                     </div>
                 </div>
