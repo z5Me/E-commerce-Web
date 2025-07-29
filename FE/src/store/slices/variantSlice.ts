@@ -13,6 +13,10 @@ const variantSlice = createSlice({
         resetForm(state) {
             state.status = 'idle';
             state.dataVariant = [];
+        },
+        setDataVariant(state, action) {
+            state.dataVariant = action.payload;
+            state.status = 'idle';
         }
     },
     extraReducers: (builder) => {
@@ -33,5 +37,5 @@ const variantSlice = createSlice({
     }
 })
 
-export const { resetForm } = variantSlice.actions;
+export const { resetForm, setDataVariant } = variantSlice.actions;
 export default variantSlice.reducer;

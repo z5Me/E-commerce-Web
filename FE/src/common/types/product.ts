@@ -6,7 +6,7 @@ export type IProduct = {
     desc: string;
     shortDesc: string;
     productImage: string;
-    variant: IVariant[];
+    variants: IVariant[];
     isDelete?: boolean;
     isHidden?: boolean;
 }

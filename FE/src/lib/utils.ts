@@ -1,3 +1,4 @@
+import axios from "axios";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -28,3 +29,23 @@ export const findFitVariant = (variants: any, chooseVariant: any) => {
     )
   );
 };
+
+export const uploadSingleImage = async (file: any) => {
+  const CLOUND_NAME = 'dnqj78t2f';
+  const PRESET_NAME = 'demo-upload';
+  const FOLDER_NAME = 'Test';
+  const CLOUND_API = `https://api.cloudinary.com/v1_1/${CLOUND_NAME}/image/upload`;
+
+  const formData = new FormData();
+
+  formData.append("upload_preset", PRESET_NAME);
+  formData.append("folder", FOLDER_NAME);
+  formData.append("file", file);
+
+  const response = await axios.post(`${CLOUND_API}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    }
+  })
+  return response.data.secure_url;
+}

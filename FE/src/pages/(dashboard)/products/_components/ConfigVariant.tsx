@@ -1,6 +1,6 @@
-import type { IAttributeValue } from "@/common/types/attributeValue";
 import type { productSchema } from "@/common/schemas/productSchema";
 import type { variantSchema } from "@/common/schemas/variantSchema";
+import type { IAttributeValue } from "@/common/types/attributeValue";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +11,7 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { ImagePlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type z from "zod";
 
@@ -23,6 +23,15 @@ type Props = {
 const AdminConfigVariant = ({ data, form, index }: Props) => {
     const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
     const [previewImagesVariant, setPreviewImagesVariant] = useState<Record<number, string>>({});
+
+    useEffect(() => {
+        if (data && data.image) {
+            setPreviewImagesVariant((prev) => ({
+                ...prev,
+                [index]: typeof data.image === "string" ? data.image : "",
+            }))
+        };
+    }, [data]);
 
     return (
         <>

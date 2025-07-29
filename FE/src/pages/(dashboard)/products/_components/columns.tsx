@@ -10,7 +10,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -20,12 +19,13 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import type { AppDispatch } from "@/store/store";
+import { setDefaultProduct } from "@/store/slices/productSlice";
+import { useAppDispatch } from "@/store/store";
+import { removeProduct } from "@/store/thunks/productThunk";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router";
 
 export const columns: ColumnDef<IProduct>[] = [
@@ -81,6 +81,7 @@ export const columns: ColumnDef<IProduct>[] = [
         cell: ({ row }) => {
             const [dialogOpen, setDialogOpen] = useState(false);
             const product = row.original;
+            const dispatch = useAppDispatch();
             return (
                 <>
                     <DropdownMenu>
@@ -98,9 +99,9 @@ export const columns: ColumnDef<IProduct>[] = [
                                 Copy product ID
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                {/* <Link to={`edit?idAttribute=${attribute._id}`} className="w-full"> */}
-                                Edit
-                                {/* </Link> */}
+                                <Link to={`edit?idProduct=${product._id}`} className="w-full">
+                                    Edit
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => setDialogOpen(true)}
@@ -122,16 +123,15 @@ export const columns: ColumnDef<IProduct>[] = [
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                // onClick={(e) => {
-                                //     e.preventDefault();
-                                //     // console.log(attribute._id as string)
-                                //     dispatch(removeAttribute({ idAttribute: attribute._id as string })).unwrap().then(() => {
-                                //         setTimeout(() => {
-                                //             dispatch(setDefaultAttribute());
-                                //             setDialogOpen(false);
-                                //         }, 100);
-                                //     })
-                                // }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        // console.log(attribute._id as string)
+                                        dispatch(removeProduct({ idProduct: product._id as string })).unwrap().then(() => {
+                                            setTimeout(() => {
+                                                setDialogOpen(false);
+                                            }, 100);
+                                        })
+                                    }}
                                 >
                                     Continue
                                 </AlertDialogAction>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createProduct, getAllProducts } from "../thunks/productThunk";
+import { createProduct, editProduct, getAllProducts, removeProduct } from "../thunks/productThunk";
 import type { IProduct } from "@/common/types/product";
 
 const productSlice = createSlice({
@@ -8,7 +8,7 @@ const productSlice = createSlice({
         //Tiếp ở đây, tạo kiểu dữ liệu cho product, xử lý dữ liệu sau khi call API lấy toàn bộ dataProduct
         dataProducts: [] as IProduct[],
         status: 'idle',
-        erorr: ''
+        error: ''
     },
     reducers: {
         setStatusProductPending(state) {
@@ -21,31 +21,67 @@ const productSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getAllProducts.pending, (state) => {
-                state.erorr = '';
+                state.error = '';
                 state.status = 'pending';
             })
             .addCase(getAllProducts.fulfilled, (state, action) => {
-                state.erorr = '';
+                state.error = '';
                 state.status = 'getAllProducts.fulfilled';
                 state.dataProducts = action.payload;
             })
             .addCase(getAllProducts.rejected, (state, action) => {
-                state.erorr = action.payload as string;
+                state.error = action.payload as string;
                 state.status = 'getAllProducts.rejected';
             })
 
             .addCase(createProduct.pending, (state) => {
                 state.status = 'pending';
-                state.erorr = '';
+                state.error = '';
             })
             .addCase(createProduct.fulfilled, (state, action) => {
                 state.status = 'createProduct.fulfilled';
-                state.erorr = '';
+                state.error = '';
                 state.dataProducts.push(action.payload);
             })
             .addCase(createProduct.rejected, (state, action) => {
                 state.status = 'createProduct.rejected';
-                state.erorr = action.payload as string;
+                state.error = action.payload as string;
+            })
+
+            .addCase(removeProduct.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(removeProduct.fulfilled, (state, action) => {
+                state.status = 'removeProduct.fulfilled';
+                state.error = '';
+                state.dataProducts = state.dataProducts.filter((item) => (
+                    item._id !== action.payload._id
+                ))
+            })
+            .addCase(removeProduct.rejected, (state, action) => {
+                state.status = 'removeProduct.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(editProduct.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(editProduct.fulfilled, (state, action) => {
+                state.status = 'editProduct.fulfilled';
+                state.error = '';
+                const index = state.dataProducts.findIndex(item => item._id?.toString() === action.payload._id.toString());
+                if (index !== -1) {
+                    state.dataProducts[index] = {
+                        ...state.dataProducts[index],
+                        ...action.payload
+                    }
+                }
+            })
+            .addCase(editProduct.rejected, (state, action) => {
+                state.status = 'editProduct.rejected';
+                state.error = action.payload as string;
             })
     }
 })

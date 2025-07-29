@@ -34,7 +34,7 @@ export const removeProduct = async (req, res) => {
     const { idProduct } = req.body;
     try {
         const findProduct = await Product.findOne({ _id: idProduct });
-        if (!findProduct) return res.status(404).json({ message: 'Product not found' });
+        if (!findProduct) return res.status(404).json({ error: 'Product not found' });
 
         findProduct.isDelete = true;
         await findProduct.save();
@@ -42,6 +42,19 @@ export const removeProduct = async (req, res) => {
         return res.status(200).json(findProduct);
     } catch (error) {
         console.log('Lỗi ở createProduct');
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
+export const editProduct = async (req, res) => {
+    const { idProduct } = req.body;
+    try {
+        const updateProduct = await Product.findByIdAndUpdate(idProduct, req.body, { new: true });
+        if (!updateProduct) return res.status(404).json({ error: 'Product not found' });
+
+        return res.status(200).json(updateProduct);
+    } catch (error) {
+        console.log('Lỗi ở editProduct');
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }

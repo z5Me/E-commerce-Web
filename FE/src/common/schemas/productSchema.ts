@@ -20,12 +20,11 @@ export const productSchema = z.object({
         .min(1, {
             message: "Short description is required.",
         }),
-    productImage: z
-        .instanceof(File, {
-            message: "Product image is required."
-        })
-        .refine((file) => file.size > 0, {
+    productImage: z.union([
+        z.instanceof(File).refine((file) => file.size > 0, {
             message: "Product image cannot be empty."
         }),
+        z.string().url().min(1, { message: "Product image is required." }),
+    ]),
     variants: z.array(variantSchema)
 })

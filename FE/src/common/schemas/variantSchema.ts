@@ -3,13 +3,10 @@ import { attributeValueSchema } from "./attributeValueSchema";
 
 export const variantSchema = z.object({
     _id: z.string().optional(),
-    image: z
-        .instanceof(File, {
-            message: "Image is required."
-        })
-        .refine((file) => file.size > 0, {
-            message: "Image cannot be empty"
-        }),
+    image: z.union([
+        z.instanceof(File),
+        z.string().url().min(1, { message: "Image is required." })
+    ]),
     sku: z.string().min(1, {
         message: "SKU is required."
     }),

@@ -1,3 +1,4 @@
+import type { IProduct } from "@/common/types/product";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -24,3 +25,25 @@ export const getAllProducts = createAsyncThunk('product/getAllProducts', async (
         return rejectWithValue(error.response.data.error);
     }
 });
+
+export const removeProduct = createAsyncThunk('product/removeProduct', async ({ idProduct }: { idProduct: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/product/removeProduct`, { idProduct });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở product/removeProduct', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
+export const editProduct = createAsyncThunk('product/editProduct', async (data: IProduct, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/product/editProduct`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở product/editProduct', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})

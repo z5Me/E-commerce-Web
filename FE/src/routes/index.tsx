@@ -24,6 +24,7 @@ import AdminAttributeValueList from "@/pages/(dashboard)/attributeValue/_compone
 import AdminAttributeValueEdit from "@/pages/(dashboard)/attributeValue/_components/AttributeValueEdit"
 import AdminAttributeEdit from "@/pages/(dashboard)/attributes/_components/AttributeEdit"
 import AdminProductsAdd from "@/pages/(dashboard)/products/_components/ProductsAdd"
+import ProductsEdit from "@/pages/(dashboard)/products/_components/ProductsEdit"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -64,6 +65,7 @@ const Router = () => {
                             <Route path="edit" element={<AdminAttributeValueEdit />} />
                         </Route>
                     </Route>
+                    <Route path="edit" element={<ProductsEdit />} />
                 </Route>
             </Route>
         </Routes>
