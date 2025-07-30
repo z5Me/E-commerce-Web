@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createProduct, editProduct, getAllProducts, removeProduct } from "../thunks/productThunk";
+import { createProduct, editProduct, getAllProducts, hiddenProduct, removeProduct } from "../thunks/productThunk";
 import type { IProduct } from "@/common/types/product";
 
 const productSlice = createSlice({
@@ -20,6 +20,7 @@ const productSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            //Lấy danh sách products
             .addCase(getAllProducts.pending, (state) => {
                 state.error = '';
                 state.status = 'pending';
@@ -33,7 +34,7 @@ const productSlice = createSlice({
                 state.error = action.payload as string;
                 state.status = 'getAllProducts.rejected';
             })
-
+            //Tạo 1 product
             .addCase(createProduct.pending, (state) => {
                 state.status = 'pending';
                 state.error = '';
@@ -47,7 +48,7 @@ const productSlice = createSlice({
                 state.status = 'createProduct.rejected';
                 state.error = action.payload as string;
             })
-
+            //Xóa mềm 1 product
             .addCase(removeProduct.pending, (state) => {
                 state.status = 'pending';
                 state.error = '';
@@ -63,7 +64,7 @@ const productSlice = createSlice({
                 state.status = 'removeProduct.rejected';
                 state.error = action.payload as string;
             })
-
+            //Edit product
             .addCase(editProduct.pending, (state) => {
                 state.status = 'pending';
                 state.error = '';
@@ -81,6 +82,23 @@ const productSlice = createSlice({
             })
             .addCase(editProduct.rejected, (state, action) => {
                 state.status = 'editProduct.rejected';
+                state.error = action.payload as string;
+            })
+            //Ẩn product phía trang người dùng
+            .addCase(hiddenProduct.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(hiddenProduct.fulfilled, (state, action) => {
+                state.status = 'hiddenProduct.fulfilled';
+                state.error = '';
+                const index = state.dataProducts.findIndex(item => item._id === action.payload._id);
+                if (index && index !== -1) {
+                    state.dataProducts[index].isHidden = action.payload.isHidden;
+                }
+            })
+            .addCase(hiddenProduct.rejected, (state, action) => {
+                state.status = 'hiddenProduct.rejected';
                 state.error = action.payload as string;
             })
     }

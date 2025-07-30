@@ -47,3 +47,14 @@ export const editProduct = createAsyncThunk('product/editProduct', async (data: 
         return rejectWithValue(error.response.data.error);
     }
 })
+
+export const hiddenProduct = createAsyncThunk('product/hiddenProduct', async ({ idProduct }: { idProduct: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/product/hiddenProduct`, { idProduct });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở product/hiddenProduct', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})

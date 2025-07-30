@@ -31,7 +31,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
         if (data && data.image) {
             setPreviewImagesVariant((prev) => ({
                 ...prev,
-                [index]: typeof data.image === "string" ? data.image : "",
+                [String(data._id)]: typeof data.image === "string" ? data.image : "",
             }))
         };
     }, [data]);

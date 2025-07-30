@@ -41,52 +41,56 @@ const AdminProductsAdd = () => {
     });
 
     async function onSubmit(data: any) {
-        dispatch(setStatusProductPending());
-        //Tải ảnh lên cloudinary
-        const mainImage = await uploadSingleImage(data.productImage);
+        if (data.variants && data.variants.length > 0) {
+            dispatch(setStatusProductPending());
+            //Tải ảnh lên cloudinary
+            const mainImage = await uploadSingleImage(data.productImage);
 
-        // Tải ảnh của các Variant lên cloudinary (tạo mảng mới chỉ lưu _id)
-        const variantsWithImage = await Promise.all(
-            data.variants.map(async (item: any) => {
-                const url = await uploadSingleImage(item.image);
-                //Cập nhật những chỉnh sửa và đường link ảnh
-                const getIdAfterEdit = await dispatch(editVariant({ ...item, image: url }));
-                //Trả về _id
-                return getIdAfterEdit.payload;
+            // Tải ảnh của các Variant lên cloudinary (tạo mảng mới chỉ lưu _id)
+            const variantsWithImage = await Promise.all(
+                data.variants.map(async (item: any) => {
+                    const url = await uploadSingleImage(item.image);
+                    //Cập nhật những chỉnh sửa và đường link ảnh
+                    const getIdAfterEdit = await dispatch(editVariant({ ...item, image: url }));
+                    //Trả về _id
+                    return getIdAfterEdit.payload;
+                })
+            );
+
+            const finalData = {
+                ...data,
+                variants: variantsWithImage,
+                productImage: mainImage
+            };
+            // console.log('finalData: ', finalData)
+            //Tạo product
+            const promise = dispatch(createProduct(finalData)).unwrap().then(() => {
+                setTimeout(() => {
+                    form.reset({
+                        name: '',
+                        desc: '',
+                        shortDesc: '',
+                        productImage: undefined,
+                        variants: [],
+                    });
+                    setPreviewImage(null);
+                    dispatch(resetForm());
+                    dispatch(setDefaultProduct());
+                    scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100)
+            });
+
+            toast.promise(promise, {
+                loading: '...Loading',
+                success: 'Success',
+                error: (error) => {
+                    return `Error: ${error}`
+                }
             })
-        );
-
-        const finalData = {
-            ...data,
-            variants: variantsWithImage,
-            productImage: mainImage
-        };
-        // console.log('finalData: ', finalData)
-        //Tạo product
-        const promise = dispatch(createProduct(finalData)).unwrap().then(() => {
-            setTimeout(() => {
-                form.reset({
-                    name: '',
-                    desc: '',
-                    shortDesc: '',
-                    productImage: undefined,
-                    variants: [],
-                });
-                setPreviewImage(null);
-                dispatch(resetForm());
-                dispatch(setDefaultProduct());
-                scrollTo({ top: 0, behavior: 'smooth' });
-            }, 100)
-        });
-
-        toast.promise(promise, {
-            loading: '...Loading',
-            success: 'Success',
-            error: (error) => {
-                return `Error: ${error}`
-            }
-        })
-    };
+        } else {
+            toast.warning('Please custom an variant to create new product!')
+        }
+    }
 
     return (
         <div className="grid gap-3">
