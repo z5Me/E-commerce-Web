@@ -9,18 +9,9 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 //Custom CSS for swiper
 import '../../productdetailcss.css';
 
-//Image
-import Product_Image from '@/assets/product.svg';
-import Product_Image2 from '@/assets/product2.svg';
-import Product_Image3 from '@/assets/product3.svg';
-import Product_Image4 from '@/assets/product4.svg';
-import Product_Image5 from '@/assets/product5.svg';
-
-//Components
-
 //Hook
 import { useRef, useState } from 'react';
-const SlideImage = ({ screenWidth }: { screenWidth: number }) => {
+const SlideImage = ({ screenWidth, imageList }: { screenWidth: number, imageList: string[] }) => {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
     const swiperRef = useRef<SwiperClass | null>(null);
 
@@ -41,21 +32,11 @@ const SlideImage = ({ screenWidth }: { screenWidth: number }) => {
                 modules={[FreeMode, Navigation, Thumbs, Pagination]}
                 className="mySwiper2 col-start-2"
             >
-                <SwiperSlide>
-                    <img src={Product_Image} alt="Product_Image" />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img src={Product_Image2} alt="Product_Image" />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img src={Product_Image3} alt="Product_Image" />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img src={Product_Image4} alt="Product_Image" />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img src={Product_Image5} alt="Product_Image" />
-                </SwiperSlide>
+                {imageList && imageList.length > 0 && imageList.map((item) => (
+                    <SwiperSlide key={item}>
+                        <img src={item} alt="Product_Image" />
+                    </SwiperSlide>
+                ))}
             </Swiper>
 
             {/* Danh sách ảnh */}
@@ -75,23 +56,13 @@ const SlideImage = ({ screenWidth }: { screenWidth: number }) => {
                     freeMode={false}
                     watchSlidesProgress={true}
                     modules={[Navigation, Thumbs]}
-                    className="mySwiper flex-1 w-full"
+                    className="mySwiper flex-1 w-full overflow-hidden"
                 >
-                    <SwiperSlide>
-                        <img src={Product_Image} alt="Product_Image" />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <img src={Product_Image2} alt="Product_Image" />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <img src={Product_Image3} alt="Product_Image" />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <img src={Product_Image4} alt="Product_Image" />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <img src={Product_Image5} alt="Product_Image" />
-                    </SwiperSlide>
+                    {imageList && imageList.length > 0 && imageList.map((item) => (
+                        <SwiperSlide key={item}>
+                            <img src={item} alt="Product_Image" />
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
                 <button onClick={() => swiperRef.current?.slideNext()} className='hover:cursor-pointer xl:rotate-0 -rotate-90'>
                     <ChevronDown size={28} />

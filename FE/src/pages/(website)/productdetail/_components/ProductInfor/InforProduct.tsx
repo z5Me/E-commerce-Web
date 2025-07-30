@@ -10,101 +10,102 @@ import ShowRatingStar from "@/components/ShowRatingStar";
 import ChangeQuantity from '@/components/ChangeQuantity';
 import { extractAttribute, findFitVariant } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@/store/store';
 import { logOut } from '@/store/slices/userSlice';
 import { toast } from 'sonner';
+import type { IVariant } from '@/common/types/variant';
 
-const attribute = [
-    {
-        id: 'a1',
-        name: 'Color',
-        slug: 'color',
-        type: 'String',
-        values: [
-            {
-                id: 'b1',
-                name: 'Red',
-                slug: 'red',
-                type: 'Color',
-                value: '#FF0000'
-            },
-            {
-                id: 'b2',
-                name: 'Blue',
-                slug: 'blue',
-                type: 'Color',
-                value: '#0000FF'
-            },
-            {
-                id: 'b7',
-                name: 'Green',
-                slug: 'green',
-                type: 'Color',
-                value: '#008000'
-            }
-        ]
-    },
-    {
-        id: 'a2',
-        name: 'Size',
-        slug: 'size',
-        type: 'String',
-        values: [
-            {
-                id: 'b3',
-                name: 'Medium',
-                slug: 'medium',
-                type: 'Size',
-                value: 'medium'
-            },
-            {
-                id: 'b4',
-                name: 'Large',
-                slug: 'large',
-                type: 'Size',
-                value: 'large'
-            }
-        ]
-    },
-    {
-        id: 'a3',
-        name: 'Weight',
-        slug: 'weight',
-        type: 'Number',
-        values: [
-            {
-                id: 'b5',
-                name: '5kg',
-                slug: '5kg',
-                type: 'Weight',
-                value: '5kg'
-            },
-            {
-                id: 'b6',
-                name: '10kg',
-                slug: '10kg',
-                type: 'Weight',
-                value: '10kg'
-            }
-        ]
-    },
-    {
-        id: 'a4',
-        name: 'Material',
-        slug: 'material',
-        type: 'String',
-        values: [
-            {
-                id: 'b8',
-                name: 'Cao Cap',
-                slug: 'cao cap',
-                type: 'Material',
-                value: 'cao cap'
-            }
-        ]
-    }
-]
+// const attribute = [
+//     {
+//         id: 'a1',
+//         name: 'Color',
+//         slug: 'color',
+//         type: 'String',
+//         values: [
+//             {
+//                 id: 'b1',
+//                 name: 'Red',
+//                 slug: 'red',
+//                 type: 'Color',
+//                 value: '#FF0000'
+//             },
+//             {
+//                 id: 'b2',
+//                 name: 'Blue',
+//                 slug: 'blue',
+//                 type: 'Color',
+//                 value: '#0000FF'
+//             },
+//             {
+//                 id: 'b7',
+//                 name: 'Green',
+//                 slug: 'green',
+//                 type: 'Color',
+//                 value: '#008000'
+//             }
+//         ]
+//     },
+//     {
+//         id: 'a2',
+//         name: 'Size',
+//         slug: 'size',
+//         type: 'String',
+//         values: [
+//             {
+//                 id: 'b3',
+//                 name: 'Medium',
+//                 slug: 'medium',
+//                 type: 'Size',
+//                 value: 'medium'
+//             },
+//             {
+//                 id: 'b4',
+//                 name: 'Large',
+//                 slug: 'large',
+//                 type: 'Size',
+//                 value: 'large'
+//             }
+//         ]
+//     },
+//     {
+//         id: 'a3',
+//         name: 'Weight',
+//         slug: 'weight',
+//         type: 'Number',
+//         values: [
+//             {
+//                 id: 'b5',
+//                 name: '5kg',
+//                 slug: '5kg',
+//                 type: 'Weight',
+//                 value: '5kg'
+//             },
+//             {
+//                 id: 'b6',
+//                 name: '10kg',
+//                 slug: '10kg',
+//                 type: 'Weight',
+//                 value: '10kg'
+//             }
+//         ]
+//     },
+//     {
+//         id: 'a4',
+//         name: 'Material',
+//         slug: 'material',
+//         type: 'String',
+//         values: [
+//             {
+//                 id: 'b8',
+//                 name: 'Cao Cap',
+//                 slug: 'cao cap',
+//                 type: 'Material',
+//                 value: 'cao cap'
+//             }
+//         ]
+//     }
+// ]
 
 const attributeValue = [
     {
@@ -306,7 +307,9 @@ const variants = [
     }
 ]
 
-const InforProduct = () => {
+const InforProduct = ({ variants }: { variants: IVariant[] }) => {
+    const attribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
+    //Làm tiếp ở đây, xử lý phần variants
     const [chooseVariant, setChooseVariant] = useState<any>([
         {
             id: 'b1',

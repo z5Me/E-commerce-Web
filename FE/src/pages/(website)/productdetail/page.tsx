@@ -7,13 +7,16 @@ import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from "react";
 import ReviewDetail from './_components/ReviewDetail';
 import ProductInfor from './_components/ProductInfor';
+import { useParams } from 'react-router';
+import { shallowEqual, useSelector } from 'react-redux';
+import type { IProduct } from '@/common/types/product';
 
 const ProductDetail = () => {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    }, [])
+    }, []);
 
     useEffect(() => {
         const handdleResize = () => {
@@ -23,7 +26,25 @@ const ProductDetail = () => {
         window.addEventListener('resize', handdleResize);
 
         return () => window.removeEventListener('resize', handdleResize);
-    }, [])
+    }, []);
+
+    const { slug } = useParams();
+    const dataProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
+    const [data, setData] = useState<IProduct>();
+
+    useEffect(() => {
+        if (dataProducts && dataProducts.length > 0) {
+            const filterProduct = dataProducts.filter((item: IProduct) => item.slug === slug);
+            if (filterProduct) {
+                setData(filterProduct[0]);
+                return;
+            }
+
+            return;
+        }
+    }, [dataProducts]);
+
+    // console.log('data: ', data);
 
     return (
         <section className='flex justify-center'>
@@ -51,7 +72,7 @@ const ProductDetail = () => {
                     </div>
                 </div>
                 {/* thông tin sản phẩm */}
-                <ProductInfor screenWidth={screenWidth} />
+                {data && <ProductInfor screenWidth={screenWidth} data={data} />}
                 {/* Review */}
                 <ReviewDetail screenWidth={screenWidth} />
 

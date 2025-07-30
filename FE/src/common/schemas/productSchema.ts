@@ -26,5 +26,6 @@ export const productSchema = z.object({
         }),
         z.string().url().min(1, { message: "Product image is required." }),
     ]),
+    slug: z.string().optional(),
     variants: z.array(variantSchema)
 })

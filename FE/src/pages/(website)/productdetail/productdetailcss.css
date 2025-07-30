@@ -12,6 +12,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .product-swiper .swiper-slide img {
@@ -61,6 +62,7 @@
     border-radius: 20px;
     cursor: pointer;
     /* background-color: #F0EEED; */
+    border: 1px solid #d1d5dc;
 }
 
 .product-swiper .mySwiper .swiper-slide-thumb-active {

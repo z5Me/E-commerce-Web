@@ -7,6 +7,7 @@ export type IProduct = {
     shortDesc: string;
     productImage: string;
     variants: IVariant[];
+    slug?: string;
     isDelete?: boolean;
     isHidden?: boolean;
 }
