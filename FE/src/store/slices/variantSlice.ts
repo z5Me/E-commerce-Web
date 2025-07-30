@@ -52,7 +52,7 @@ const variantSlice = createSlice({
                 state.error = action.payload as string;
             })
     }
-})
+});
 
 export const { resetForm, setDataVariant } = variantSlice.actions;
 export default variantSlice.reducer;

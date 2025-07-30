@@ -25,7 +25,7 @@ type Props = {
 const AdminConfigVariant = ({ data, form, index }: Props) => {
     const dispatch = useAppDispatch();
     const [openDropdownVariant, setOpenDropdownVariant] = useState<string>('id');
-    const [previewImagesVariant, setPreviewImagesVariant] = useState<Record<number, string>>({});
+    const [previewImagesVariant, setPreviewImagesVariant] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (data && data.image) {
@@ -77,9 +77,9 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel htmlFor={`image${index}`}>
-                                            {previewImagesVariant[index] ? (
+                                            {data._id && previewImagesVariant[data._id] ? (
                                                 <img
-                                                    src={previewImagesVariant[index]}
+                                                    src={previewImagesVariant[data._id]}
                                                     alt="Preview"
                                                     className="w-24 h-24 object-cover rounded-md border"
                                                 />
@@ -101,7 +101,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
                                                         const url = URL.createObjectURL(file);
                                                         setPreviewImagesVariant((prev) => ({
                                                             ...prev,
-                                                            [index]: url,
+                                                            [String(data._id)]: url,
                                                         }));
                                                     }
                                                 }}

@@ -11,6 +11,7 @@ import type { UseFormReturn } from "react-hook-form";
 import type z from "zod";
 import type { productSchema } from "@/common/schemas/productSchema";
 import { useLocation } from "react-router";
+import type { IVariant } from "@/common/types/variant";
 
 const ProductData = ({ form }: { form: UseFormReturn<z.infer<typeof productSchema>> }) => {
     const dispatch = useAppDispatch();
@@ -78,7 +79,7 @@ const ProductData = ({ form }: { form: UseFormReturn<z.infer<typeof productSchem
                                         </div>
                                     </div>
 
-                                    {dataVariant && dataVariant.length > 0 && dataVariant.map((item: any, index: number) => (
+                                    {dataVariant && dataVariant.length > 0 && dataVariant.map((item: IVariant, index: number) => (
                                         <AdminConfigVariant key={item._id} data={item} form={form} index={index} />
                                     ))}
                                 </div>
