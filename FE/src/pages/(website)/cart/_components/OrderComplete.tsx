@@ -17,7 +17,7 @@ const cart = {
                 id: 'c1',
                 price: 200,
                 oldPrice: 250,
-                discountPercent: 20,
+                discountPrice: 20,
                 image: Product_Image,
                 values: [
                     {
@@ -55,7 +55,7 @@ const cart = {
                 id: 'c4',
                 price: 350,
                 oldPrice: 400,
-                discountPercent: 5,
+                discountPrice: 5,
                 image: Product_Image,
                 values: [
                     {

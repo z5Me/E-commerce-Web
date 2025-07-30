@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from 'slugify';
 
 const productSchema = new mongoose.Schema({
     name: {
@@ -19,6 +20,11 @@ const productSchema = new mongoose.Schema({
         default: ''
     },
     variants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Variant' }],
+    slug: {
+        type: String,
+        lower: true,
+        strict: true
+    },
     isDelete: {
         type: Boolean,
         default: false
@@ -27,6 +33,14 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-})
+}, { timestamps: true });
+
+productSchema.pre('save', function (next) {
+    // Chỉ tạo slug khi slug chưa được set
+    if (!this.slug || this.slug.trim() === '') {
+        this.slug = slugify(this.name, { lower: true, strict: true });
+    }
+    next();
+});
 
 export default mongoose.model('Product', productSchema);

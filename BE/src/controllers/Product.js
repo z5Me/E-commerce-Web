@@ -1,14 +1,17 @@
 import Product from "../models/Product";
 
 export const getAllProducts = async (req, res) => {
-    const { filterDelete } = req.query;
+    const { filterDelete, filterHidden } = req.query;
     try {
-        const getAll = await Product.find().populate('variants');
+        let getAll = await Product.find().populate('variants');
         if (!getAll) return res.status(404).json({ error: 'Products not found.' });
 
-        if (filterDelete) {
-            const filterProducts = getAll.filter((item) => item.isDelete === false);
-            return res.status(200).json(filterProducts);
+        if (filterDelete && filterDelete === 'true') {
+            getAll = getAll.filter((item) => item.isDelete === false);
+        }
+
+        if (filterHidden && filterHidden === 'true') {
+            getAll = getAll.filter(item => item.isHidden === false);
         }
 
         return res.status(200).json(getAll);

@@ -7,9 +7,7 @@ export const variantSchema = z.object({
         z.instanceof(File),
         z.string().url().min(1, { message: "Image is required." })
     ]),
-    sku: z.string().min(1, {
-        message: "SKU is required."
-    }),
+    sku: z.string(),
     countOnStock: z
         .coerce.number()
         .min(0, { message: "Count on stock must be at least 0" }) as z.ZodType<number, any, any>, //ép kiểu cho typescript hiểu đây là number

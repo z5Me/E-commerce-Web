@@ -49,7 +49,7 @@ const ProductInCart = ({ item, checkout = false }: any) => {
                                 classNameDPercent="sm:text-sm text-xs max-sm:px-[10px] max-sm:py-[4px]"
                                 price={item.variant.price}
                                 oldPrice={item.variant.oldPrice}
-                                discountPercent={item.variant.discountPercent}
+                                discountPrice={item.variant.discountPrice}
                             />
                         }
                         <div className={`grid place-items-end ${checkout && 'w-full'}`}>

@@ -16,13 +16,13 @@ const Banner = () => {
                         <p className='font-IntegralCF md:text-6xl text-4xl xl:w-[493px] w-auto inline xl:block lg:text-start text-center'>
                             FIND CLOTHES THAT MATCHES YOUR STYLE
                         </p>
-                        <p className='xl:w-[545px] w-auto md:text-base text-sm inline xl:block font-Satoshi text-black/60 lg:text-start text-center'>
+                        <p className='xl:w-[545px] w-auto md:text-base text-sm inline xl:block font-MJSatoshi text-black/60 lg:text-start text-center'>
                             Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.
                         </p>
                         <div className='flex lg:justify-start justify-center'>
                             <DefaultButton title='Shop now' classNameButton='bg-primary hover:cursor-pointer lg:w-auto md:w-[50%] w-full text-center' classNameText='text-white' />
                         </div>
-                        <div className='pt-4 font-Satoshi flex xl:flex-row flex-col gap-x-[17px] xl:items-start items-center'>
+                        <div className='pt-4 font-MJSatoshi flex xl:flex-row flex-col gap-x-[17px] xl:items-start items-center'>
                             <div className='flex gap-x-[17px]'>
                                 <div className='flex flex-col'>
                                     <p className='text-primary font-bold text-2xl md:text-[40px]'>200+</p>

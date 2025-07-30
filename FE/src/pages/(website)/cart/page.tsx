@@ -160,7 +160,7 @@ const variants = [
         id: 'c1',
         price: 200,
         oldPrice: 250,
-        discountPercent: 20,
+        discountPrice: 20,
         values: [
             {
                 id: 'b1',
@@ -189,7 +189,7 @@ const variants = [
         id: 'c2',
         price: 250,
         oldPrice: 300,
-        discountPercent: 15,
+        discountPrice: 15,
         values: [
             {
                 id: 'b1',
@@ -218,7 +218,7 @@ const variants = [
         id: 'c3',
         price: 300,
         oldPrice: 350,
-        discountPercent: 10,
+        discountPrice: 10,
         values: [
             {
                 id: 'b2',
@@ -247,7 +247,7 @@ const variants = [
         id: 'c4',
         price: 350,
         oldPrice: 400,
-        discountPercent: 5,
+        discountPrice: 5,
         values: [
             {
                 id: 'b2',
@@ -276,7 +276,7 @@ const variants = [
         id: 'c5',
         price: 100,
         oldPrice: 200,
-        discountPercent: 50,
+        discountPrice: 50,
         values: [
             {
                 id: 'b3',
@@ -309,7 +309,7 @@ const cart = {
                 id: 'c1',
                 price: 200,
                 oldPrice: 250,
-                discountPercent: 20,
+                discountPrice: 20,
                 image: Product_Image,
                 values: [
                     {
@@ -347,7 +347,7 @@ const cart = {
                 id: 'c4',
                 price: 350,
                 oldPrice: 400,
-                discountPercent: 5,
+                discountPrice: 5,
                 image: Product_Image,
                 values: [
                     {
@@ -392,11 +392,11 @@ const CartPage = () => {
                 <div className='w-full flex flex-col gap-6 mb-9'>
                     <div className='h-[1px] w-full bg-primary/10'></div>
                     <div className='flex lg:gap-3 gap-[6px]'>
-                        <div className='flex gap-1 items-center font-Satoshi lg:text-base text-sm text-primary/60'>
+                        <div className='flex gap-1 items-center font-MJSatoshi lg:text-base text-sm text-primary/60'>
                             <p>Home</p>
                             <ChevronRight size={18} />
                         </div>
-                        <div className='flex gap-1 items-center font-Satoshi lg:text-base text-sm text-primary'>
+                        <div className='flex gap-1 items-center font-MJSatoshi lg:text-base text-sm text-primary'>
                             <p>Cart</p>
                             {/* <ChevronRight size={18} /> */}
                         </div>
@@ -404,7 +404,7 @@ const CartPage = () => {
                 </div>
             </div>
             <ShoppingStatus screenWidth={screenWidth} />
-            <div className='max-w-[1920px] w-full defaultPadding flex xl:flex-row flex-col sm:gap-16 gap-8 py-10 font-Satoshi'>
+            <div className='max-w-[1920px] w-full defaultPadding flex xl:flex-row flex-col sm:gap-16 gap-8 py-10 font-MJSatoshi'>
                 {/* YOUR CART  */}
                 <Outlet />
             </div>

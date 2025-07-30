@@ -65,7 +65,7 @@ const ShoppingStatus = ({ screenWidth }: any) => {
     }, [changeStatus, screenWidth]);
 
     return (
-        <div className="w-full py-7 bg-[#F4F4F4] flex justify-center items-center font-Satoshi">
+        <div className="w-full py-7 bg-[#F4F4F4] flex justify-center items-center font-MJSatoshi">
             <div className="max-w-[1920px] w-full md:p-0 px-4 flex items-center justify-center">
                 <div className="flex gap-x-4 items-center sm:w-fit w-full">
                     <div className="flex gap-x-2 items-center">

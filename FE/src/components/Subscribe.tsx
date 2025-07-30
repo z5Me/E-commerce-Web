@@ -16,7 +16,7 @@ const Subscribe = () => {
                                     <input className='border-none outline-none w-full text-primary/40 lg:text-base text-sm' type="text" placeholder='Enter your email address' />
                                 </div>
                                 <button className='px-4 py-3 bg-white rounded-full cursor-pointer'>
-                                    <p className='font-Satoshi font-medium text-primary lg:text-base text-sm'>Subscribe to Newsletter</p>
+                                    <p className='font-MJSatoshi font-medium text-primary lg:text-base text-sm'>Subscribe to Newsletter</p>
                                 </button>
                             </div>
                         </div>

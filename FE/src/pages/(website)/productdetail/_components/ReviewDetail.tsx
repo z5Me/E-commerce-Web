@@ -36,7 +36,7 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
     return (
         <div className="mt-[104px] mb-[64px]">
             <div className="w-full relative">
-                <div className="flex w-full items-center *:transition-all *:duration-200 *:sm:pb-6 *:pb-3 *:w-1/3 *:text-center *:cursor-pointer font-Satoshi md:text-[20px] text-base border-b border-b-primary/10">
+                <div className="flex w-full items-center *:transition-all *:duration-200 *:sm:pb-6 *:pb-3 *:w-1/3 *:text-center *:cursor-pointer font-MJSatoshi md:text-[20px] text-base border-b border-b-primary/10">
                     <button onClick={() => setSelectButton(1)} className={`${selectButton === 1 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>{screenWidth > 639 ? 'Product Details' : 'Details'}</button>
                     <button onClick={() => setSelectButton(2)} className={`${selectButton === 2 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>{screenWidth > 639 ? 'Rating & Review' : 'Review'}</button>
                     <button onClick={() => setSelectButton(3)} className={`${selectButton === 3 ? 'text-primary font-medium' : 'text-primary/60 font-normal'}`}>FAQs</button>
@@ -56,7 +56,7 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
                     selectButton === 2 ?
                         <>
                             <div className="flex justify-between items-center py-6 gap-1">
-                                <div className="flex sm:gap-x-2 gap-x-[6px] gap-y-0 font-Satoshi items-center flex-wrap">
+                                <div className="flex sm:gap-x-2 gap-x-[6px] gap-y-0 font-MJSatoshi items-center flex-wrap">
                                     <p className="sm:text-2xl text-xl font-bold">All Review</p>
                                     <span className="text-base text-primary/60">(451)</span>
                                 </div>
@@ -65,11 +65,11 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
                                         <SlidersVertical size={screenWidth > 640 ? 24 : 20} />
                                     </div>
                                     <div className="py-3 px-5 rounded-full bg-[#F0F0F0] items-center gap-[21px] md:flex hidden">
-                                        <p className="font-Satoshi font-medium text-base">Latest</p>
+                                        <p className="font-MJSatoshi font-medium text-base">Latest</p>
                                         <ChevronDown size={16} />
                                     </div>
                                     <div className="sm:py-3 py-[10px] sm:px-5 px-4 bg-primary rounded-full flex items-center">
-                                        <p className="text-white sm:text-base text-xs font-Satoshi font-medium text-nowrap">Write a Review</p>
+                                        <p className="text-white sm:text-base text-xs font-MJSatoshi font-medium text-nowrap">Write a Review</p>
                                     </div>
                                 </div>
                             </div>

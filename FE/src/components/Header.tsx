@@ -115,11 +115,11 @@ const Header = () => {
 
     return (
         <>
-            <section className='FIRST_TIME_SIGN_UP bg-primary text-white font-Satoshi flex select-none text-xs sm:text-sm py-[9px] defaultPadding'>
+            <section className='FIRST_TIME_SIGN_UP bg-primary text-white font-MJSatoshi flex select-none text-xs sm:text-sm py-[9px] defaultPadding'>
                 <p className='flex-1 text-center font-light'>Sign up and get 20% off to your first order. <span className='font-normal underline underline-offset-4 cursor-pointer'>Sign Up Now</span></p>
                 <X className='hidden sm:inline' />
             </section>
-            <header ref={headerRef} className='bg-white py-6 flex justify-center select-none font-Satoshi'>
+            <header ref={headerRef} className='bg-white py-6 flex justify-center select-none font-MJSatoshi'>
                 <div className='defaultPadding max-w-[1920px] w-full'>
                     <div className='NAV flex justify-between items-center lg:gap-x-10 gap-x-4 z-10'>
                         <button

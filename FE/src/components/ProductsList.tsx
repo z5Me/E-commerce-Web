@@ -16,7 +16,7 @@ const products = [
         name: 'T-Shirt with Tape Details',
         price: 120,
         oldPrice: 200,
-        discountPercent: 40,
+        discountPrice: 40,
         rating: 4.5
     },
     {
@@ -25,7 +25,7 @@ const products = [
         name: 'Classic Polo Shirt',
         price: 90,
         oldPrice: 150,
-        discountPercent: 40,
+        discountPrice: 40,
         rating: 5
     },
     {
@@ -34,7 +34,7 @@ const products = [
         name: 'Denim Jacket',
         price: 180,
         oldPrice: 250,
-        discountPercent: 28,
+        discountPrice: 28,
         rating: 3.3
     },
     {
@@ -43,7 +43,7 @@ const products = [
         name: 'Slim Fit Jeans',
         price: 110,
         oldPrice: 160,
-        discountPercent: 31,
+        discountPrice: 31,
         rating: 3.8
     }
 ]
@@ -60,12 +60,12 @@ const ProductsList = ({ caption, className, loadMoreProducts = true }: { caption
                 {/* Product */}
                 {products.map((product) => (
                     <Link to={`/detail`} key={product.id}>
-                        <div className='w-full h-full group hover:bg-primary/15 rounded-[20px] hover:cursor-pointer'>
+                        <div className='w-full h-full group hover:bg-gray-200 rounded-[20px] hover:cursor-pointer'>
                             <div className='flex flex-col h-full gap-y-4 transition-all duration-150 group-hover:scale-95'>
                                 <div className='w-full aspect-[23/24] flex items-center justify-center overflow-hidden bg-[#F0EEED] rounded-[20px]'>
                                     <img className='rounded-[20px] object-contain w-full' src={product.image} alt={product.name} />
                                 </div>
-                                <div className='flex flex-col h-fit gap-y-2 font-Satoshi'>
+                                <div className='flex flex-col h-fit gap-y-2 font-MJSatoshi'>
                                     <p className='lg:text-xl text-base font-bold group-hover:text-blue-600'>{product.name}</p>
                                     <div className='flex flex-wrap gap-x-[13px] items-center'>
                                         <div className='flex gap-x-[5px]'>
@@ -84,7 +84,7 @@ const ProductsList = ({ caption, className, loadMoreProducts = true }: { caption
                                         classNameDPercent='sm:text-xs text-[10px]'
                                         price={product.price}
                                         oldPrice={product.oldPrice}
-                                        discountPercent={product.discountPercent}
+                                        discountPrice={product.discountPrice}
                                     />
                                 </div>
                             </div>

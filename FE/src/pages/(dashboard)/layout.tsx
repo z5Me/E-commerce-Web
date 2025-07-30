@@ -17,7 +17,7 @@ import { Outlet } from "react-router"
 
 const LayoutAdmin = () => {
     return (
-        <div className='font-Satoshi'>
+        <div className='font-MJSatoshi'>
             <SidebarProvider>
                 {/* Navbar  */}
                 <AppSidebar />

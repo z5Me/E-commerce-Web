@@ -5,9 +5,11 @@ import { Outlet } from "react-router"
 const LayoutWebsite = () => {
     return (
         <>
-            <Header />
-            <Outlet />
-            <Footer />
+            <div className="font-MJSatoshi">
+                <Header />
+                <Outlet />
+                <Footer />
+            </div>
         </>
     )
 }

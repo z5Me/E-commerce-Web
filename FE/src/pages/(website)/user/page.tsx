@@ -38,17 +38,17 @@ const UserPage = () => {
                     <div className='w-full flex flex-col gap-6 mb-9'>
                         <div className='h-[1px] w-full bg-primary/10'></div>
                         <div className='flex lg:gap-3 gap-[6px]'>
-                            <div className='flex gap-1 items-center font-Satoshi lg:text-base text-sm text-primary/60'>
+                            <div className='flex gap-1 items-center font-MJSatoshi lg:text-base text-sm text-primary/60'>
                                 <p>Home</p>
                                 <ChevronRight size={18} />
                             </div>
-                            <div className='flex gap-1 items-center font-Satoshi lg:text-base text-sm text-primary'>
+                            <div className='flex gap-1 items-center font-MJSatoshi lg:text-base text-sm text-primary'>
                                 <p>My Account</p>
                                 {/* <ChevronRight size={18} /> */}
                             </div>
                         </div>
                     </div>
-                    <div className='flex gap-6 sm:gap-12 font-Satoshi overflow-hidden'>
+                    <div className='flex gap-6 sm:gap-12 font-MJSatoshi overflow-hidden'>
                         <ManageSetting openAccountManage={openAccountManage} avatar={dataUser?.avatar} />
                         <AccountSetting
                             openAccountManage={openAccountManage}

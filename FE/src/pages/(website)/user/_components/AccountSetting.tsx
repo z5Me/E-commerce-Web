@@ -201,7 +201,7 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                                 }
                                 return
                             }}
-                            className={`flex items-center gap-2 font-Satoshi px-4 py-2 border ${openEdit ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer text-primary' : ' bg-gray-200 text-gray-600'} rounded-lg select-none`}
+                            className={`flex items-center gap-2 font-MJSatoshi px-4 py-2 border ${openEdit ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer text-primary' : ' bg-gray-200 text-gray-600'} rounded-lg select-none`}
                         >
                             <MapPinPlus size={20} />
                             <p>Add address</p>
@@ -225,7 +225,7 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                                     //     <p>Address: {item.addressName}</p>
                                     //     {item.selected &&
                                     //         <div>
-                                    //             <span className='font-Satoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
+                                    //             <span className='font-MJSatoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
                                     //         </div>
                                     //     }
                                     // </div>

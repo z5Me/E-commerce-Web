@@ -147,7 +147,7 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
             <div
                 ref={divChildrenRef}
                 onClick={(e) => e.stopPropagation()}
-                className='lg:grid hidden bg-white w-full opacity-10 gap-6 border border-primary/10 rounded-[20px] py-5 px-6 font-Satoshi select-none h-fit'
+                className='lg:grid hidden bg-white w-full opacity-10 gap-6 border border-primary/10 rounded-[20px] py-5 px-6 font-MJSatoshi select-none h-fit'
             >
                 <div className='flex justify-between'>
                     <p className='font-bold text-xl'>Filters</p>

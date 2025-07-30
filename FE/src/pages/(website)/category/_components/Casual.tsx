@@ -15,7 +15,7 @@ const products = [
         name: 'T-Shirt with Tape Details',
         price: 120,
         oldPrice: 0,
-        discountPercent: 0,
+        discountPrice: 0,
         rating: 4.5
     },
     {
@@ -24,7 +24,7 @@ const products = [
         name: 'Classic Polo Shirt',
         price: 90,
         oldPrice: 150,
-        discountPercent: 40,
+        discountPrice: 40,
         rating: 5
     },
     {
@@ -33,7 +33,7 @@ const products = [
         name: 'Denim Jacket',
         price: 180,
         oldPrice: 250,
-        discountPercent: 28,
+        discountPrice: 28,
         rating: 3.3
     },
     {
@@ -42,7 +42,7 @@ const products = [
         name: 'Slim Fit Jeans',
         price: 110,
         oldPrice: 0,
-        discountPercent: 0,
+        discountPrice: 0,
         rating: 3.8
     },
     {
@@ -51,7 +51,7 @@ const products = [
         name: 'T-Shirt with Tape Details',
         price: 120,
         oldPrice: 200,
-        discountPercent: 40,
+        discountPrice: 40,
         rating: 4.5
     },
     {
@@ -60,7 +60,7 @@ const products = [
         name: 'Classic Polo Shirt',
         price: 90,
         oldPrice: 150,
-        discountPercent: 40,
+        discountPrice: 40,
         rating: 5
     },
     {
@@ -69,7 +69,7 @@ const products = [
         name: 'Denim Jacket',
         price: 180,
         oldPrice: 0,
-        discountPercent: 0,
+        discountPrice: 0,
         rating: 3.3
     },
     {
@@ -78,7 +78,7 @@ const products = [
         name: 'Slim Fit Jeans',
         price: 110,
         oldPrice: 0,
-        discountPercent: 0,
+        discountPrice: 0,
         rating: 3.8
     },
     {
@@ -87,7 +87,7 @@ const products = [
         name: 'T-Shirt with Tape Details',
         price: 120,
         oldPrice: 200,
-        discountPercent: 40,
+        discountPrice: 40,
         rating: 4.5
     },
 ]
@@ -102,7 +102,7 @@ const Casual = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
 
     return (
         <div className='flex flex-col gap-4'>
-            <div className='flex justify-between items-center w-full h-fit gap-3 font-Satoshi'>
+            <div className='flex justify-between items-center w-full h-fit gap-3 font-MJSatoshi'>
                 <p className='font-bold sm:text-[32px] text-2xl'>Casual</p>
                 <div className='flex-1 flex w-full lg:justify-end justify-start items-center text-primary/60 sm:text-base text-sm sm:pt-[10px] pt-[5px]'>
                     <p className=''>Showing 1-10 of 100 Products</p>
@@ -146,7 +146,7 @@ const Casual = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
             </div>
 
             {/* Pagination  */}
-            <div className='grid gap-y-5 mt-[30px] font-Satoshi'>
+            <div className='grid gap-y-5 mt-[30px] font-MJSatoshi'>
                 <div className='h-[1px] w-full bg-primary/10'></div>
                 <div className='flex justify-between items-center gap-1'>
                     <button className='flex gap-2 text-primary hover:text-white px-[14px] py-[8px] border border-primary/10 hover:border-primary hover:bg-primary rounded-[8px] cursor-pointer'>

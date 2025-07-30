@@ -18,6 +18,11 @@
     src: url(../src/assets/fonts/IntegralCF-Regular.ttf);
 }
 
+@font-face {
+    font-family: Roboto;
+    src: url(../src/assets/fonts/Roboto-VariableFont_wdth\,wght.ttf);
+}
+
 @theme {
     --color-primary: #000;
     --color-contrast: #fff;
@@ -25,6 +30,7 @@
     --font-Satoshi: Satoshi;
     --font-MJSatoshi: MJSatoshi;
     --font-IntegralCF: IntegralCF;
+    --font-Roboto: Roboto;
     --container-840S: 840px;
 }
 

@@ -38,7 +38,7 @@ const Router = () => {
                         <TestPage />
                     </Suspense>
                 } />
-                <Route path="detail" element={<ProductDetail />} />
+                <Route path="detail/:slug" element={<ProductDetail />} />
                 <Route path="category" element={<CategoryPage />} />
                 <Route path="cart" element={<CartPage />} >
                     <Route index element={<ShoppingCart />} />

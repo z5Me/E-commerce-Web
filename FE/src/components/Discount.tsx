@@ -1,24 +1,24 @@
 
 const DiscountIcon = (
-    { price, oldPrice, discountPercent, className, classNamePrice, classNameOldPrice, classNameDPercent }:
-        { price: number, oldPrice?: number, discountPercent?: number, className?: string, classNamePrice?: string, classNameOldPrice?: string, classNameDPercent?: string }
+    { price, oldPrice, discountPrice, className, classNamePrice, classNameOldPrice, classNameDPercent }:
+        { price: number, oldPrice?: number, discountPrice?: number, className?: string, classNamePrice?: string, classNameOldPrice?: string, classNameDPercent?: string }
 ) => {
 
     return (
         <div className={`flex items-center ${className}`}>
             <p className={`font-bold ${classNamePrice}`}>${price}</p>
-            {(oldPrice && oldPrice > 0)
+            {(oldPrice && oldPrice > 0 && price < oldPrice)
                 ?
                 <p className={`font-bold text-primary/30 line-through ${classNameOldPrice}`}>${oldPrice}</p>
                 :
                 ''
             }
             {
-                (discountPercent && discountPercent > 0)
+                (discountPrice && discountPrice > 0)
                     ?
                     <div>
-                        <p className={`text-danger font-medium px-[14px] py-[6px] bg-danger/10 rounded-full ${classNameDPercent}`}>
-                            -{discountPercent}%
+                        <p className={`text-danger font-bold px-[14px] py-[6px] bg-danger/10 rounded-full ${classNameDPercent}`}>
+                            -{((discountPrice / (price + discountPrice)) * 100).toString().slice(0, 4)}%
                         </p>
                     </div>
                     :

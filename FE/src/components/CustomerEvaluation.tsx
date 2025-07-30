@@ -19,15 +19,15 @@ const CustomerEvaluation = ({ historyPosted = false, moreOptions = false, index 
                 </div>
                 <div className='flex flex-col sm:gap-y-3 gap-y-2'>
                     <div className='flex gap-x-1 items-center'>
-                        <p className='font-Satoshi font-bold lg:text-xl text-base'>Sarah {index ? index + 1 : 1}.</p>
+                        <p className='font-MJSatoshi font-bold lg:text-xl text-base'>Sarah {index ? index + 1 : 1}.</p>
                         <FaCircleCheck size={20} color='#01AB31' className='pb-[2px]' />
                     </div>
-                    <p className='font-Satoshi font-base lg:text-base text-sm text-primary/60'>
+                    <p className='font-MJSatoshi font-base lg:text-base text-sm text-primary/60'>
                         "I'm blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations.”
                     </p>
                 </div>
             </div>
-            {historyPosted && <p className="font-Satoshi sm:text-base text-sm font-medium text-primary/60">Posted on August 18, 2023</p>}
+            {historyPosted && <p className="font-MJSatoshi sm:text-base text-sm font-medium text-primary/60">Posted on August 18, 2023</p>}
         </div>
     )
 }

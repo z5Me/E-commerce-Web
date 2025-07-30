@@ -49,3 +49,18 @@ export const uploadSingleImage = async (file: any) => {
   })
   return response.data.secure_url;
 }
+
+export const createSlug = (name: string) => {
+  const nameExtrac = name
+    .normalize('NFD')                  // Tách dấu khỏi chữ cái
+    .replace(/[\u0300-\u036f]/g, '')   // Xóa dấu
+    .toLowerCase()                     // Chuyển thành chữ thường
+    .replace(/[^a-z0-9\s-]/g, '')      // Xóa ký tự đặc biệt
+    .trim()                            // Xóa khoảng trắng đầu/cuối
+    .replace(/\s+/g, '-')               // Đổi khoảng trắng thành "-"
+    .replace(/-+/g, '-');               // Gộp nhiều "-" liên tiếp
+
+  const uniqueSlug = `${nameExtrac}-${Date.now()}`;
+
+  return uniqueSlug;
+}

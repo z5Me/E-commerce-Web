@@ -5,7 +5,7 @@ const DefaultButton = ({ title, classNameButton, classNameText, onClick }: { tit
             onClick={onClick}
             className={`px-[54px] py-4 rounded-full ${classNameButton}`}
         >
-            <p className={`font-Satoshi font-medium lg:text-base text-sm ${classNameText}`}>
+            <p className={`font-MJSatoshi font-medium lg:text-base text-sm ${classNameText}`}>
                 {title}
             </p>
         </button >

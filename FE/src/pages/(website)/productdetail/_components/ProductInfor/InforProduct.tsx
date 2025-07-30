@@ -170,7 +170,7 @@ const variants = [
         id: 'c1',
         price: 200,
         oldPrice: 250,
-        discountPercent: 20,
+        discountPrice: 20,
         values: [
             {
                 id: 'b1',
@@ -199,7 +199,7 @@ const variants = [
         id: 'c2',
         price: 250,
         oldPrice: 300,
-        discountPercent: 15,
+        discountPrice: 15,
         values: [
             {
                 id: 'b1',
@@ -228,7 +228,7 @@ const variants = [
         id: 'c3',
         price: 300,
         oldPrice: 350,
-        discountPercent: 10,
+        discountPrice: 10,
         values: [
             {
                 id: 'b2',
@@ -257,7 +257,7 @@ const variants = [
         id: 'c4',
         price: 350,
         oldPrice: 400,
-        discountPercent: 5,
+        discountPrice: 5,
         values: [
             {
                 id: 'b2',
@@ -286,7 +286,7 @@ const variants = [
         id: 'c5',
         price: 100,
         oldPrice: 200,
-        discountPercent: 50,
+        discountPrice: 50,
         values: [
             {
                 id: 'b3',
@@ -371,7 +371,7 @@ const InforProduct = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     return (
-        <div className='flex flex-col font-Satoshi'>
+        <div className='flex flex-col font-MJSatoshi'>
             <div className="flex flex-col sm:gap-[14px] gap-3">
                 <p className='font-IntegralCF uppercase sm:text-[40px] text-2xl font-bold text-primary'>One Life Graphic T-shirt</p>
                 <div className='flex gap-4 items-center'>
@@ -387,7 +387,7 @@ const InforProduct = () => {
                     classNameDPercent="sm:text-base text-sm lg:mb-[6px] m-0"
                     price={(productInfor && productInfor.price ? productInfor.price : 0)}
                     oldPrice={(productInfor && productInfor.oldPrice ? productInfor.oldPrice : 0)}
-                    discountPercent={(productInfor && productInfor.discountPercent ? productInfor.discountPercent : 0)}
+                    discountPrice={(productInfor && productInfor.discountPrice ? productInfor.discountPrice : 0)}
                 />
                 <span className="sm:text-base text-sm text-primary/60 pt-2">
                     This graphic t-shirt which is perfect for any occasion. Crafted from a soft and breathable fabric, it offers superior comfort and style.
@@ -397,7 +397,7 @@ const InforProduct = () => {
             {allAttributes && allAttributes.map((attributes: any) => (
                 <React.Fragment key={attributes.id}>
                     <div className="flex flex-col sm:gap-[21px] gap-4">
-                        <p className="font-Satoshi sm:text-base text-sm text-primary/60">Select {attributes.name}</p>
+                        <p className="font-MJSatoshi sm:text-base text-sm text-primary/60">Select {attributes.name}</p>
                         <div className="flex sm:gap-[21px] gap-3">
                             {attributes.values.map((item: any) => {
                                 const isChoose = chooseVariant?.some(

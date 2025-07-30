@@ -8,7 +8,7 @@ import { productSchema } from "@/common/schemas/productSchema";
 import type z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setDefaultProduct, setStatusProductPending } from "@/store/slices/productSlice";
-import { uploadSingleImage } from "@/lib/utils";
+import { createSlug, uploadSingleImage } from "@/lib/utils";
 import { editVariant } from "@/store/thunks/variantThunk";
 import { createProduct } from "@/store/thunks/productThunk";
 import { resetForm } from "@/store/slices/variantSlice";
@@ -60,7 +60,8 @@ const AdminProductsAdd = () => {
             const finalData = {
                 ...data,
                 variants: variantsWithImage,
-                productImage: mainImage
+                productImage: mainImage,
+                slug: createSlug(data.name),
             };
             // console.log('finalData: ', finalData)
             //Tạo product

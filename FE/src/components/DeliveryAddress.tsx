@@ -14,7 +14,7 @@ const DeliveryAddress = ({ item, openEdit = true }: { item: Iitem, openEdit?: bo
             <p>Address: {item.addressName}</p>
             {item.selected &&
                 <div>
-                    <span className='font-Satoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
+                    <span className='font-MJSatoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
                 </div>
             }
         </div>

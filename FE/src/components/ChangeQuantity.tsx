@@ -24,7 +24,7 @@ const ChangeQuantity = ({ className = 'sm:min-w-[170px] sm:py-4 py-3 sm:px-5 px-
             />
             <input
                 type="number"
-                className="hide-spinner font-Satoshi font-medium sm:text-base text-sm text-primary text-center border-none outline-none w-fit sm:absolute static sm:top-1/2 sm:left-1/2 sm:-translate-1/2"
+                className="hide-spinner font-MJSatoshi font-medium sm:text-base text-sm text-primary text-center border-none outline-none w-fit sm:absolute static sm:top-1/2 sm:left-1/2 sm:-translate-1/2"
                 min={1}
                 max={99}
                 value={quantity}
