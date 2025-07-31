@@ -75,7 +75,7 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
     useEffect(() => {
         if (fitVariant.length === 1 && chooseVariant.length === fitVariant[0].values.length) {
             setProductInfor(fitVariant[0]);
-            //tìm vị trí ảnh và target vào
+            //tìm vị trí ảnh và target dựa vào các biến thể đã chọn
             const imgIndex = imageList.findIndex((item: any) => item === fitVariant[0].image);
             mainSwiperRef.current?.slideTo(imgIndex);
             return;
@@ -154,7 +154,7 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
             <div className="flex sm:gap-5 gap-3">
                 <ChangeQuantity />
                 <DefaultButton
-                    onClick={() => dispatch(logOut())}
+                    onClick={() => { }}
                     title="Add to Card"
                     classNameButton="bg-primary rounded-full w-full cursor-pointer max-sm:px-0"
                     classNameText="text-white"
