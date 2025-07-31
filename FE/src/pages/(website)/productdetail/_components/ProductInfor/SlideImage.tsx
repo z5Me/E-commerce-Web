@@ -1,5 +1,4 @@
 // import required modules
-import type { Swiper as SwiperClass } from 'swiper';
 import { FreeMode, Navigation, Pagination, Thumbs } from 'swiper/modules';
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -9,20 +8,26 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 //Custom CSS for swiper
 import '../../productdetailcss.css';
 
-//Hook
-import { useRef, useState } from 'react';
-const SlideImage = ({ screenWidth, imageList }: { screenWidth: number, imageList: string[] }) => {
-    const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
-    const swiperRef = useRef<SwiperClass | null>(null);
+type Props = {
+    screenWidth: number,
+    imageList: string[],
+    swiperRef: any,
+    thumbsSwiper: any,
+    setThumbsSwiper: any,
+    mainSwiperRef: any
+};
+
+const SlideImage = ({ screenWidth, imageList, swiperRef, thumbsSwiper, setThumbsSwiper, mainSwiperRef }: Props) => {
 
     return (
         <div className='product-swiper xl:grid xl:grid-cols-[25%_auto] xl:grid-rows-none flex flex-col gap-4 select-none'>
             <Swiper
+                onSwiper={(swiper) => (mainSwiperRef.current = swiper)}
                 style={{
                     '--swiper-navigation-color': '#fff',
                     '--swiper-pagination-color': '#fff',
                 } as any}
-                loop={true}
+                loop={false}
                 spaceBetween={16}
                 navigation={false}
                 thumbs={{ swiper: thumbsSwiper }}

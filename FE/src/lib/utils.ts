@@ -7,25 +7,43 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const extractAttribute = (variants: any, attribute: any) => {
-  return attribute.filter((attr: any) => {
+  // console.log('variants: ', variants)
+  // console.log('attribute: ', attribute)
+  const allAttributes = attribute.filter((attr: any) => {
     // Duyệt qua các giá trị của thuộc tính
-    return attr.values.some((attrValue: any) => {
+    return attr.value.some((attrValue: any) => {
       // Kiểm tra có giá trị nào của thuộc tính xuất hiện trong biến thể hay không
       return variants.some((variant: any) => {
         // Duyệt qua các giá trị của biến thể
         return variant.values.some((variantValue: any) => {
           // So sánh id của giá trị thuộc tính với id của giá trị biến thể
-          return variantValue.id === attrValue.id;
+          return variantValue._id.toString() === attrValue._id.toString();
         });
       });
     });
   });
+
+  // Lọc ra các value thực sự xuất hiện trong variants
+  const filter = allAttributes.map((attri: any) => {
+    return {
+      ...attri,
+      value: attri.value.filter((item: any) => {
+        return variants.some((variant: any) => {
+          return variant.values.some((value: any) => {
+            return item._id.toString() === value._id.toString()
+          })
+        })
+      })
+    }
+  })
+
+  return filter
 };
 
 export const findFitVariant = (variants: any, chooseVariant: any) => {
   return variants.filter((variant: any) =>
     chooseVariant.every((choosed: any) =>
-      variant.values.some((v: any) => v.id === choosed.id)
+      variant.values.some((v: any) => v._id === choosed._id)
     )
   );
 };

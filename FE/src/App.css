@@ -23,6 +23,11 @@
     src: url(../src/assets/fonts/Roboto-VariableFont_wdth\,wght.ttf);
 }
 
+@font-face {
+    font-family: DKLongreach;
+    src: url(../src/assets/fonts/MJ\ Satoshi-Bold.ttf);
+}
+
 @theme {
     --color-primary: #000;
     --color-contrast: #fff;
@@ -31,6 +36,7 @@
     --font-MJSatoshi: MJSatoshi;
     --font-IntegralCF: IntegralCF;
     --font-Roboto: Roboto;
+    --font-DKLongreach: DKLongreach;
     --container-840S: 840px;
 }
 

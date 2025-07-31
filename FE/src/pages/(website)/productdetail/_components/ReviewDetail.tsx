@@ -1,9 +1,10 @@
+import type { IProduct } from '@/common/types/product';
 import CustomerEvaluation from '@/components/CustomerEvaluation';
 import DefaultButton from '@/components/DefaultButton';
 import { ChevronDown, SlidersVertical } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
+const ReviewDetail = ({ screenWidth, data }: { screenWidth: number, data: IProduct }) => {
     const selectDivRef = useRef<HTMLDivElement | null>(null);
     const [selectButton, setSelectButton] = useState<number>(2);
     const [renderReview, setRenderReview] = useState<number>(6);
@@ -31,7 +32,9 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
                 selectDivRef.current.classList.remove('left-1/2');
             }
         }
-    }, [selectButton])
+    }, [selectButton]);
+
+    // console.log('data: ', data)
 
     return (
         <div className="mt-[104px] mb-[64px]">
@@ -49,8 +52,8 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
             </div>
             {
                 selectButton === 1 ?
-                    <div className='min-h-[300px] flex justify-center items-center'>
-                        <p>...đang phát triển</p>
+                    <div className='min-h-[300px] flex justify-center font-Roboto py-6 flex-col' dangerouslySetInnerHTML={{ __html: data.desc }}>
+
                     </div>
                     :
                     selectButton === 2 ?
@@ -97,7 +100,7 @@ const ReviewDetail = ({ screenWidth }: { screenWidth: number }) => {
                         </>
                         :
                         selectButton === 3 ?
-                            <div className='min-h-[300px] flex justify-center items-center'>
+                            <div className='min-h-[300px] flex justify-center items-center  py-6'>
                                 <p>...đang phát triển</p>
                             </div>
                             :

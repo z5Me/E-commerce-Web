@@ -74,7 +74,7 @@ const ProductDetail = () => {
                 {/* thông tin sản phẩm */}
                 {data && <ProductInfor screenWidth={screenWidth} data={data} />}
                 {/* Review */}
-                <ReviewDetail screenWidth={screenWidth} />
+                {data && <ReviewDetail screenWidth={screenWidth} data={data} />}
 
                 {/* You Might Also Like */}
                 <ProductsList className="mb-[78px]" caption="You might also like" loadMoreProducts={false} />

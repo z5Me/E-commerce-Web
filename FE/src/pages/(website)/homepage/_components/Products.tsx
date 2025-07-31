@@ -1,5 +1,4 @@
 //Image
-import Image_Product from '@/assets/product.svg';
 import type { IProduct } from '@/common/types/product';
 import DefaultButton from '@/components/DefaultButton';
 import DiscountIcon from '@/components/Discount';
@@ -23,7 +22,7 @@ const Products = () => {
         }
     }, [statusProduct])
 
-    console.log('data: ', data)
+    // console.log('data: ', data)
 
     return (
         <>
@@ -39,7 +38,7 @@ const Products = () => {
                                 //Tìm vị trí index Variant có giá rẻ nhất
                                 const bestPriceIndex = item.variants.reduce((minIndex, variant, index, array) => variant.price < array[minIndex].price ? index : minIndex, 0)
                                 return (
-                                    <Link to={`/detail/${item.slug}`} key={item._id}>
+                                    <Link to={`/detail/${item.slug}?idVariant=${item.variants[bestPriceIndex]._id}`} key={item._id}>
                                         <div className='w-full h-full group hover:bg-gray-200 rounded-[20px] hover:cursor-pointer'>
                                             <div className='flex flex-col h-full gap-y-4 transition-all duration-150 group-hover:scale-95'>
                                                 <div className='w-full aspect-[24/24] flex items-center justify-center overflow-hidden border rounded-[20px]'>
