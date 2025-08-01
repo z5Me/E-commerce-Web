@@ -95,7 +95,7 @@ const AdminProductsAdd = () => {
 
     return (
         <div className="grid gap-3">
-            <h1 className="sm:text-lg text-base">Add new product</h1>
+            <h1 className="sm:text-2xl text-lg font-bold">Add new product</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
                     <ProductForm previewImage={previewImage} setPreviewImage={setPreviewImage} form={form} />

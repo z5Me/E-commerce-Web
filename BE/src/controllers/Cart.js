@@ -5,13 +5,32 @@ import Variant from '../models/Variant';
 export const getSingleCart = async (req, res) => {
     const { idUser } = req.query;
     try {
-        const getCart = await Cart.findOne({ idUser });
+        const getCart = await Cart.findOne({ idUser })
+            .populate({
+                path: "products.product",
+                model: "Product"
+            })
+            .populate({
+                path: "products.variant",
+                model: "Variant"
+            });
         if (!getCart) {
             const newCart = await Cart.create({ idUser });
             return res.status(201).json(newCart);
         }
 
-        return res.status(200).json(getCart);
+        let total = 0;
+
+        total = getCart.products.reduce((acc, curr) => {
+            return acc + ((curr.variant.price - curr.variant.discount) * curr.quantity);
+        }, 0)
+
+        const newCart = {
+            ...getCart._doc,
+            total
+        }
+
+        return res.status(200).json(newCart);
 
     } catch (error) {
         console.log('Lỗi ở getSingleCart', error);
@@ -75,7 +94,7 @@ export const increaseQuantity = async (req, res) => {
         getCart.products[index].quantity += 1;
         await getCart.save();
 
-        return res.status(200).json(getCart);
+        return res.status(200).json(getCart.products[index]);
     } catch (error) {
         console.log('Lỗi ở increaseQuantity', error);
         return res.staus(500).json({ message: 'Lỗi server', error: error.message });
@@ -89,7 +108,7 @@ export const decreaseQuantity = async (req, res) => {
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
 
         const index = getCart.products.findIndex(item => item.product.toString() === idProduct && item.variant.toString() === idVariant);
-        if (index === -1) return res.status(404).json({ error: 'Canot found index' });
+        if (index === -1) return res.status(404).json({ error: 'Can not found index' });
 
         if (getCart.products[index].quantity === 1) {
             getCart.products = getCart.products.filter(item => item.variant.toString() !== idVariant.toString());
@@ -104,6 +123,56 @@ export const decreaseQuantity = async (req, res) => {
         return res.status(200).json(getCart);
     } catch (error) {
         console.log('Lỗi ở decreaseQuantity', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
+export const updateQuantity = async (req, res) => {
+    const { idProduct, idVariant, idUser, quantity } = req.body;
+    try {
+        const getCart = await Cart.findOne({ idUser })
+            .populate({
+                path: "products.product",
+                model: "Product"
+            })
+            .populate({
+                path: "products.variant",
+                model: "Variant"
+            });
+        if (!getCart) return res.status(404).json({ error: 'Cart not found' });
+
+        const index = getCart.products.findIndex(item => item.product._id.toString() === idProduct && item.variant._id.toString() === idVariant);
+        if (index === -1) return res.status(404).json({ error: 'Can not found index' });
+
+        getCart.products[index].quantity = quantity;
+        await getCart.save();
+
+        // let total = 0;
+        getCart.total = getCart.products.reduce((acc, curr) => {
+            return acc + ((curr.variant.price - curr.variant.discount) * curr.quantity);
+        }, 0)
+        // getCart.total = total;
+        await getCart.save();
+
+        return res.status(200).json(getCart.products[index]);
+    } catch (error) {
+        console.log('Lỗi ở updateQuantity', error)
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
+export const clearCart = async (req, res) => {
+    const { idUser } = req.body;
+    try {
+        const getCart = await Cart.findOne({ idUser });
+        if (!getCart) return res.status(404).json({ error: 'Cart not found' });
+
+        getCart.products = [];
+        await getCart.save();
+
+        return res.status(200).json(getCart);
+    } catch (error) {
+        console.log('Lỗi ở clearCart', error);
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }

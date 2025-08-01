@@ -47,7 +47,7 @@ const Signup = () => {
         }
 
         if (userState === 'signIn.fulfilled') {
-            navigate('/');
+            navigate(-1);
             return;
         }
     }, [userState]);

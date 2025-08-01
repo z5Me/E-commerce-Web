@@ -3,95 +3,43 @@ import ProductInCart from '@/components/ProductInCart';
 import PriceList from './PriceList';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
 import { Tag } from 'lucide-react';
-
-const cart = {
-    id: 'cartid1',
-    products: [
-        {
-            id: 'd1',
-            product: {
-                id: 'e1',
-                name: 'Gradient Graphic T-shirt'
-            },
-            variant: {
-                id: 'c1',
-                price: 200,
-                oldPrice: 250,
-                discountPrice: 20,
-                image: Product_Image,
-                values: [
-                    {
-                        id: 'b1',
-                        name: 'Red',
-                        slug: 'red',
-                        type: 'Color',
-                        value: '#FF0000'
-                    },
-                    {
-                        id: 'b3',
-                        name: 'Medium',
-                        slug: 'medium',
-                        type: 'Size',
-                        value: 'medium'
-                    },
-                    {
-                        id: 'b5',
-                        name: '5kg',
-                        slug: '5kg',
-                        type: 'Weight',
-                        value: '5kg'
-                    }
-                ]
-            },
-            quantity: 1
-        },
-        {
-            id: 'd2',
-            product: {
-                id: 'e2',
-                name: 'Polo with Tipping Details'
-            },
-            variant: {
-                id: 'c4',
-                price: 350,
-                oldPrice: 400,
-                discountPrice: 5,
-                image: Product_Image,
-                values: [
-                    {
-                        id: 'b2',
-                        name: 'Blue',
-                        slug: 'blue',
-                        type: 'Color',
-                        value: '#0000FF'
-                    },
-                    {
-                        id: 'b4',
-                        name: 'Large',
-                        slug: 'large',
-                        type: 'Size',
-                        value: 'large'
-                    },
-                    {
-                        id: 'b6',
-                        name: '10kg',
-                        slug: '10kg',
-                        type: 'Weight',
-                        value: '10kg'
-                    },
-                ]
-            },
-            quantity: 3
-        }
-    ],
-    totalProducts: 400,
-    discount: 10,
-    total: 390
-}
+import { shallowEqual, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useAppDispatch } from '@/store/store';
+import { getSingleCart } from '@/store/thunks/cartThunk';
+import { reSignIn } from '@/store/thunks/userThunk';
+import { toast } from 'sonner';
 
 const ShoppingCart = () => {
     //Theo dõi chiều ngang của web
     const screenWidth = useScreenWidth();
+    const dispatch = useAppDispatch();
+    const cart = useSelector((state: any) => state.cart.cartData, shallowEqual);
+    const cartStatus = useSelector((state: any) => state.cart.status, shallowEqual);
+
+    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
+    // console.log('cart: ', cart);
+
+    useEffect(() => {
+        if (cartStatus === 'idle') {
+            if (!dataUser._id) {
+                // console.log('Chạy vào idUser rong')
+                dispatch(reSignIn()).unwrap()
+                    .then()
+                    .catch(() => {
+                        toast.warning('Phiên đăng nhập đã hết hạn');
+                        return;
+                    })
+            }
+            dispatch(getSingleCart({ idUser: dataUser._id }));
+        }
+    }, [cartStatus]);
+
+    useEffect(() => {
+        if (dataUser && dataUser._id) {
+            dispatch(getSingleCart({ idUser: dataUser._id }));
+        }
+    }, [dataUser])
 
     return (
         <>
@@ -102,8 +50,8 @@ const ShoppingCart = () => {
                 </div>
                 <div className="flex flex-col py-5 gap-y-6">
                     {cart && cart.products && cart.products.map((item: any) => (
-                        <div key={item.id} className='pb-6 border-b border-b-primary/10'>
-                            <ProductInCart item={item} />
+                        <div key={item._id} className='pb-6 border-b border-b-primary/10'>
+                            <ProductInCart item={item} cart={cart} />
                         </div>
                     ))}
                 </div>
@@ -120,7 +68,7 @@ const ShoppingCart = () => {
                     <p className='sm:text-base text-sm font-semibold underline cursor-pointer text-nowrap'>Clear cart</p>
                 </div>
             </div>
-            <PriceList />
+            <PriceList cart={cart} />
         </>
     )
 }

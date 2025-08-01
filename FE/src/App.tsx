@@ -1,7 +1,6 @@
-import { Toaster } from 'sonner';
 import './App.css';
-import Router from './routes';
 import { LoadingProvider } from './contexts/LoadingScreen';
+import Router from './routes';
 
 function App() {
   return (
@@ -9,7 +8,6 @@ function App() {
       <LoadingProvider>
         <Router />
       </LoadingProvider>
-      <Toaster richColors={true} position="top-center" closeButton />
     </>
   )
 }

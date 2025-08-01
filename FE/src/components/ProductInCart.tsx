@@ -4,8 +4,9 @@ import DiscountIcon from './Discount'
 import ChangeQuantity from './ChangeQuantity'
 import useScreenWidth from '@/common/hooks/useScreenWidth'
 
-const ProductInCart = ({ item, checkout = false }: any) => {
+const ProductInCart = ({ item, checkout = false, cart }: any) => {
     const screenWidth = useScreenWidth();
+    // console.log('item: ', item);
     return (
         <div className="flex gap-x-4">
             <div className="aspect-square sm:max-w-[166px] max-w-[99px]">
@@ -28,7 +29,7 @@ const ProductInCart = ({ item, checkout = false }: any) => {
                         </div>
                         <div className="flex flex-col gap-y-1 sm:text-sm text-xs">
                             {item.variant.values.map((value: any) => (
-                                <React.Fragment key={value.id}>
+                                <React.Fragment key={value._id}>
                                     <p>{value.type}: <span className="text-primary/60">{value.name}</span> </p>
                                 </React.Fragment>
                             ))}
@@ -39,7 +40,7 @@ const ProductInCart = ({ item, checkout = false }: any) => {
                             ?
                             <div className='w-full flex justify-between'>
                                 <p>Price:</p>
-                                <span className="text-primary">${item.variant.price}</span>
+                                <span className="text-primary">${(item.variant.price ?? 0) - (item.variant.discount ?? 0)}</span>
                             </div>
                             :
                             <DiscountIcon
@@ -47,19 +48,24 @@ const ProductInCart = ({ item, checkout = false }: any) => {
                                 classNamePrice=""
                                 classNameOldPrice=""
                                 classNameDPercent="sm:text-sm text-xs max-sm:px-[10px] max-sm:py-[4px]"
-                                price={item.variant.price}
-                                oldPrice={item.variant.oldPrice}
-                                discountPrice={item.variant.discountPrice}
+                                price={(item.variant.price ?? 0) - (item.variant.discount ?? 0)}
+                                oldPrice={item.variant.price ?? 0}
+                                discountPrice={item.variant.discount ?? 0}
                             />
                         }
                         <div className={`grid place-items-end ${checkout && 'w-full'}`}>
                             {checkout ?
-                                <div className='flex w-full justify-between sm:text-2xl text-base font-medium'>
+                                <div className='flex w-full justify-between sm:text-2xl text-base font-bold'>
                                     <p>Total</p>
                                     <p className=''>${item.variant.price * item.quantity}</p>
                                 </div>
                                 :
                                 <ChangeQuantity
+                                    idUser={cart.idUser}
+                                    idProduct={item.product._id}
+                                    idVariant={item.variant._id}
+                                    maxQuantity={item.variant.countOnStock}
+                                    defaultQuantity={item.quantity}
                                     className="sm:min-w-[126px] sm:py-3 py-2 sm:px-5 px-4"
                                     sizeMinus={screenWidth > 639 ? 16 : 14}
                                     sizePlus={screenWidth > 639 ? 16 : 14}

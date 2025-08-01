@@ -1,101 +1,89 @@
 import { createSlice } from "@reduxjs/toolkit";
-import Product_Image from '@/assets/product2.svg';
+import { toast } from "sonner";
+import { addToCart, getSingleCart, updateQuantity } from "../thunks/cartThunk";
+
 
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
-        id: 'cartid1',
-        products: [
-            {
-                id: 'd1',
-                product: {
-                    id: 'e1',
-                    name: 'Gradient Graphic T-shirt'
-                },
-                variant: {
-                    id: 'c1',
-                    price: 200,
-                    oldPrice: 250,
-                    discountPrice: 20,
-                    image: Product_Image,
-                    values: [
-                        {
-                            id: 'b1',
-                            name: 'Red',
-                            slug: 'red',
-                            type: 'Color',
-                            value: '#FF0000'
-                        },
-                        {
-                            id: 'b3',
-                            name: 'Medium',
-                            slug: 'medium',
-                            type: 'Size',
-                            value: 'medium'
-                        },
-                        {
-                            id: 'b5',
-                            name: '5kg',
-                            slug: '5kg',
-                            type: 'Weight',
-                            value: '5kg'
-                        }
-                    ]
-                },
-                quantity: 1
-            },
-            {
-                id: 'd2',
-                product: {
-                    id: 'e2',
-                    name: 'Polo with Tipping Details'
-                },
-                variant: {
-                    id: 'c4',
-                    price: 350,
-                    oldPrice: 400,
-                    discountPrice: 5,
-                    image: Product_Image,
-                    values: [
-                        {
-                            id: 'b2',
-                            name: 'Blue',
-                            slug: 'blue',
-                            type: 'Color',
-                            value: '#0000FF'
-                        },
-                        {
-                            id: 'b4',
-                            name: 'Large',
-                            slug: 'large',
-                            type: 'Size',
-                            value: 'large'
-                        },
-                        {
-                            id: 'b6',
-                            name: '10kg',
-                            slug: '10kg',
-                            type: 'Weight',
-                            value: '10kg'
-                        },
-                    ]
-                },
-                quantity: 3
-            }
-        ],
-        totalProducts: 400,
-        discount: 10,
-        total: 390
+        cartData: {
+            _id: '',
+            idUser: '',
+            products: [] as any[],
+            totalProduct: 0,
+            discountVoucher: 0,
+            total: 0,
+        },
+        status: 'idle',
+        error: ''
     },
     reducers: {
-        addToCart(state, actions) {
-
+        setStatusCart(state) {
+            state.status = 'idle';
         }
     },
     extraReducers: (builder) => {
+        builder
+            .addCase(getSingleCart.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(getSingleCart.fulfilled, (state, action) => {
+                state.status = 'getSingleCart.fulfilled';
+                state.error = '';
+                // console.log('action: ', action)
+                state.cartData = action.payload;
+            })
+            .addCase(getSingleCart.rejected, (state, action) => {
+                state.status = 'getSingleCart.rejected';
+                state.error = action.payload as string;
+            })
 
+            .addCase(addToCart.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(addToCart.fulfilled, (state, action) => {
+                state.status = 'addToCart.fulfilled';
+                state.error = '';
+                const indexProduct = state.cartData.products.findIndex((item) => {
+                    return item.variant._id.toString() === action.payload.variant.toString()
+                })
+
+                if (indexProduct !== -1) {
+                    state.cartData.products[indexProduct].quantity = action.payload.quantity;
+                    toast.success('Thêm giỏ hàng thành công');
+                }
+
+            })
+            .addCase(addToCart.rejected, (state, action) => {
+                state.status = 'addToCart.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(updateQuantity.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(updateQuantity.fulfilled, (state, action) => {
+                state.status = 'updateQuantity.fulfilled';
+                state.error = '';
+                const index = state.cartData.products.findIndex(item => item.variant._id.toString() === action.payload.variant._id.toString());
+
+                if (index !== -1) {
+                    state.cartData.products[index].quantity = action.payload.quantity;
+                }
+
+                state.cartData.total = state.cartData.products.reduce((acc, curr) => {
+                    return acc + ((curr.variant.price - curr.variant.discount) * curr.quantity)
+                }, 0);
+            })
+            .addCase(updateQuantity.rejected, (state, action) => {
+                state.status = 'updateQuantity.rejected';
+                state.error = action.payload as string;
+            })
     },
 })
 
-export const { } = cartSlice.actions;
+export const { setStatusCart } = cartSlice.actions;
 export default cartSlice.reducer;

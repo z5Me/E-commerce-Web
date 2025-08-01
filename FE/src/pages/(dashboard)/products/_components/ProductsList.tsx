@@ -23,7 +23,7 @@ const AdminProductsList = () => {
     return (
         <div className="grid gap-4 md:gap-6">
             <div className="grid w-full">
-                <h1 className="sm:text-lg text-base">Products list</h1>
+                <h1 className="sm:text-2xl text-lg font-bold">Products list</h1>
                 <div className="w-full overflow-x-auto pb-10">
                     <DataTable columns={columns} data={data} filterColumn="name" filterPlaceholder="Filter by Name..." />
                 </div>

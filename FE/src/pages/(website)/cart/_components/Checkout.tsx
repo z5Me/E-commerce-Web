@@ -2,104 +2,48 @@ import Product_Image from '@/assets/product2.svg';
 import ProductInCart from '@/components/ProductInCart';
 import { shallowEqual, useSelector } from 'react-redux';
 import DeliveryAddress from '../../../../components/DeliveryAddress';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Check, CircleDollarSign, CreditCard, Pencil } from 'lucide-react';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
 import PriceList from './PriceList';
-
-const cart = {
-    id: 'cartid1',
-    products: [
-        {
-            id: 'd1',
-            product: {
-                id: 'e1',
-                name: 'Gradient Graphic T-shirt'
-            },
-            variant: {
-                id: 'c1',
-                price: 200,
-                oldPrice: 250,
-                discountPrice: 20,
-                image: Product_Image,
-                values: [
-                    {
-                        id: 'b1',
-                        name: 'Red',
-                        slug: 'red',
-                        type: 'Color',
-                        value: '#FF0000'
-                    },
-                    {
-                        id: 'b3',
-                        name: 'Medium',
-                        slug: 'medium',
-                        type: 'Size',
-                        value: 'medium'
-                    },
-                    {
-                        id: 'b5',
-                        name: '5kg',
-                        slug: '5kg',
-                        type: 'Weight',
-                        value: '5kg'
-                    }
-                ]
-            },
-            quantity: 1
-        },
-        {
-            id: 'd2',
-            product: {
-                id: 'e2',
-                name: 'Polo with Tipping Details'
-            },
-            variant: {
-                id: 'c4',
-                price: 350,
-                oldPrice: 400,
-                discountPrice: 5,
-                image: Product_Image,
-                values: [
-                    {
-                        id: 'b2',
-                        name: 'Blue',
-                        slug: 'blue',
-                        type: 'Color',
-                        value: '#0000FF'
-                    },
-                    {
-                        id: 'b4',
-                        name: 'Large',
-                        slug: 'large',
-                        type: 'Size',
-                        value: 'large'
-                    },
-                    {
-                        id: 'b6',
-                        name: '10kg',
-                        slug: '10kg',
-                        type: 'Weight',
-                        value: '10kg'
-                    },
-                ]
-            },
-            quantity: 3
-        }
-    ],
-    totalProducts: 400,
-    discount: 10,
-    total: 390
-}
+import { useAppDispatch } from '@/store/store';
+import { reSignIn } from '@/store/thunks/userThunk';
+import { toast } from 'sonner';
+import { getSingleCart } from '@/store/thunks/cartThunk';
 
 const Checkout = () => {
-    //data of user in redux
-    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
-
-    const [payment, setPayment] = useState<string>('');
-    const [terms, setTerms] = useState<boolean>(false);
+    const [payment, setPayment] = useState<string>('cod');
+    const [terms, setTerms] = useState<boolean>(true);
 
     const screenWidth = useScreenWidth();
+    const dispatch = useAppDispatch();
+    const cart = useSelector((state: any) => state.cart.cartData, shallowEqual);
+    const cartStatus = useSelector((state: any) => state.cart.status, shallowEqual);
+
+    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
+    // console.log('cart: ', cart);
+
+    useEffect(() => {
+        if (cartStatus === 'idle') {
+            if (!dataUser._id) {
+                // console.log('Chạy vào idUser rong')
+                dispatch(reSignIn()).unwrap()
+                    .then()
+                    .catch(() => {
+                        toast.warning('Phiên đăng nhập đã hết hạn');
+                        return;
+                    })
+            }
+            dispatch(getSingleCart({ idUser: dataUser._id }));
+        }
+    }, [cartStatus]);
+
+    useEffect(() => {
+        if (dataUser && dataUser._id) {
+            dispatch(getSingleCart({ idUser: dataUser._id }));
+        }
+    }, [dataUser])
+
 
     return (
         <>
@@ -113,12 +57,12 @@ const Checkout = () => {
                         <p className='sm:text-lg text-base after:ml-0.5 after:text-red-500 after:content-["*"]'>Delivery address</p>
                         <div className='border-t-2 border-primary overflow-hidden relative z-10 group'>
                             <div className='transition-all duration-300 group-hover:blur-xs'>
-                                {dataUser.address.map((item: any, index: number) => (
+                                {/* {dataUser.address.map((item: any, index: number) => (
                                     item.selected &&
                                     <React.Fragment key={index}>
                                         <DeliveryAddress item={item} />
                                     </React.Fragment>
-                                ))}
+                                ))} */}
                             </div>
                             <div className='absolute transition-all duration-300 top-[200%] group-hover:top-1/2 left-1/2 -translate-1/2 z-30 bg-primary rounded-md cursor-pointer text-white'>
                                 <div className='flex items-center gap-1 py-1 px-2 shadow-xl select-none'>
@@ -181,7 +125,7 @@ const Checkout = () => {
 
                 </div>
             </div>
-            <PriceList />
+            <PriceList cart={cart} terms={terms} />
         </>
     )
 }

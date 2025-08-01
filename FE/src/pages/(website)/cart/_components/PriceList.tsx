@@ -1,8 +1,11 @@
 import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
 import { Link } from "react-router";
+import { toast } from "sonner";
 
-const PriceList = () => {
+const PriceList = ({ cart, terms }: { cart: any, terms?: boolean }) => {
     const { url } = useChangeStatusCart();
+    console.log('url: ', url)
+    // console.log('cart', cart)
 
     return (
         <div className="xl:w-[40%] w-full">
@@ -30,9 +33,9 @@ const PriceList = () => {
                 </div>
                 <div className="flex justify-between items-center sm:text-lg text-base">
                     <p className="text-primary font-medium">Total</p>
-                    <p className="font-bold">$467</p>
+                    <p className="font-bold">${cart?.total}</p>
                 </div>
-                <Link to={url}>
+                <Link to={(url === '/cart/order') ? terms && url : url} onClick={() => (url === '/cart/order') && (!terms && toast.warning('Vui lòng tích vào ô điều khoản để tiếp tục'))}>
                     <div className="w-full px-10 flex justify-center items-center bg-[#C8C9CB] hover:bg-primary rounded-full select-none cursor-pointer">
                         <div className="text-white sm:h-[56px] h-[48px] sm:text-lg text-base font-medium flex justify-center items-center gap-x-4">
                             <p>Checkout</p>

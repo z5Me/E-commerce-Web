@@ -39,7 +39,7 @@ const Signin = () => {
             setTimeout(() => {
                 dispatch(resetStatus());
             }, 1000)
-            navigate('/');
+            navigate(-1);
         }
     }, [userState]);
 

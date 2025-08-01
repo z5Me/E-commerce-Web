@@ -16,7 +16,7 @@ const AdminAttributesPage = () => {
 
     return (
         <div className="grid gap-6">
-            <h1 className="sm:text-2xl text-lg font-medium">Attributes</h1>
+            <h1 className="sm:text-2xl text-lg font-bold">Attributes</h1>
             <Outlet />
         </div>
     )
