@@ -1,13 +1,16 @@
 import './App.css';
+import { DialogProvider } from './contexts/DialogContext';
 import { LoadingProvider } from './contexts/LoadingScreen';
 import Router from './routes';
 
 function App() {
   return (
     <>
-      <LoadingProvider>
-        <Router />
-      </LoadingProvider>
+      <DialogProvider>
+        <LoadingProvider>
+          <Router />
+        </LoadingProvider>
+      </DialogProvider>
     </>
   )
 }

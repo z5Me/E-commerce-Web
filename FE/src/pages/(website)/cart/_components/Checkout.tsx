@@ -1,15 +1,12 @@
-import Product_Image from '@/assets/product2.svg';
-import ProductInCart from '@/components/ProductInCart';
-import { shallowEqual, useSelector } from 'react-redux';
-import DeliveryAddress from '../../../../components/DeliveryAddress';
-import React, { useEffect, useState } from 'react';
-import { Check, CircleDollarSign, CreditCard, Pencil } from 'lucide-react';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
-import PriceList from './PriceList';
+import ProductInCart from '@/components/ProductInCart';
 import { useAppDispatch } from '@/store/store';
-import { reSignIn } from '@/store/thunks/userThunk';
-import { toast } from 'sonner';
 import { getSingleCart } from '@/store/thunks/cartThunk';
+import { reSignIn } from '@/store/thunks/userThunk';
+import { Check, CircleDollarSign, CreditCard, Pencil } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
+import PriceList from './PriceList';
 
 const Checkout = () => {
     const [payment, setPayment] = useState<string>('cod');
@@ -27,12 +24,7 @@ const Checkout = () => {
         if (cartStatus === 'idle') {
             if (!dataUser._id) {
                 // console.log('Chạy vào idUser rong')
-                dispatch(reSignIn()).unwrap()
-                    .then()
-                    .catch(() => {
-                        toast.warning('Phiên đăng nhập đã hết hạn');
-                        return;
-                    })
+                dispatch(reSignIn())
             }
             dispatch(getSingleCart({ idUser: dataUser._id }));
         }

@@ -39,13 +39,13 @@ export const getSingleCart = async (req, res) => {
 }
 
 export const addToCart = async (req, res) => {
-    const { idProduct, idVariant, idUser } = req.body;
+    const { idProduct, idVariant, idUser, quantity } = req.body;
     try {
         const getCart = await Cart.findOne({ idUser });
         if (!getCart) {
             const newCart = await Cart.create({ idUser });
 
-            newCart.products.push({ product: idProduct, variant: idVariant, quantity: 1 });
+            newCart.products.push({ product: idProduct, variant: idVariant, quantity: quantity });
             await newCart.save();
 
             return res.status(200).json(newCart);
@@ -62,12 +62,12 @@ export const addToCart = async (req, res) => {
         if (exitAdd !== -1) {
             //Kiểm tra số lượng tồn kho
             if (getCart.products[exitAdd].quantity >= findVariant.countOnStock) return res.status(409).json({ error: 'Max count on stock' });
-            getCart.products[exitAdd].quantity += 1;
+            getCart.products[exitAdd].quantity += quantity;
             await getCart.save();
             return res.status(200).json(getCart);
         }
 
-        getCart.products.push({ product: idProduct, variant: idVariant, quantity: 1 });
+        getCart.products.push({ product: idProduct, variant: idVariant, quantity: quantity });
         await getCart.save();
 
         return res.status(200).json(getCart);
@@ -167,6 +167,9 @@ export const clearCart = async (req, res) => {
         const getCart = await Cart.findOne({ idUser });
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
 
+        getCart.totalProduct = 0;
+        getCart.discountVoucher = 0;
+        getCart.total = 0;
         getCart.products = [];
         await getCart.save();
 
@@ -174,5 +177,24 @@ export const clearCart = async (req, res) => {
     } catch (error) {
         console.log('Lỗi ở clearCart', error);
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
+export const removeAProduct = async (req, res) => {
+    const { idUser, idVariant } = req.body;
+    try {
+        const getCart = await Cart.findOne({ idUser });
+        if (!getCart) return res.status(404).json({ error: 'Cart not found' });
+
+        const findIndex = getCart.products.findIndex(item => item.variant._id.toString() === idVariant);
+        if (findIndex === -1) return res.status(404).json({ error: 'Can not found index' });
+
+        getCart.products = getCart.products.filter((_, index) => index !== findIndex);
+        await getCart.save();
+
+        return res.status(200).json({ idVariant })
+    } catch (error) {
+        console.log('Lỗi ở removeAProduct', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message })
     }
 }

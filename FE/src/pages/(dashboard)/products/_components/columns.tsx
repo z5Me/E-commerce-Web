@@ -19,7 +19,6 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { setDefaultProduct } from "@/store/slices/productSlice";
 import { useAppDispatch } from "@/store/store";
 import { removeProduct } from "@/store/thunks/productThunk";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";

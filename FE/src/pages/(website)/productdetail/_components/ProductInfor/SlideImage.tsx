@@ -13,7 +13,7 @@ type Props = {
     imageList: string[],
     swiperRef: any,
     thumbsSwiper: any,
-    setThumbsSwiper: any,
+    setThumbsSwiper: (value: any) => void,
     mainSwiperRef: any
 };
 

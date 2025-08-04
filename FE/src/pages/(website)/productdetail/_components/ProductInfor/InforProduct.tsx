@@ -2,36 +2,23 @@
 import { Check } from 'lucide-react';
 
 //Components
-import DefaultButton from "@/components/DefaultButton";
 import DiscountIcon from "@/components/Discount";
 import ShowRatingStar from "@/components/ShowRatingStar";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 
-//Hook
-import { useGetParams } from '@/common/hooks/useGetParams';
+//types
 import type { IProduct } from '@/common/types/product';
 import type { IVariant } from '@/common/types/variant';
-import ChangeQuantity from '@/components/ChangeQuantity';
+
+//redux
+import { useGetParams } from '@/common/hooks/useGetParams';
 import { extractAttribute, findFitVariant } from '@/lib/utils';
 import { useAppDispatch } from '@/store/store';
 import { getAllAttribute } from '@/store/thunks/attributeThunk';
+
+//Hook
 import React, { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { addToCart } from '@/store/thunks/cartThunk';
-import { reSignIn } from '@/store/thunks/userThunk';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
-import { setStatusCart } from '@/store/slices/cartSlice';
+import AddToCartButton from './addToCartButton';
 
 type Props = {
     data: IProduct,
@@ -65,7 +52,7 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
             }
             return;
         }
-    }, [idVariant])
+    }, [idVariant]);
 
     //Chức năng chọn biến thể
     const handleChooseVariant = ({ variant }: any) => (
@@ -81,9 +68,10 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
 
     //Hiển thị UI
     const allAttributes = extractAttribute(variants, attribute);
-    //Giá trị ban đầu
+    //Giá trị ban đầu và tìm giá trị phù hợp với những biến thể đã chọn
     const fitVariant = findFitVariant(variants, chooseVariant);
 
+    //Lưu thông tin sản phẩm và hiển thị ra UI
     const [productInfor, setProductInfor] = useState<IVariant>();
     useEffect(() => {
         if (fitVariant.length === 1 && chooseVariant.length === fitVariant[0].values.length) {
@@ -97,47 +85,7 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
             return;
         }
 
-    }, [chooseVariant])
-
-    //Xử lý thêm giỏ hàng
-    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
-    const [open, setOpen] = useState<boolean>(false);
-    const navigate = useNavigate();
-
-    const handleAddToCart = () => {
-        if (!productInfor) {
-            toast.warning('Vui lòng chọn đủ biến thể trước khi thêm vào giỏ hàng!');
-            return;
-        }
-        //check chọn đủ biến thể
-        if (fitVariant.length === 1 && chooseVariant.length === fitVariant[0].values.length) {
-            //check đăng nhập
-            if (!dataUser._id) {
-                dispatch(reSignIn())
-                    .unwrap()
-                    .then(() => {
-                        dispatch(addToCart({ idUser: dataUser._id, idProduct: data._id as string, idVariant: productInfor._id ?? idVariant }))
-
-                    })
-                    .catch(() => {
-                        toast.warning('Phiên đăng nhập đã hết hạn!');
-                        setOpen(true);
-                    })
-            }
-            const promise = dispatch(addToCart({ idUser: dataUser._id, idProduct: data._id as string, idVariant: productInfor._id })).unwrap();
-            toast.promise(promise, {
-                loading: '...loading',
-                success: 'Thêm giỏ hàng thành công',
-                error: (error) => {
-                    return `Error: ${error}`
-                }
-            })
-        } else {
-            toast.warning('Vui lòng chọn đủ biến thể');
-            return;
-        }
-
-    }
+    }, [chooseVariant]);
 
     return (
         <>
@@ -203,30 +151,13 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
 
                 ))}
 
-                <div className="flex sm:gap-5 gap-3">
-                    <ChangeQuantity />
-                    <DefaultButton
-                        onClick={() => handleAddToCart()}
-                        title="Add to Card"
-                        classNameButton="bg-primary rounded-full w-full cursor-pointer max-sm:px-0"
-                        classNameText="text-white"
-                    />
-                </div>
+                <AddToCartButton
+                    data={data}
+                    productInfor={productInfor}
+                    fitVariant={fitVariant}
+                    chooseVariant={chooseVariant}
+                />
             </div>
-            <AlertDialog open={open} onOpenChange={setOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Thoát khỏi trang hiện tại?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Bạn cần đăng nhập để tiếp tục mua hàng, bạn sẽ được điều hướng trở lại sau đăng nhập!
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Hủy</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => navigate('/auth/signin')}>Tiếp tục</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </>
     )
 }

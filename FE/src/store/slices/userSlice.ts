@@ -1,7 +1,7 @@
+import type { IUser } from '@/common/types/user';
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 import { reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
-import type { IUser } from '@/common/types/user';
 
 const initialState: IUser = {
     _id: '',
@@ -91,6 +91,7 @@ const userSlice = createSlice({
             .addCase(reSignIn.rejected, (state, action) => {
                 state.status = 'reSignIn.rejected';
                 state.error = action.payload as string;
+                return;
             })
 
             .addCase(saveUserInformation.pending, (state) => {

@@ -14,9 +14,9 @@ export const getSingleCart = createAsyncThunk('cart/getSingleCart', async ({ idU
     }
 })
 
-export const addToCart = createAsyncThunk('cart/addToCart', async ({ idUser, idProduct, idVariant }: { idUser: string, idProduct: string, idVariant: string }, { rejectWithValue }) => {
+export const addToCart = createAsyncThunk('cart/addToCart', async ({ idUser, idProduct, idVariant, quantity }: { idUser: string, idProduct: string, idVariant: string, quantity: number }, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API}/cart/addToCart`, { idUser, idProduct, idVariant });
+        const response = await axios.post(`${API}/cart/addToCart`, { idUser, idProduct, idVariant, quantity });
 
         return response.data;
     } catch (error: any) {
@@ -38,8 +38,22 @@ export const updateQuantity = createAsyncThunk('cart/updateQuantity', async ({ i
 
 export const clearCart = createAsyncThunk('cart/clearCart', async ({ idUser }: { idUser: string }, { rejectWithValue }) => {
     try {
+        const response = await axios.post(`${API}/cart/clearCart`, { idUser });
 
+        return response.data;
     } catch (error: any) {
-
+        console.log('Lỗi ở cart/clearCart', error);
+        return rejectWithValue(error.response.data.error);
     }
-})  
+})
+
+export const removeAProduct = createAsyncThunk('cart/removeAProduct', async ({ idUser, idVariant }: { idUser: string, idVariant: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/cart/removeAProduct`, { idUser, idVariant });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở cart/removeAProduct', error);
+        return rejectWithValue(error.response.daat.error);
+    }
+})

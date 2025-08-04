@@ -1,57 +1,55 @@
-import Product_Image from '@/assets/product2.svg';
-import ProductInCart from '@/components/ProductInCart';
-import PriceList from './PriceList';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
-import { Tag } from 'lucide-react';
-import { shallowEqual, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import ProductInCart from '@/components/ProductInCart';
+import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
-import { getSingleCart } from '@/store/thunks/cartThunk';
+import { clearCart, getSingleCart } from '@/store/thunks/cartThunk';
 import { reSignIn } from '@/store/thunks/userThunk';
+import { Tag } from 'lucide-react';
+import { useEffect } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
+import PriceList from './PriceList';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
 
 const ShoppingCart = () => {
     //Theo dõi chiều ngang của web
     const screenWidth = useScreenWidth();
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const cart = useSelector((state: any) => state.cart.cartData, shallowEqual);
-    const cartStatus = useSelector((state: any) => state.cart.status, shallowEqual);
 
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
-    // console.log('cart: ', cart);
 
-    useEffect(() => {
-        if (cartStatus === 'idle') {
-            if (!dataUser._id) {
-                // console.log('Chạy vào idUser rong')
-                dispatch(reSignIn()).unwrap()
-                    .then()
-                    .catch(() => {
-                        toast.warning('Phiên đăng nhập đã hết hạn');
-                        return;
-                    })
-            }
-            dispatch(getSingleCart({ idUser: dataUser._id }));
-        }
-    }, [cartStatus]);
+    const { showDialog } = useDialog();
 
     useEffect(() => {
         if (dataUser && dataUser._id) {
             dispatch(getSingleCart({ idUser: dataUser._id }));
+        } else {
+            dispatch(reSignIn()).unwrap()
+                .catch(() => {
+                    toast.warning('Phiên đăng nhập đã hết hạn');
+                    showDialog({
+                        title: 'Rời khỏi trang?',
+                        description: 'Một vài tính năng cần bạn đăng nhập để tiếp tục sử dụng',
+                        onConfirm: () => navigate('/auth'),
+                        onCancel: () => navigate(-1)
+                    });
+                });
         }
-    }, [dataUser])
+    }, [dataUser]);
 
     return (
         <>
             <div className="xl:w-[60%] w-full">
                 <div className="flex justify-between items-center border-b border-b-primary/10 sm:pb-6 pb-2">
                     <p className="text-xl font-medium">Your Cart</p>
-                    <p className="text-base">(3)</p>
+                    <p className="text-base">({cart && cart.products.length})</p>
                 </div>
                 <div className="flex flex-col py-5 gap-y-6">
                     {cart && cart.products && cart.products.map((item: any) => (
                         <div key={item._id} className='pb-6 border-b border-b-primary/10'>
-                            <ProductInCart item={item} cart={cart} />
+                            <ProductInCart item={item} cart={cart} dataUser={dataUser} />
                         </div>
                     ))}
                 </div>
@@ -65,7 +63,18 @@ const ShoppingCart = () => {
                             <p>Apply</p>
                         </button>
                     </div>
-                    <p className='sm:text-base text-sm font-semibold underline cursor-pointer text-nowrap'>Clear cart</p>
+                    <p
+                        className='sm:text-base text-sm font-semibold underline cursor-pointer text-nowrap'
+                        onClick={() => showDialog({
+                            title: 'Bạn chắc chứ?',
+                            description: 'Toàn bộ sản phẩm có trong giỏ hàng sẽ bị xóa',
+                            onConfirm: () => {
+                                dispatch(clearCart({ idUser: dataUser._id }))
+                            }
+                        })}
+                    >
+                        Clear cart
+                    </p>
                 </div>
             </div>
             <PriceList cart={cart} />

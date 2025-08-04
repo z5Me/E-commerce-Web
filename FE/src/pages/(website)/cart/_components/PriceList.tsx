@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 const PriceList = ({ cart, terms }: { cart: any, terms?: boolean }) => {
     const { url } = useChangeStatusCart();
-    console.log('url: ', url)
+    // console.log('url: ', url)
     // console.log('cart', cart)
 
     return (

@@ -3,13 +3,11 @@ import './productdetailcss.css';
 
 //Image
 import ProductsList from "@/components/ProductsList";
+import { getDetailProduct } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from "react";
-import ReviewDetail from './_components/ReviewDetail';
 import ProductInfor from './_components/ProductInfor';
-import { useParams } from 'react-router';
-import { shallowEqual, useSelector } from 'react-redux';
-import type { IProduct } from '@/common/types/product';
+import ReviewDetail from './_components/ReviewDetail';
 
 const ProductDetail = () => {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -28,23 +26,7 @@ const ProductDetail = () => {
         return () => window.removeEventListener('resize', handdleResize);
     }, []);
 
-    const { slug } = useParams();
-    const dataProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
-    const [data, setData] = useState<IProduct>();
-
-    useEffect(() => {
-        if (dataProducts && dataProducts.length > 0) {
-            const filterProduct = dataProducts.filter((item: IProduct) => item.slug === slug);
-            if (filterProduct) {
-                setData(filterProduct[0]);
-                return;
-            }
-
-            return;
-        }
-    }, [dataProducts]);
-
-    // console.log('data: ', data);
+    const data = getDetailProduct();
 
     return (
         <section className='flex justify-center'>

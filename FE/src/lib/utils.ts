@@ -1,5 +1,11 @@
+import type { IProduct } from "@/common/types/product";
+import { useAppDispatch } from "@/store/store";
+import { getAllProducts } from "@/store/thunks/productThunk";
 import axios from "axios";
 import { clsx, type ClassValue } from "clsx"
+import { useEffect, useState } from "react";
+import { shallowEqual, useSelector } from "react-redux";
+import { useParams } from "react-router";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -81,4 +87,35 @@ export const createSlug = (name: string) => {
   const uniqueSlug = `${nameExtrac}-${Date.now()}`;
 
   return uniqueSlug;
+}
+
+export const debounce = (func: any, delay: number) => {
+  let timer: any;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+};
+
+export const getDetailProduct = (): IProduct | undefined => {
+  const dispatch = useAppDispatch();
+  const { slug } = useParams();
+  const dataProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
+  const [data, setData] = useState<IProduct>();
+
+  useEffect(() => {
+    if (dataProducts && dataProducts.length > 0) {
+      const filterProduct = dataProducts.filter((item: IProduct) => item.slug === slug);
+      if (filterProduct) {
+        setData(filterProduct[0]);
+        return;
+      }
+
+      return;
+    } else {
+      dispatch(getAllProducts({ filterHidden: 'true' }));
+    }
+  }, [dataProducts, slug]);
+
+  return data;
 }
