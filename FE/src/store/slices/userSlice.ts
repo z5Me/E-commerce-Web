@@ -46,7 +46,7 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(signUp.pending, (state) => {
-                state.status = 'signUp.pending';
+                state.status = 'pending';
             })
             .addCase(signUp.fulfilled, (state) => {
                 state.status = 'signUp.fulfilled';
@@ -57,7 +57,7 @@ const userSlice = createSlice({
             })
 
             .addCase(signIn.pending, (state) => {
-                state.status = 'signIn.pending';
+                state.status = 'pending';
             })
             .addCase(signIn.fulfilled, (state, action) => {
                 state.status = 'signIn.fulfilled';
@@ -79,7 +79,7 @@ const userSlice = createSlice({
             })
 
             .addCase(reSignIn.pending, (state) => {
-                state.status = 'reSignIn.pending';
+                state.status = 'pending';
             })
             .addCase(reSignIn.fulfilled, (state, action) => {
                 state.status = 'reSignIn.fulfilled';
@@ -95,7 +95,7 @@ const userSlice = createSlice({
             })
 
             .addCase(saveUserInformation.pending, (state) => {
-                state.status = 'saveUserInformation.pending';
+                state.status = 'pending';
             })
             .addCase(saveUserInformation.fulfilled, (state, action) => {
                 state.status = 'saveUserInformation.fulfilled';
@@ -110,7 +110,7 @@ const userSlice = createSlice({
             })
 
             .addCase(saveAddress.pending, (state) => {
-                state.status = 'saveAddress.pending';
+                state.status = 'pending';
             })
             .addCase(saveAddress.fulfilled, (state, action) => {
                 state.status = 'saveAddress.fulfilled';

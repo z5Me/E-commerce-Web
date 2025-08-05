@@ -11,15 +11,17 @@ const CartPage = () => {
     //Theo dõi chiều ngang của web
     const screenWidth = useScreenWidth();
     const cartStatus = useSelector((state: any) => state.cart.status, shallowEqual);
+    const orderStatus = useSelector((state: any) => state.order.status, shallowEqual);
+    console.log('orderStatus', orderStatus);
     const { show, hide } = useLoading();
 
     useEffect(() => {
-        if (cartStatus && cartStatus === 'pending') {
+        if ((cartStatus && cartStatus === 'pending') || (orderStatus && orderStatus === 'pending')) {
             show()
             return;
         }
         return hide();
-    }, [cartStatus]);
+    }, [cartStatus, orderStatus]);
 
     return (
         <section className='grid place-items-center'>

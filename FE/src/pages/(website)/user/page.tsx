@@ -4,8 +4,16 @@ import { shallowEqual, useSelector } from 'react-redux';
 //interface
 import AccountSetting from './_components/AccountSetting';
 import ManageSetting from './_components/ManageSetting';
+import { useLoading } from '@/contexts/LoadingScreen';
+import { useAppDispatch } from '@/store/store';
+import { reSignIn } from '@/store/thunks/userThunk';
+import { toast } from 'sonner';
+import { useDialog } from '@/contexts/DialogContext';
+import { useNavigate } from 'react-router';
 
 const UserPage = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     //Use for Account Setting
     const [openEdit, setOpenEdit] = useState<boolean>(false);
     const [openAccountManage, setOpenAccountManage] = useState<boolean>(false);
@@ -16,22 +24,38 @@ const UserPage = () => {
 
     //Loading screen when call API
     const userStatus = useSelector((state: any) => state.user.status, shallowEqual);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { show, hide } = useLoading();
+    const { showDialog } = useDialog();
+
     useEffect(() => {
-        const loading = ['saveUserInformation.pending', 'saveAddress.pending'].includes(userStatus);
-        setIsLoading((prev) => {
-            if (prev !== loading) return loading;
-            return prev;
-        });
+        if (userStatus === 'pending') {
+            show();
+            return;
+        }
+        return hide();
+
     }, [userStatus]);
+
+    useEffect(() => {
+        if (!dataUser || !dataUser._id) {
+            dispatch(reSignIn()).unwrap().then().catch(() => {
+                toast.warning('Phiên đăng nhập đã hết hạn!');
+                showDialog({
+                    title: 'Rời khỏi trang?',
+                    description: 'Bạn cần đăng nhập để tiếp tục chỉnh sửa!',
+                    onConfirm() {
+                        navigate('/auth');
+                    },
+                    onCancel() {
+                        navigate('/');
+                    },
+                })
+            })
+        }
+    }, [dataUser])
 
     return (
         <>
-            {isLoading && (
-                <div className="fixed inset-0 bg-black/30 z-[9999] pointer-events-auto cursor-wait grid place-items-center">
-                    <div className="loaderSpinner" />
-                </div>
-            )}
             <section className='flex justify-center'>
                 <div className='w-full max-w-[1920px] defaultPadding min-h-[200px] flex flex-col'>
                     {/* điều hướng */}

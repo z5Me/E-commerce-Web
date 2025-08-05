@@ -82,8 +82,8 @@ export const saveAddress = async (req, res) => {
     console.log(req.body)
     try {
         const findUser = await User.findOne({ _id: req.body._id }).select('-password');
-        if (!findUser) return res.status(401).json({ error: 'Không tìm thấy user' });
-        if (!findUser.phone) return res.status(401).json({ error: 'Vui lòng xác minh số điện thoại' });
+        if (!findUser) return res.status(404).json({ error: 'Không tìm thấy user' });
+        if (!findUser.phone) return res.status(401).json({ error: 'Vui lòng xác minh số điện thoại trước' });
         const newAddress = {
             receiver: findUser.userNameFile,
             phone: findUser.phone,

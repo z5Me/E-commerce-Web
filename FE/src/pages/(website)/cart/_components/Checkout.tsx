@@ -4,11 +4,14 @@ import { useAppDispatch } from '@/store/store';
 import { getSingleCart } from '@/store/thunks/cartThunk';
 import { reSignIn } from '@/store/thunks/userThunk';
 import { Check, CircleDollarSign, CreditCard, Pencil } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import PriceList from './PriceList';
+import DeliveryAddress from '@/components/DeliveryAddress';
+import { useDialog } from '@/contexts/DialogContext';
 
 const Checkout = () => {
+    const { showDialog } = useDialog();
     const [payment, setPayment] = useState<string>('cod');
     const [terms, setTerms] = useState<boolean>(true);
 
@@ -36,7 +39,6 @@ const Checkout = () => {
         }
     }, [dataUser])
 
-
     return (
         <>
             <div className='xl:w-[60%] w-full'>
@@ -48,16 +50,16 @@ const Checkout = () => {
                     <div className='flex flex-col gap-2 border-b border-b-primary/10 pb-6'>
                         <p className='sm:text-lg text-base after:ml-0.5 after:text-red-500 after:content-["*"]'>Delivery address</p>
                         <div className='border-t-2 border-primary overflow-hidden relative z-10 group'>
-                            <div className='transition-all duration-300 group-hover:blur-xs'>
-                                {/* {dataUser.address.map((item: any, index: number) => (
+                            <div className='transition-all duration-300 group-hover:blur-[2px]'>
+                                {dataUser.address.map((item: any, index: number) => (
                                     item.selected &&
                                     <React.Fragment key={index}>
                                         <DeliveryAddress item={item} />
                                     </React.Fragment>
-                                ))} */}
+                                ))}
                             </div>
                             <div className='absolute transition-all duration-300 top-[200%] group-hover:top-1/2 left-1/2 -translate-1/2 z-30 bg-primary rounded-md cursor-pointer text-white'>
-                                <div className='flex items-center gap-1 py-1 px-2 shadow-xl select-none'>
+                                <div onClick={() => showDialog({})} className='flex items-center gap-1 py-1 px-2 shadow-xl select-none'>
                                     <Pencil size={16} />
                                     <p>Edit</p>
                                 </div>
@@ -70,7 +72,7 @@ const Checkout = () => {
                         <div className='flex flex-col gap-y-6'>
                             {cart && cart.products && cart.products.map((item: any, index: number) => (
                                 <div key={index} className='pb-6 border-b border-b-primary/10' >
-                                    <ProductInCart checkout={true} item={item} />
+                                    <ProductInCart checkout={true} item={item} cart={cart} dataUser={dataUser} />
                                 </div>
                             ))}
                         </div>
@@ -117,7 +119,7 @@ const Checkout = () => {
 
                 </div>
             </div>
-            <PriceList cart={cart} terms={terms} />
+            <PriceList cart={cart} terms={terms} payment={payment} />
         </>
     )
 }

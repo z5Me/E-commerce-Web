@@ -107,9 +107,13 @@ const Header = () => {
         };
         if (openAccount) {
             document.addEventListener('click', handleCloseOpenAccount);
+            document.body.classList.add('overflow-hidden');
         }
 
-        return () => document.removeEventListener('click', handleCloseOpenAccount);
+        return () => {
+            document.removeEventListener('click', handleCloseOpenAccount);
+            document.body.classList.remove('overflow-hidden');
+        }
 
     }, [openAccount])
 

@@ -7,7 +7,8 @@ import "leaflet/dist/leaflet.css";
 import { Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 // Fix lỗi icon marker không hiển thị đúng
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -24,6 +25,7 @@ const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value:
     const [suggestions, setSuggestions] = useState([]);
     const [debouncedQuery, setDebouncedQuery] = useState("");
     const dispatch = useDispatch<AppDispatch>();
+    const errorUser = useSelector((state: any) => state.user.error);
 
     //tìm kiếm sau khi người dùng ngừng gõ 300ms
     useEffect(() => {
@@ -140,7 +142,13 @@ const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value:
             addressName: address,
             lat: position.lat,
             lng: position.lng,
-        }))
+        })).unwrap()
+            .then(() => {
+                toast.success('Lưu địa chỉ thành công');
+            })
+            .catch(() => {
+                toast.error(errorUser);
+            })
     };
 
     return (

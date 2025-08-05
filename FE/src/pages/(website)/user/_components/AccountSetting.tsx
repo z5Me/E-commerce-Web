@@ -5,7 +5,8 @@ import type { AppDispatch } from '@/store/store';
 import { AlignJustify, MapPinPlus, Save, UserRoundPen, X } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import GoogleMap from '../../test/googleMap';
-import DeliveryAddress from '../../../../components/DeliveryAddress';
+import DeliveryAddress from '@/components/DeliveryAddress';
+import { useState } from 'react';
 
 interface AccountSettingProps {
     openAccountManage: boolean;
@@ -33,7 +34,10 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
     const dispatch = useDispatch<AppDispatch>();
 
     //Xử lý form
-    const { register, handleSubmit, errors, selectedGender, onSubmit } = useAccountForm({ dataUser, openEdit, setOpenEdit, setOpenAddAddress, });
+    const { register, handleSubmit, errors, selectedGender, onSubmit, reset } = useAccountForm({ dataUser, openEdit, setOpenEdit, setOpenAddAddress, });
+    const [prevImage, setPreviewImage] = useState<string | null>(null);
+
+    console.log('dataUser', dataUser)
 
     return (
         <div className='w-full flex flex-col gap-4 pb-12'>
@@ -52,11 +56,22 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                 >
                     <div className='flex justify-center'>
                         <div className='group flex flex-col items-center gap-2'>
-                            <img className='rounded-full w-[70px] sm:w-[100px]' src={'https://avatars.githubusercontent.com/u/124599?v=4'} alt="Avatar" />
+                            <img className='rounded-full w-[70px] sm:w-[100px]' src={prevImage !== null ? prevImage : dataUser.avatar} alt="Avatar" />
                             {openEdit &&
                                 <div className='flex *:cursor-pointer'>
                                     <label htmlFor="fileUpload" className='text-sm sm:text-base border border-gray-200 rounded-[6px] px-3 sm:px-4 py-1 bg-gray-200 hover:bg-gray-300'>Choose file</label>
-                                    <input className='hidden' type="file" id="fileUpload" />
+                                    <input
+                                        className='hidden'
+                                        type="file"
+                                        id="fileUpload"
+                                        onChange={(e: any) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                const url = URL.createObjectURL(file);
+                                                setPreviewImage(url);
+                                            }
+                                        }}
+                                    />
                                 </div>
                             }
                         </div>
@@ -129,6 +144,7 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                                 type="text"
                                 className={`bg-gray-50 disabled:bg-gray-200 hover:bg-gray-100 focus:bg-gray-50 border ${errors.phone ? 'border-danger focus:outline-danger' : 'border-gray-300 focus:outline-primary'} rounded-lg text-primary disabled:text-gray-600 px-3 sm:px-4 py-2`}
                                 {...register("phone", {
+                                    required: 'Is required',
                                     pattern: {
                                         value: /^(0|\+84)[0-9]{9}$/,
                                         message: "Invalid phone number"
@@ -210,25 +226,6 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                         {(dataUser.address && dataUser.address.length > 0) &&
                             <>
                                 {dataUser.address.map((item: any, index: number) => (
-                                    // <div
-                                    //     onClick={() => {
-                                    //         if (openEdit) {
-                                    //             dispatch(setSelected({ index }))
-                                    //         }
-                                    //         return
-                                    //     }}
-                                    //     key={index}
-                                    //     className={`flex font-MJSatoshi flex-col gap-1 px-4 py-2 border ${item.selected && 'border-primary'} rounded-lg ${openEdit ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer text-primary' : 'bg-gray-200 text-gray-600'}  focus:bg-gray-50 focus:outline-primary`}
-                                    // >
-                                    //     <p>Receiver: {item.receiver}</p>
-                                    //     <span>Phone: {item.phone}</span>
-                                    //     <p>Address: {item.addressName}</p>
-                                    //     {item.selected &&
-                                    //         <div>
-                                    //             <span className='font-MJSatoshi text-xs px-2 py-1 rounded-[6px] text-white bg-primary'>Default</span>
-                                    //         </div>
-                                    //     }
-                                    // </div>
                                     <div
                                         onClick={() => {
                                             if (openEdit) {
@@ -269,7 +266,7 @@ const AccountSetting = ({ ...props }: AccountSettingProps) => {
                                 </button>
                                 <button
                                     className='flex items-center gap-1 px-3 py-1 border border-danger bg-danger hover:bg-white text-white hover:text-danger rounded-[6px] cursor-pointer'
-                                    onClick={(e) => { e.preventDefault(); setOpenEdit(false) }}
+                                    onClick={(e) => { e.preventDefault(); setOpenEdit(false); setPreviewImage(null); reset() }}
                                 >
                                     <X size={16} />
                                     <p className='text-base'>Cancel</p>

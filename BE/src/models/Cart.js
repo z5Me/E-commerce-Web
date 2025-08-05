@@ -26,6 +26,7 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    address: {},
     total: {
         type: Number,
         default: 0

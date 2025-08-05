@@ -18,14 +18,14 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: any) => {
         debounce((value: number) => {
             if (cart.idUser && item.product._id && item.variant._id) {
                 dispatch(updateQuantity({
-                    idUser: cart.idUser,
+                    idUser: dataUser._id,
                     idProduct: item.product._id,
                     idVariant: item.variant._id,
                     quantity: value
                 }));
             }
         }, 500)
-        , [cart.idUser, item.product._id, item.variant._id, dispatch]);
+        , [dataUser._id, item.product._id, item.variant._id, dispatch]);
 
     return (
         <div className="flex gap-x-4">
@@ -46,7 +46,6 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: any) => {
                             {checkout ?
                                 <p>x{quantity}</p>
                                 :
-                                //Sửa phần này
                                 <div onClick={() => dispatch(removeAProduct({ idUser: dataUser._id, idVariant: item.variant._id }))} className="flex justify-end hover:text-danger cursor-pointer">
                                     <Trash2 size={20} />
                                 </div>
