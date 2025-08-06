@@ -1,93 +1,12 @@
 import success from '@/assets/animations/Success.json';
-import Product_Image from '@/assets/product2.svg';
 import ProductsList from '@/components/ProductsList';
+import { setOrderStatus } from '@/store/slices/orderSlice';
+import { useAppDispatch } from '@/store/store';
 import { useEffect, useRef, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import LazyLottiePlayer from './LazyLottiePlayer';
-
-const cart = {
-    id: 'cartid1',
-    products: [
-        {
-            id: 'd1',
-            product: {
-                id: 'e1',
-                name: 'Gradient Graphic T-shirt'
-            },
-            variant: {
-                id: 'c1',
-                price: 200,
-                oldPrice: 250,
-                discountPrice: 20,
-                image: Product_Image,
-                values: [
-                    {
-                        id: 'b1',
-                        name: 'Red',
-                        slug: 'red',
-                        type: 'Color',
-                        value: '#FF0000'
-                    },
-                    {
-                        id: 'b3',
-                        name: 'Medium',
-                        slug: 'medium',
-                        type: 'Size',
-                        value: 'medium'
-                    },
-                    {
-                        id: 'b5',
-                        name: '5kg',
-                        slug: '5kg',
-                        type: 'Weight',
-                        value: '5kg'
-                    }
-                ]
-            },
-            quantity: 1
-        },
-        {
-            id: 'd2',
-            product: {
-                id: 'e2',
-                name: 'Polo with Tipping Details'
-            },
-            variant: {
-                id: 'c4',
-                price: 350,
-                oldPrice: 400,
-                discountPrice: 5,
-                image: Product_Image,
-                values: [
-                    {
-                        id: 'b2',
-                        name: 'Blue',
-                        slug: 'blue',
-                        type: 'Color',
-                        value: '#0000FF'
-                    },
-                    {
-                        id: 'b4',
-                        name: 'Large',
-                        slug: 'large',
-                        type: 'Size',
-                        value: 'large'
-                    },
-                    {
-                        id: 'b6',
-                        name: '10kg',
-                        slug: '10kg',
-                        type: 'Weight',
-                        value: '10kg'
-                    },
-                ]
-            },
-            quantity: 3
-        }
-    ],
-    totalProducts: 400,
-    discount: 10,
-    total: 390
-}
+import { useLoading } from '@/contexts/LoadingScreen';
 
 const OrderComplete = () => {
     const animationRef = useRef<any>(null);
@@ -97,10 +16,17 @@ const OrderComplete = () => {
     const productsListRef = useRef<HTMLDivElement>(null);
     const [showPlayer, setShowPlayer] = useState<boolean>(false);
 
+    const dispatch = useAppDispatch();
+    const orderStatus = useSelector((state: any) => state.order.status, shallowEqual);
+    const { show, hide } = useLoading();
+
     useEffect(() => {
         window.scrollTo({ top: 240, behavior: 'smooth' });
+        document.body.classList.add('overflow-hidden');
+        toast.info('Sắp xong rồi! Chúng tôi đang hoàn tất đơn hàng');
         setTimeout(() => {
             setShowPlayer(true);
+            show()
         }, 500)
     }, [])
 
@@ -114,34 +40,45 @@ const OrderComplete = () => {
                             autoplay
                             keepLastFrame={true}
                             onEvent={(e) => {
+                                if (e === "load") {
+                                    hide();
+                                }
                                 if (e === 'complete') {
                                     // console.log('Hoàn thành hiệu ứng');
-                                    animationRef.current?.classList.remove('top-1/2', '-translate-y-1/2');
-                                    animationRef.current?.classList.add('top-0');
-
-                                    setTimeout(() => {
-                                        thanksRef.current?.classList.add('pt-0', 'opacity-100');
-                                        thanksRef.current?.classList.remove('pt-12', 'opacity-0');
-                                    }, 400)
-
-                                    setTimeout(() => {
-                                        buymoreRef.current?.classList.remove('mt-16', 'opacity-0');
-                                        buymoreRef.current?.classList.add('mt-8', 'opacity-100');
-                                    }, 600)
-
-                                    setTimeout(() => {
-                                        ordertrackRef.current?.classList.remove('mt-16', 'opacity-0');
-                                        ordertrackRef.current?.classList.add('mt-8', 'opacity-100');
-                                    }, 800)
-
-                                    setTimeout(() => {
-                                        productsListRef.current?.classList.remove('hidden');
-                                        productsListRef.current?.classList.add('block');
+                                    toast.success('Đặt hàng thành công!')
+                                    if (orderStatus === 'createOrder.fulfilled') {
                                         setTimeout(() => {
-                                            productsListRef.current?.classList.remove('mt-60', 'opacity-0');
-                                            productsListRef.current?.classList.add('mt-20', 'opacity-100');
-                                        }, 10)
-                                    }, 1000)
+                                            dispatch(setOrderStatus());
+                                        }, 500);
+
+                                        animationRef.current?.classList.remove('top-1/2', '-translate-y-1/2');
+                                        animationRef.current?.classList.add('top-0');
+
+                                        setTimeout(() => {
+                                            thanksRef.current?.classList.add('pt-0', 'opacity-100');
+                                            thanksRef.current?.classList.remove('pt-12', 'opacity-0');
+                                        }, 400)
+
+                                        setTimeout(() => {
+                                            buymoreRef.current?.classList.remove('mt-16', 'opacity-0');
+                                            buymoreRef.current?.classList.add('mt-8', 'opacity-100');
+                                        }, 600)
+
+                                        setTimeout(() => {
+                                            ordertrackRef.current?.classList.remove('mt-16', 'opacity-0');
+                                            ordertrackRef.current?.classList.add('mt-8', 'opacity-100');
+                                        }, 800)
+
+                                        setTimeout(() => {
+                                            productsListRef.current?.classList.remove('hidden');
+                                            productsListRef.current?.classList.add('block');
+                                            setTimeout(() => {
+                                                productsListRef.current?.classList.remove('mt-60', 'opacity-0');
+                                                productsListRef.current?.classList.add('mt-20', 'opacity-100');
+                                                document.body.classList.remove('overflow-hidden')
+                                            }, 10)
+                                        }, 1000)
+                                    }
                                 }
                             }}
 

@@ -25,6 +25,9 @@ import AdminAttributeValueEdit from "@/pages/(dashboard)/attributeValue/_compone
 import AdminAttributeEdit from "@/pages/(dashboard)/attributes/_components/AttributeEdit"
 import AdminProductsAdd from "@/pages/(dashboard)/products/_components/ProductsAdd"
 import ProductsEdit from "@/pages/(dashboard)/products/_components/ProductsEdit"
+import AdminOrderPage from "@/pages/(dashboard)/orders/page"
+import OrderList from "@/pages/(dashboard)/orders/_components/OrderList"
+import OrderUpdateStatus from "@/pages/(dashboard)/orders/_components/OrderUpdateStatus"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -66,6 +69,10 @@ const Router = () => {
                         </Route>
                     </Route>
                     <Route path="edit" element={<ProductsEdit />} />
+                </Route>
+                <Route path="order" element={<AdminOrderPage />}>
+                    <Route index element={<OrderList />} />
+                    <Route path="updatestatus" element={<OrderUpdateStatus />} />
                 </Route>
             </Route>
         </Routes>

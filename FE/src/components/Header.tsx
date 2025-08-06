@@ -87,8 +87,11 @@ const Header = () => {
     const userStatus = useSelector((state: any) => state.user.status, shallowEqual);
 
     useEffect(() => {
-        dispatch(reSignIn());
-    }, [])
+        if (!dataUser._id) {
+            dispatch(reSignIn());
+            return;
+        }
+    }, [dataUser])
 
     useEffect(() => {
         if (userStatus === 'reSignIn.fulfilled') {

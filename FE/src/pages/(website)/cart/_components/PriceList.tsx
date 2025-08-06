@@ -1,24 +1,28 @@
 import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
 import { useDialog } from "@/contexts/DialogContext";
+import { setChangePage } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/store";
 import { createOrder } from "@/store/thunks/orderThunk";
-import { useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payment?: string }) => {
     const dispatch = useAppDispatch();
     const { url } = useChangeStatusCart();
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
-    const [linkTo, setLinkTo] = useState<boolean>(true);
     const orderError = useSelector((state: any) => state.order.error);
     const { showDialog } = useDialog();
     const naviagte = useNavigate();
 
     const handleCreateOrder = () => {
+        if (url === '/cart/checkout') {
+            dispatch(setChangePage(url));
+            naviagte(url);
+            return;
+        }
+
         if (url === '/cart/order') {
-            setLinkTo(false);
             if (!terms) {
                 toast.warning('Vui lòng tích vào ô điều khoản để tiếp tục');
                 return
@@ -31,7 +35,17 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
                 address: filterAddress[0],
                 products: cart.products,
                 payment: payment as "cod" | "momo",
-                total: cart.total
+                total: cart.total,
+                updateStatus: [{
+                    title: 'Chờ xác nhận',
+                    desc: 'Chờ xác nhận bên phía người bán',
+                    date: new Date(),
+                    creator: {
+                        userId: dataUser._id,
+                        name: dataUser.userName,
+                        email: dataUser.email
+                    }
+                }]
             }
 
             if (data.products.length === 0) {
@@ -47,7 +61,6 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
 
             dispatch(createOrder(data)).unwrap()
                 .then(() => {
-                    toast.success('Đặt hàng thành công!');
                     naviagte('/cart/order');
                 })
                 .catch(() => {
@@ -86,15 +99,15 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
                     <p className="text-primary font-medium">Total</p>
                     <p className="font-bold">${cart?.total}</p>
                 </div>
-                <Link to={(url === '/cart/order') ? terms : (linkTo !== false) ? url : url} onClick={() => handleCreateOrder()}>
+                <div onClick={() => handleCreateOrder()}>
                     <div className="w-full px-10 flex justify-center items-center bg-[#C8C9CB] hover:bg-primary rounded-full select-none cursor-pointer">
                         <div className="text-white sm:h-[56px] h-[48px] sm:text-lg text-base font-medium flex justify-center items-center gap-x-4">
-                            <p>Checkout</p>
+                            <p>{url === '/cart/checkout' ? 'Checkout' : url === '/cart/order' && 'Order'}</p>
                             <div className="bg-white w-[2px] h-3"></div>
                             <p>$467.00</p>
                         </div>
                     </div>
-                </Link>
+                </div>
             </div>
         </div>
     )

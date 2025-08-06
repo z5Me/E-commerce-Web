@@ -119,3 +119,16 @@ export const getDetailProduct = (): IProduct | undefined => {
 
   return data;
 }
+
+//Format Viet Nam Time
+export function formatVietnamTime(dateInput: Date) {
+  const date = new Date(dateInput);
+  return date.toLocaleString('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh', // Giờ VN
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}

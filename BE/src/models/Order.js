@@ -26,7 +26,6 @@ const addressSchema = new mongoose.Schema({
 const OrderShcema = new mongoose.Schema({
     orderCode: {
         type: String,
-        default: () => nanoid(10)
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -42,7 +41,7 @@ const OrderShcema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'processing', 'complete', 'cancel'],
+        enum: ['pending', 'processing', 'shipping', 'complete', 'cancel'],
         default: 'pending'
     },
     total: {

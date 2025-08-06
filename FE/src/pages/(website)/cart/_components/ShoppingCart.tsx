@@ -7,10 +7,9 @@ import { reSignIn } from '@/store/thunks/userThunk';
 import { Tag } from 'lucide-react';
 import { useEffect } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import PriceList from './PriceList';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { useChangeStatusCart } from '@/common/hooks/useChangeStatusCart';
+import { toast } from 'sonner';
+import PriceList from './PriceList';
 
 const ShoppingCart = () => {
     //Theo dõi chiều ngang của web

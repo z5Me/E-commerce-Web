@@ -8,7 +8,7 @@ export type IOrder = {
     address: IAddress,
     products: IProduct[],
     payment: 'cod' | 'momo',
-    status?: 'pending' | 'processing' | 'complete' | 'cancel',
+    status?: 'pending' | 'processing' | 'shipping' | 'complete' | 'cancel',
     total: number,
     updateStatus?: any[]
 }

@@ -15,11 +15,15 @@ const cartSlice = createSlice({
             total: 0,
         },
         status: 'idle',
-        error: ''
+        error: '',
+        changePage: '',
     },
     reducers: {
         setStatusCart(state) {
             state.status = 'idle';
+        },
+        setChangePage(state, action) {
+            state.changePage = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -119,5 +123,5 @@ const cartSlice = createSlice({
     },
 })
 
-export const { setStatusCart } = cartSlice.actions;
+export const { setStatusCart, setChangePage } = cartSlice.actions;
 export default cartSlice.reducer;

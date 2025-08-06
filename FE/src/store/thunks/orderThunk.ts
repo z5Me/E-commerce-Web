@@ -14,3 +14,14 @@ export const createOrder = createAsyncThunk('order/createOrder', async (data: IO
         return rejectWithValue(error.response.data.error);
     }
 })
+
+export const getAllOrder = createAsyncThunk('order/getAllOrder', async (_, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(`${API}/order/getAllOrder`);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở getAllOrder', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})

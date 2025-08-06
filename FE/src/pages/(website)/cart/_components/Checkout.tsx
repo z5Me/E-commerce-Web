@@ -1,43 +1,40 @@
 import useScreenWidth from '@/common/hooks/useScreenWidth';
+import DeliveryAddress from '@/components/DeliveryAddress';
 import ProductInCart from '@/components/ProductInCart';
+import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
 import { getSingleCart } from '@/store/thunks/cartThunk';
-import { reSignIn } from '@/store/thunks/userThunk';
 import { Check, CircleDollarSign, CreditCard, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import PriceList from './PriceList';
-import DeliveryAddress from '@/components/DeliveryAddress';
-import { useDialog } from '@/contexts/DialogContext';
+import { useNavigate } from 'react-router';
 
 const Checkout = () => {
     const { showDialog } = useDialog();
     const [payment, setPayment] = useState<string>('cod');
     const [terms, setTerms] = useState<boolean>(true);
+    const navigate = useNavigate();
 
     const screenWidth = useScreenWidth();
     const dispatch = useAppDispatch();
     const cart = useSelector((state: any) => state.cart.cartData, shallowEqual);
-    const cartStatus = useSelector((state: any) => state.cart.status, shallowEqual);
-
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
-    // console.log('cart: ', cart);
-
-    useEffect(() => {
-        if (cartStatus === 'idle') {
-            if (!dataUser._id) {
-                // console.log('Chạy vào idUser rong')
-                dispatch(reSignIn())
-            }
-            dispatch(getSingleCart({ idUser: dataUser._id }));
-        }
-    }, [cartStatus]);
 
     useEffect(() => {
         if (dataUser && dataUser._id) {
             dispatch(getSingleCart({ idUser: dataUser._id }));
         }
-    }, [dataUser])
+    }, [dataUser]);
+
+    const changePage = useSelector((state: any) => state.cart.changePage, shallowEqual);
+    useEffect(() => {
+        if (changePage !== '/cart/checkout') {
+            navigate('/cart');
+            return;
+        }
+        return;
+    }, []);
 
     return (
         <>

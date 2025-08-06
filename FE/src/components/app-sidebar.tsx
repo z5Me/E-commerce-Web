@@ -11,7 +11,8 @@ import {
     Package,
     PieChart,
     Send,
-    Settings2
+    Settings2,
+    SquareChartGantt
 } from "lucide-react"
 import * as React from "react"
 
@@ -62,23 +63,23 @@ const data = {
             ],
         },
         {
-            title: "Varaint",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
+            title: "Order",
+            url: "order",
+            icon: SquareChartGantt,
+            // items: [
+            //     {
+            //         title: "Genesis",
+            //         url: "#",
+            //     },
+            //     {
+            //         title: "Explorer",
+            //         url: "#",
+            //     },
+            //     {
+            //         title: "Quantum",
+            //         url: "#",
+            //     },
+            // ],
         },
         {
             title: "Documentation",
