@@ -1,6 +1,7 @@
 "use client"
 
 import type { IUpdateStatus } from "@/common/types/updateStatus";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatVietnamTime } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -30,6 +31,27 @@ export const columnsStatus: ColumnDef<IUpdateStatus>[] = [
         enableHiding: false,
     },
     {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+            const status = row.original.status;
+            //Chờ xác nhận | Chờ đóng gói | Chờ giao hàng | Đang giao hàng | Thành công | Hủy đơn
+            //Pending      |  Processing  |            Shipping            |  Complete  | Cancel
+
+            return (
+                <Badge
+                    className={`
+                        ${status === 'shipping' && 'bg-blue-500 text-white dark:bg-blue-600'} 
+                        ${status === 'complete' && 'bg-green-500 text-white dark:bg-green-600'}
+                    `}
+                    variant={status === 'pending' ? 'default' : status === 'processing' ? 'secondary' : status === 'cancel' ? 'destructive' : undefined}
+                >
+                    <p className="text-sm">{status}</p>
+                </Badge >
+            )
+        }
+    },
+    {
         accessorKey: "title",
         header: "Title"
     },
@@ -52,6 +74,13 @@ export const columnsStatus: ColumnDef<IUpdateStatus>[] = [
         header: "Creater",
         cell: ({ row }) => (
             <div>{row.original.creator.name}</div>
+        )
+    },
+    {
+        accessorKey: "role",
+        header: "Role",
+        cell: ({ row }) => (
+            <div>{row.original.creator.role}</div>
         )
     }
 ]

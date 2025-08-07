@@ -1,4 +1,5 @@
 import type { IOrder } from "@/common/types/order";
+import type { IUpdateStatus } from "@/common/types/updateStatus";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -22,6 +23,17 @@ export const getAllOrder = createAsyncThunk('order/getAllOrder', async (_, { rej
         return response.data;
     } catch (error: any) {
         console.log('Lỗi ở getAllOrder', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
+export const updateStatus = createAsyncThunk('order/updateStatus', async (data: IUpdateStatus, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/order/updateStatus`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở updateStatus ', error);
         return rejectWithValue(error.response.data.error);
     }
 })

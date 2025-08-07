@@ -21,14 +21,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { useAppDispatch } from "@/store/store";
+import { formatVietnamTime } from "@/lib/utils";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 
-//Sửa đoạn này 
 export const columns: ColumnDef<IOrder>[] = [
     {
         id: "select",
@@ -88,29 +87,118 @@ export const columns: ColumnDef<IOrder>[] = [
         accessorKey: "total",
         header: "Total",
         cell: ({ row }) => (
-            <div>{row.original.total}$</div>
+            <div>${row.original.total}</div>
         )
     },
     {
         accessorKey: "status",
-        header: "Status",
+        header: () => {
+            return (
+                // <Button
+                //     variant="ghost"
+                //     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                // >
+                <div>Status</div>
+                //     <ArrowUpDown className="ml-2 h-4 w-4" />
+                // </Button>
+            )
+        },
         cell: ({ row }) => {
             const status = row.original.status;
-            //Chờ xác nhận | Chờ đóng gói | Chờ giao hàng | Đang giao hàng | Thành công | Hủy đơn
-            //Pending      |  Processing  |            Shipping            |  Complete  | Cancel
+
+            return (
+                <Badge
+                    className={`
+                        ${status === 'shipping' && 'bg-blue-500 text-white dark:bg-blue-600'}
+                        ${status === 'complete' && 'bg-green-500 text-white dark:bg-green-600'}
+                    `}
+                    variant={
+                        status === 'pending'
+                            ? 'default'
+                            : status === 'processing'
+                                ? 'secondary'
+                                : status === 'cancel'
+                                    ? 'destructive'
+                                    : undefined
+                    }
+                >
+                    <p className="text-sm capitalize">{status}</p>
+                </Badge>
+            );
+        },
+        // sortingFn: (rowA, rowB, columnId) => {
+        //     const order = ['pending', 'processing', 'shipping', 'complete', 'cancel'];
+        //     const a = rowA.getValue(columnId);
+        //     const b = rowB.getValue(columnId);
+        //     return order.indexOf(a) - order.indexOf(b);
+        // },
+    },
+    {
+        accessorKey: "nameStatus",
+        header: "Name status",
+        cell: ({ row }) => {
             const updateStatus = row.original.updateStatus;
             const latestUpdate = updateStatus?.reduce((acc, curr) => {
                 return new Date(curr.date) > new Date(acc.date) ? curr : acc;
             });
 
-            // console.log('latestUpdate', latestUpdate)
             return (
-                <Badge
-                    className={`${status === 'shipping' && 'bg-blue-500 text-white dark:bg-blue-600'}`}
-                    variant={status === 'pending' ? 'default' : status === 'processing' ? 'secondary' : status === 'cancel' ? 'destructive' : undefined}
-                >
-                    <p className="text-sm">{latestUpdate.title}</p>
-                </Badge >
+                <div>{latestUpdate.title}</div>
+            )
+        }
+    },
+    {
+        accessorKey: "latestUpdate",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() =>
+                    column.toggleSorting(column.getIsSorted() === "asc")
+                }
+            >
+                Latest Update
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: ({ row }) => {
+            //Chờ xác nhận | Chờ đóng gói | Chờ giao hàng | Đang giao hàng | Thành công | Hủy đơn
+            //Pending      |  Processing  |            Shipping            |  Complete  | Cancel
+            const updateStatus = row.original.updateStatus;
+
+            const latestUpdate = updateStatus?.reduce((acc, curr) => {
+                return new Date(curr.date) > new Date(acc.date) ? curr : acc;
+            });
+
+            return (
+                <div>{latestUpdate ? formatVietnamTime(latestUpdate.date) : "N/A"}</div>
+            );
+        },
+        sortingFn: (rowA, rowB) => {
+            const getLatestDate = (updateStatus?: { date: string }[]) => {
+                if (!updateStatus?.length) return new Date(0);
+                return updateStatus.reduce((latest, curr) =>
+                    new Date(curr.date) > new Date(latest.date) ? curr : latest
+                ).date;
+            };
+
+            const dateA = new Date(getLatestDate(rowA.original.updateStatus));
+            const dateB = new Date(getLatestDate(rowB.original.updateStatus));
+
+            return dateA.getTime() - dateB.getTime(); // ascending
+        },
+        enableSorting: true,
+    },
+    {
+        accessorKey: "updateBy",
+        header: "Update By",
+        cell: ({ row }) => {
+            const updateStatus = row.original.updateStatus;
+            const latestUpdate = updateStatus?.reduce((acc, curr) => {
+                return new Date(curr.date) > new Date(acc.date) ? curr : acc;
+            });
+
+            return (
+                <div>{latestUpdate.creator.name}</div>
             )
         }
     },
@@ -120,7 +208,7 @@ export const columns: ColumnDef<IOrder>[] = [
         cell: ({ row }) => {
             const [dialogOpen, setDialogOpen] = useState(false);
             const order = row.original;
-            const dispatch = useAppDispatch();
+            // const dispatch = useAppDispatch();
             return (
                 <>
                     <DropdownMenu>

@@ -40,10 +40,12 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
                     title: 'Chờ xác nhận',
                     desc: 'Chờ xác nhận bên phía người bán',
                     date: new Date(),
+                    status: 'pending',
                     creator: {
                         userId: dataUser._id,
                         name: dataUser.userName,
-                        email: dataUser.email
+                        email: dataUser.email,
+                        role: dataUser.role
                     }
                 }]
             }
@@ -61,6 +63,7 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
 
             dispatch(createOrder(data)).unwrap()
                 .then(() => {
+                    dispatch(setChangePage(url))
                     naviagte('/cart/order');
                 })
                 .catch(() => {

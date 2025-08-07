@@ -4,11 +4,12 @@ import ProductInCart from '@/components/ProductInCart';
 import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
 import { getSingleCart } from '@/store/thunks/cartThunk';
-import { Check, CircleDollarSign, CreditCard, Pencil } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { Check, CircleDollarSign, CreditCard, Pencil, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import PriceList from './PriceList';
 import { useNavigate } from 'react-router';
+import PriceList from './PriceList';
+import GoogleMap from '../../test/googleMap';
 
 const Checkout = () => {
     const { showDialog } = useDialog();
@@ -36,6 +37,8 @@ const Checkout = () => {
         return;
     }, []);
 
+    const [openAddAddress, setOpenAddAddress] = useState<boolean>(false);
+
     return (
         <>
             <div className='xl:w-[60%] w-full'>
@@ -46,20 +49,37 @@ const Checkout = () => {
                 <div className='grid gap-4 my-4 min-h-[200px]'>
                     <div className='flex flex-col gap-2 border-b border-b-primary/10 pb-6'>
                         <p className='sm:text-lg text-base after:ml-0.5 after:text-red-500 after:content-["*"]'>Delivery address</p>
-                        <div className='border-t-2 border-primary overflow-hidden relative z-10 group'>
-                            <div className='transition-all duration-300 group-hover:blur-[2px]'>
-                                {dataUser.address.map((item: any, index: number) => (
-                                    item.selected &&
-                                    <React.Fragment key={index}>
-                                        <DeliveryAddress item={item} />
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                            <div className='absolute transition-all duration-300 top-[200%] group-hover:top-1/2 left-1/2 -translate-1/2 z-30 bg-primary rounded-md cursor-pointer text-white'>
-                                <div onClick={() => showDialog({})} className='flex items-center gap-1 py-1 px-2 shadow-xl select-none'>
-                                    <Pencil size={16} />
-                                    <p>Edit</p>
-                                </div>
+                        <div className='overflow-hidden relative z-10 '>
+                            <div className='transition-all duration-300'>
+                                {dataUser.address.length > 0
+                                    ?
+                                    dataUser.address.map((item: any, index: number) => (
+                                        item.selected &&
+                                        <div className='group-hover:blur-[2px] group border-t-2 border-primary' key={index}>
+                                            <DeliveryAddress item={item} />
+                                            <div className='absolute transition-all duration-300 top-[200%] group-hover:top-1/2 left-1/2 -translate-1/2 z-30 bg-primary rounded-md cursor-pointer text-white'>
+                                                <div onClick={() => showDialog({})} className='flex items-center gap-1 py-1 px-2 shadow-xl select-none'>
+                                                    <Pencil size={16} />
+                                                    <p>Edit</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                    :
+                                    <>
+                                        <div
+                                            onClick={() => setOpenAddAddress(!openAddAddress)}
+                                            className='w-full flex justify-center p-2 mb-4 border rounded-sm bg-gray-100 hover:bg-gray-300 cursor-pointer select-none'
+                                        >
+                                            <div className='flex items-center gap-2'>
+                                                <Plus size={16} />
+                                                <p>Thêm địa chỉ</p>
+                                            </div>
+                                        </div>
+                                        {openAddAddress && <GoogleMap setOpenAddAddress={setOpenAddAddress} dataUser={dataUser} />}
+
+                                    </>
+                                }
                             </div>
                         </div>
                     </div>

@@ -1,19 +1,22 @@
 import { useGetParams } from "@/common/hooks/useGetParams";
 import { DataTable } from "@/components/data-table";
 import { useAppDispatch } from "@/store/store";
-import { getAllOrder } from "@/store/thunks/orderThunk";
-import { useEffect, useState } from "react";
+import { getAllOrder, updateStatus } from "@/store/thunks/orderThunk";
+import { useEffect, useRef, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux"
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { columnsStatus } from "./columnsStatus";
-import { z } from "zod"
+import { email, z } from "zod"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { IOrder } from "@/common/types/order";
+import { useDialog } from "@/contexts/DialogContext";
+import { reSignIn } from "@/store/thunks/userThunk";
 
 const formSchema = z.object({
     title: z.string()
@@ -36,79 +39,102 @@ const formSchema = z.object({
 
 const OrderUpdateStatus = () => {
     const dispatch = useAppDispatch();
+    //Kiểm tra phiên đăng nhập
+    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
+    const { showDialog } = useDialog();
+    useEffect(() => {
+        if (dataUser && dataUser._id) {
+            // dispatch(getSingleCart({ idUser: dataUser._id }));
+        } else {
+            dispatch(reSignIn()).unwrap()
+                .catch(() => {
+                    toast.warning('Phiên đăng nhập đã hết hạn');
+                    showDialog({
+                        title: 'Rời khỏi trang?',
+                        description: 'Một vài tính năng cần bạn đăng nhập để tiếp tục sử dụng',
+                        onConfirm: () => navigate('/auth'),
+                        onCancel: () => navigate(-1)
+                    });
+                });
+        }
+    }, [dataUser]);
+
     const orderData = useSelector((state: any) => state.order.orderData, shallowEqual);
     const { orderCode } = useGetParams(['orderCode']);
-    const [data, setData] = useState<any>([]);
+    const [data, setData] = useState<IOrder | null>(null);
     const navigate = useNavigate();
-    console.log('orderData', orderData);
-    useEffect(() => {
-        if (data.length === 0) {
-            if (orderData.length < 1) {
-                dispatch(getAllOrder()).unwrap()
-                    .then((e) => {
-                        const filterOrder = e.filter((item: any) => item.orderCode === orderCode);
-                        if (filterOrder.length === 0) {
-                            toast.warning('Không tìm thấy dữ liệu');
-                            navigate(-1);
-                            return;
-                        } else {
-                            setData(filterOrder[0]);
-                            form.reset({
-                                title: '',
-                                desc: '',
-                                status: filterOrder[0].status
-                            });
-                            return;
-                        }
-                    })
-                    .catch((e) => {
-                        toast.error('Lỗi mạng, vui lòng thử lại sau');
-                        console.log('error: ', e);
-                        return;
-                    });
-            }
-            const filterOrder = orderData.filter((item: any) => item.orderCode === orderCode);
-            if (filterOrder.length === 0) {
-                toast.warning('Không tìm thấy dữ liệu');
-                navigate(-1);
-                return;
-            } else {
-                setData(filterOrder[0]);
-                form.reset({
-                    title: '',
-                    desc: '',
-                    status: filterOrder[0].status
-                });
-                return;
-            }
-
-        }
-    }, [data, orderCode]);
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
-            desc: "",
-            status: ""
-        },
-    })
+            status: '',
+            title: '',
+            desc: ''
+        }
+    });
+
+    useEffect(() => {
+        if (orderData && orderData.length > 0) {
+            const filterData = orderData.filter((item: IOrder) => item.orderCode === orderCode);
+            if (filterData.length === 1) {
+                setData(filterData[0]);
+            }
+        } else {
+            dispatch(getAllOrder())
+        }
+    }, [orderCode, orderData]);
+
+    const statusValue = form.watch('status');
+    useEffect(() => {
+        if (data && data.status && (statusValue === '' || statusValue === undefined)) {
+            form.setValue('status', data.status);
+        }
+
+        if (statusValue === 'processing') {
+            form.setValue('title', 'Đang gói hàng');
+        } else {
+            form.setValue('title', '');
+        }
+
+        if (statusValue === 'complete') {
+            form.setValue('title', 'Giao hàng thành công');
+        }
+
+    }, [data, form, statusValue]);
 
     function onSubmit(data: z.infer<typeof formSchema>) {
-        toast("You submitted the following values", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+        if (!orderCode) {
+            toast.error("Order code is missing.");
+            return;
+        }
+        const newData = {
+            ...data,
+            date: new Date(),
+            orderCode: orderCode,
+            creator: {
+                userId: dataUser._id,
+                name: dataUser.userName,
+                email: dataUser.email,
+                role: dataUser.role
+            }
+        }
+        dispatch(updateStatus(newData)).unwrap()
+            .then(() => {
+                toast.success('Success');
+                navigate(-1);
+            })
+            .catch((e) => {
+                console.log('error: ', e);
+                toast.error('Error');
+            })
     }
+
+    if (!data) return null; // Hoặc loading state
 
     return (
         <div className="grid gap-4 md:gap-6">
             <div className="grid w-full gap-y-8">
                 <h1 className="sm:text-2xl text-lg font-bold">Update Status</h1>
-                <Form {...form}>
+                <Form {...form} key={data.orderCode}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
                             control={form.control}
@@ -116,28 +142,28 @@ const OrderUpdateStatus = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Status</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                                    <Select onValueChange={field.onChange} value={field.value} >
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select a verified status to display" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {/* Sửa phần này */}
+
                                             <SelectItem
-                                                disabled={data?.status !== 'pending'}
+                                                disabled={true}
                                                 value="pending"
                                             >
                                                 Pending
                                             </SelectItem>
                                             <SelectItem
-                                                disabled={(data?.status !== 'shipping' && data?.status !== 'complete')}
+                                                disabled={data?.status !== 'pending'}
                                                 value="processing"
                                             >
                                                 Processing
                                             </SelectItem>
                                             <SelectItem
-                                                disabled={(data?.status !== 'shipping' && data?.status !== 'complete')}
+                                                disabled={data?.status !== 'processing'}
                                                 value="shipping"
                                             >
                                                 Shipping
@@ -161,7 +187,7 @@ const OrderUpdateStatus = () => {
                                 <FormItem>
                                     <FormLabel>Title</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="title..." {...field} />
+                                        <Input readOnly={form.watch("status") === "processing"} placeholder="title..." {...field} />
                                     </FormControl>
                                     <FormDescription>
                                         The title of this status.
@@ -190,7 +216,7 @@ const OrderUpdateStatus = () => {
                     </form>
                 </Form>
                 <div className="w-full overflow-x-auto pb-10">
-                    <DataTable data={data} columns={columnsStatus} />
+                    <DataTable data={data?.updateStatus || []} columns={columnsStatus} />
                 </div>
             </div>
         </div>

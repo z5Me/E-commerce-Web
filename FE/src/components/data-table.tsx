@@ -28,15 +28,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableViewOptions } from "./data-table-view-options"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     filterColumn?: keyof TData
-    filterPlaceholder?: string
+    filterPlaceholder?: string,
+    statusOptions?: string[]
 }
 
-export function DataTable<TData, TValue>({ columns, data, filterColumn, filterPlaceholder }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, filterColumn, filterPlaceholder, statusOptions }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -74,7 +76,30 @@ export function DataTable<TData, TValue>({ columns, data, filterColumn, filterPl
                         className="max-w-sm"
                     />
                 )}
-                <DataTableViewOptions table={table} />
+                <div className="ml-auto flex items-center space-x-2">
+                    {statusOptions && statusOptions.length > 0 &&
+                        <Select
+                            value={(table.getColumn("status")?.getFilterValue() as string) ?? "all"}
+                            onValueChange={(value) => {
+                                table.getColumn("status")?.setFilterValue(value === "all" ? undefined : value);
+                            }}
+                        >
+                            <SelectTrigger className="w-[160px] h-8">
+                                <SelectValue placeholder="Filter status..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Status</SelectItem>
+                                {statusOptions.map((status) => (
+                                    <SelectItem key={status} value={status}>
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    }
+
+                    <DataTableViewOptions table={table} />
+                </div>
             </div>
             <div className="rounded-md border">
                 <Table>

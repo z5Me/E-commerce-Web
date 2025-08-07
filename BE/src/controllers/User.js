@@ -50,6 +50,7 @@ export const SignIn = async (req, res) => {
 
 export const reSignIn = async (req, res) => {
     // console.log('req.user: ', req.user);
+    if (req.user === null) return res.status(404).json({ error: 'Account not found' })
     return res.status(200).json(req.user);
 }
 

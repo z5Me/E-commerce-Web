@@ -7,6 +7,7 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import LazyLottiePlayer from './LazyLottiePlayer';
 import { useLoading } from '@/contexts/LoadingScreen';
+import { useNavigate } from 'react-router';
 
 const OrderComplete = () => {
     const animationRef = useRef<any>(null);
@@ -15,6 +16,7 @@ const OrderComplete = () => {
     const ordertrackRef = useRef<HTMLDivElement>(null);
     const productsListRef = useRef<HTMLDivElement>(null);
     const [showPlayer, setShowPlayer] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
     const orderStatus = useSelector((state: any) => state.order.status, shallowEqual);
@@ -27,8 +29,22 @@ const OrderComplete = () => {
         setTimeout(() => {
             setShowPlayer(true);
             show()
-        }, 500)
-    }, [])
+        }, 1)
+    }, []);
+
+    // kiểm tra change để điều hướng về cart nếu không thỏa mãn url
+    const changePage = useSelector((state: any) => state.cart.changePage, shallowEqual);
+    useEffect(() => {
+        console.log(changePage)
+        if (changePage !== '/cart/order') {
+            setTimeout(() => {
+                navigate('/cart');
+                hide();
+            }, 2);
+            return;
+        }
+        return;
+    }, []);
 
     return (
         <div className='flex flex-col min-h-[1000px] w-full items-center relative'>

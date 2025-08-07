@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/store/store";
 import { getAllOrder } from "@/store/thunks/orderThunk";
 
+const statusOptions = ['pending', 'processing', 'shipping', 'complete', 'cancel'];
+
 const OrderList = () => {
     const dispatch = useAppDispatch();
     const data = useSelector((state: any) => state.order.orderData, shallowEqual);
@@ -19,7 +21,7 @@ const OrderList = () => {
             <div className="grid w-full">
                 <h1 className="sm:text-2xl text-lg font-bold">Order list</h1>
                 <div className="w-full overflow-x-auto pb-10">
-                    <DataTable columns={columns} data={data} filterColumn="orderCode" filterPlaceholder="Filter by Order Code..." />
+                    <DataTable columns={columns} data={data} filterColumn="orderCode" filterPlaceholder="Filter by Order Code..." statusOptions={statusOptions} />
                 </div>
             </div>
         </div>

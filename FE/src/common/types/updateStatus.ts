@@ -1,12 +1,15 @@
 export type ICreator = {
     userId: string,
     name: string,
-    email: string
+    email: string,
+    role: string
 }
 
 export type IUpdateStatus = {
+    status: string,
     title: string,
     desc: string,
     date: Date | string,
-    creator: ICreator
+    orderCode: string,
+    creator: ICreator,
 }

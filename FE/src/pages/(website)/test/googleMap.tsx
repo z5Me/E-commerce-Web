@@ -146,8 +146,8 @@ const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value:
             .then(() => {
                 toast.success('Lưu địa chỉ thành công');
             })
-            .catch(() => {
-                toast.error(errorUser);
+            .catch((e) => {
+                toast.error(e);
             })
     };
 

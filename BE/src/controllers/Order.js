@@ -1,4 +1,5 @@
 import Order from "../models/Order";
+import { nanoid } from "nanoid";
 
 export const createOrder = async (req, res) => {
     try {
@@ -31,16 +32,16 @@ export const getAllOrder = async (req, res) => {
 }
 
 export const updateStatus = async (req, res) => {
-    const { orderCode, status, updateStatus } = req.body;
+    const { orderCode, status } = req.body;
     try {
         const findOrder = await Order.findOne({ orderCode });
         if (!findOrder) return res.status(404).json({ error: 'Order not found' });
 
         findOrder.status = status;
-        findOrder.updateStatus.push(updateStatus);
+        findOrder.updateStatus.push(req.body);
         await findOrder.save();
 
-        return res.status(200).json(findOrder);
+        return res.status(200).json(req.body);
     } catch (error) {
         console.log('Lỗi ở updateStatus', error);
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
