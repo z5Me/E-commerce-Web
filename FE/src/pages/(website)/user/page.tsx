@@ -1,23 +1,63 @@
-import { ChevronRight } from 'lucide-react';
+import { Archive, ArrowDownUp, ChevronRight, CircleUserRound, Heart, MessageCircleQuestion, MessagesSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-//interface
-import AccountSetting from './_components/AccountSetting';
-import ManageSetting from './_components/ManageSetting';
+
+import { useDialog } from '@/contexts/DialogContext';
 import { useLoading } from '@/contexts/LoadingScreen';
 import { useAppDispatch } from '@/store/store';
 import { reSignIn } from '@/store/thunks/userThunk';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { useDialog } from '@/contexts/DialogContext';
-import { useNavigate } from 'react-router';
+import ManageSetting from './_components/ManageSetting';
+
+const columns = [
+    {
+        title: 'Manage',
+        items: [
+            {
+                name: 'My orders',
+                url: '/user/order',
+                icon: Archive
+            },
+            {
+                name: 'My Wishlist',
+                url: '1',
+                icon: Heart
+            }
+        ]
+    },
+    {
+        title: 'Setting',
+        items: [
+            {
+                name: 'Profile',
+                url: '/user/profile',
+                icon: CircleUserRound
+            },
+            {
+                name: 'Feedback',
+                url: '2',
+                icon: MessageCircleQuestion
+            }
+        ]
+    },
+    {
+        title: 'Others',
+        items: [
+            {
+                name: 'FAQ',
+                url: '3',
+                icon: MessagesSquare
+            }
+        ]
+    }
+]
 
 const UserPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     //Use for Account Setting
-    const [openEdit, setOpenEdit] = useState<boolean>(false);
     const [openAccountManage, setOpenAccountManage] = useState<boolean>(false);
-    const [openAddAddress, setOpenAddAddress] = useState<boolean>(false);
 
     //data of user in redux
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
@@ -52,7 +92,28 @@ const UserPage = () => {
                 })
             })
         }
-    }, [dataUser])
+    }, [dataUser]);
+
+    const urlWeb = useLocation().pathname;
+    const [itemName, setItemName] = useState<string>('');
+
+    useEffect(() => {
+        // let findItemsIndex = -1;
+        const findTitleIndex = columns.findIndex((column: any) => (
+            column.items.some((item: any) => item.url === urlWeb)
+        ));
+
+        const findItemsIndex = columns[findTitleIndex].items.findIndex((item: any) => (
+            item.url = urlWeb
+        ))
+
+        if (findTitleIndex !== -1 && findItemsIndex !== -1) {
+            const name = columns[findTitleIndex].items[findItemsIndex].name;
+            if (name) return setItemName(name);
+        }
+
+        return;
+    }, [urlWeb]);
 
     return (
         <>
@@ -67,22 +128,30 @@ const UserPage = () => {
                                 <ChevronRight size={18} />
                             </div>
                             <div className='flex gap-1 items-center font-MJSatoshi lg:text-base text-sm text-primary'>
-                                <p>My Account</p>
-                                {/* <ChevronRight size={18} /> */}
+                                <p>{itemName}</p>
                             </div>
                         </div>
                     </div>
                     <div className='flex gap-6 sm:gap-12 font-MJSatoshi overflow-hidden'>
-                        <ManageSetting openAccountManage={openAccountManage} avatar={dataUser?.avatar} />
-                        <AccountSetting
+                        <ManageSetting
                             openAccountManage={openAccountManage}
                             setOpenAccountManage={setOpenAccountManage}
-                            openEdit={openEdit}
-                            setOpenEdit={setOpenEdit}
-                            openAddAddress={openAddAddress}
-                            setOpenAddAddress={setOpenAddAddress}
-                            dataUser={dataUser}
+                            avatar={dataUser?.avatar}
+                            columns={columns}
                         />
+                        <div className='w-full flex flex-col gap-4 pb-12'>
+                            <div className='flex md:hidden justify-end'>
+                                <div onClick={() => setOpenAccountManage(true)} className='flex gap-2 items-center border py-1 px-2 rounded-sm cursor-pointer'>
+                                    <ArrowDownUp
+                                        size={16}
+                                    />
+                                    <p className='text-sm'>Setting</p>
+                                </div>
+                            </div>
+                            <div className='py-2'>
+                                <Outlet />
+                            </div>
+                        </div>
                     </div>
                 </div >
             </section >

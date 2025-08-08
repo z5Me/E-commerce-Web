@@ -28,6 +28,9 @@ import ProductsEdit from "@/pages/(dashboard)/products/_components/ProductsEdit"
 import AdminOrderPage from "@/pages/(dashboard)/orders/page"
 import OrderList from "@/pages/(dashboard)/orders/_components/OrderList"
 import OrderUpdateStatus from "@/pages/(dashboard)/orders/_components/OrderUpdateStatus"
+import AccountSetting from "@/pages/(website)/user/_components/AccountSetting"
+import MyOrder from "@/pages/(website)/user/_components/MyOrder"
+import NotFoundPage from "@/pages/(404)/page"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -48,7 +51,10 @@ const Router = () => {
                     <Route path="checkout" element={<Checkout />} />
                     <Route path="order" element={<OrderComplete />} />
                 </Route>
-                <Route path="user" element={<UserPage />} />
+                <Route path="user" element={<UserPage />} >
+                    <Route path="profile" element={<AccountSetting />} />
+                    <Route path="order" element={<MyOrder />} />
+                </Route>
             </Route>
             <Route path="auth" element={<AuthPage />}>
                 <Route index element={<Navigate to="signin" replace />} />
@@ -75,6 +81,7 @@ const Router = () => {
                     <Route path="updatestatus" element={<OrderUpdateStatus />} />
                 </Route>
             </Route>
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     )
 }

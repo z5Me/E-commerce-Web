@@ -1,16 +1,16 @@
 // Icons
-import { ChevronDown, CircleUserRound, LogOut, Menu, Search, ShoppingCart, UserRoundPen, X } from 'lucide-react';
+import { ChevronDown, CircleUserRound, LogOut, Menu, Search, ShoppingCart, UserRound, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 //Image
 import Logo from '@/assets/logo.svg';
 
 //React
+import { logOut, resetStatus } from '@/store/slices/userSlice';
 import { type AppDispatch } from '@/store/store';
+import { reSignIn } from '@/store/thunks/userThunk';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router';
-import { reSignIn } from '@/store/thunks/userThunk';
-import { logOut, resetStatus } from '@/store/slices/userSlice';
 
 const Header = () => {
     const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -211,8 +211,8 @@ const Header = () => {
                                                         onClick={() => setOpenAccount(false)}
                                                         className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-primary hover:text-white bg-gray-100 hover:bg-primary font-medium'
                                                     >
-                                                        <UserRoundPen size={16} />
-                                                        <p>Edit</p>
+                                                        <UserRound size={16} />
+                                                        <p>Profile</p>
                                                     </button>
                                                 </Link>
                                                 <button onClick={() => dispatch(logOut())} className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-danger hover:text-white bg-gray-100 hover:bg-danger font-medium'>
