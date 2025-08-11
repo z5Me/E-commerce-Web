@@ -4,5 +4,6 @@ export type IAddress = {
     addressName: string,
     lat: string,
     lng: string,
-    selected: boolean
+    selected: boolean,
+    _id?: string
 }

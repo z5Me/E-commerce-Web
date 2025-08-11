@@ -87,7 +87,7 @@ const Header = () => {
     const userStatus = useSelector((state: any) => state.user.status, shallowEqual);
 
     useEffect(() => {
-        if (!dataUser._id) {
+        if (dataUser._id === '') {
             dispatch(reSignIn());
             return;
         }
@@ -206,7 +206,7 @@ const Header = () => {
                                                 </div>
                                             </div>
                                             <div className='flex justify-between items-center gap-2 text-sm'>
-                                                <Link to={'/user'}>
+                                                <Link to={'/user/profile'}>
                                                     <button
                                                         onClick={() => setOpenAccount(false)}
                                                         className='flex items-center transition-all duration-300 cursor-pointer gap-1 rounded-md px-2 py-1 text-primary hover:text-white bg-gray-100 hover:bg-primary font-medium'

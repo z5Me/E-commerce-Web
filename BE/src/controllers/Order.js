@@ -31,6 +31,19 @@ export const getAllOrder = async (req, res) => {
     }
 }
 
+export const getAllOrderByUserId = async (req, res) => {
+    const { userId } = req.query;
+    try {
+        const allOrder = await Order.find({ userId });
+        if (!allOrder) return res.status(404).json({ error: 'Order not found' });
+
+        return res.status(200).json(allOrder);
+    } catch (error) {
+        console.log('Lỗi ở getAllOrderByUserId', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}
+
 export const updateStatus = async (req, res) => {
     const { orderCode, status } = req.body;
     try {

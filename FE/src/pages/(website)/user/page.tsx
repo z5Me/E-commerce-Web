@@ -76,36 +76,39 @@ const UserPage = () => {
 
     }, [userStatus]);
 
-    useEffect(() => {
-        if (!dataUser || !dataUser._id) {
-            dispatch(reSignIn()).unwrap().then().catch(() => {
-                toast.warning('Phiên đăng nhập đã hết hạn!');
-                showDialog({
-                    title: 'Rời khỏi trang?',
-                    description: 'Bạn cần đăng nhập để tiếp tục chỉnh sửa!',
-                    onConfirm() {
-                        navigate('/auth');
-                    },
-                    onCancel() {
-                        navigate('/');
-                    },
-                })
-            })
-        }
-    }, [dataUser]);
+    // useEffect(() => {
+    //     if (!dataUser || !dataUser._id) {
+    //         dispatch(reSignIn()).unwrap().then().catch(() => {
+    //             toast.warning('Phiên đăng nhập đã hết hạn!');
+    //             showDialog({
+    //                 title: 'Rời khỏi trang?',
+    //                 description: 'Bạn cần đăng nhập để tiếp tục chỉnh sửa!',
+    //                 onConfirm() {
+    //                     navigate('/auth');
+    //                 },
+    //                 onCancel() {
+    //                     navigate('/');
+    //                 },
+    //             })
+    //         })
+    //     }
+    // }, [dataUser]);
 
     const urlWeb = useLocation().pathname;
     const [itemName, setItemName] = useState<string>('');
 
     useEffect(() => {
-        // let findItemsIndex = -1;
+        let findItemsIndex = -1;
         const findTitleIndex = columns.findIndex((column: any) => (
             column.items.some((item: any) => item.url === urlWeb)
         ));
 
-        const findItemsIndex = columns[findTitleIndex].items.findIndex((item: any) => (
-            item.url = urlWeb
-        ))
+        if (findTitleIndex !== -1) {
+            findItemsIndex = columns[findTitleIndex].items.findIndex((item: any) => (
+                item.url = urlWeb
+            ))
+
+        }
 
         if (findTitleIndex !== -1 && findItemsIndex !== -1) {
             const name = columns[findTitleIndex].items[findItemsIndex].name;
