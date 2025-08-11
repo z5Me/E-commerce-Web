@@ -40,7 +40,7 @@ const AdminProductsAdd = () => {
         },
     });
 
-    async function onSubmit(data: any) {
+    async function onSubmit(data: z.infer<typeof productSchema>) {
         if (data.variants && data.variants.length > 0) {
             dispatch(setStatusProductPending());
             //Tải ảnh lên cloudinary

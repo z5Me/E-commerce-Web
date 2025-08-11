@@ -7,18 +7,29 @@ import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { ChangeQuantity } from './ChangeQuantity'
 import DiscountIcon from './Discount'
+import type { IItemCart } from '@/common/types/itemCart'
+import type { ICart } from '@/common/types/cart'
+import type { IUser } from '@/common/types/user'
+import type { IAttributeValue } from '@/common/types/attributeValue'
 
-const ProductInCart = ({ item, checkout = false, cart, dataUser }: any) => {
+type Props = {
+    item: IItemCart,
+    checkout?: Boolean,
+    cart: ICart,
+    dataUser: IUser
+}
+
+const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
     const screenWidth = useScreenWidth();
     const dispatch = useAppDispatch();
     const [quantity, setQuantity] = useState<number>(item.quantity);
-    // console.log('item: ', item); 
+    // console.log('item: ', cart);
 
     const debouncedUpdateQuantity = useMemo(() =>
         debounce((value: number) => {
             if (cart.idUser && item.product._id && item.variant._id) {
                 dispatch(updateQuantity({
-                    idUser: dataUser._id,
+                    idUser: dataUser._id as string,
                     idProduct: item.product._id,
                     idVariant: item.variant._id,
                     quantity: value
@@ -46,13 +57,13 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: any) => {
                             {checkout ?
                                 <p>x{quantity}</p>
                                 :
-                                <div onClick={() => dispatch(removeAProduct({ idUser: dataUser._id, idVariant: item.variant._id }))} className="flex justify-end hover:text-danger cursor-pointer">
+                                <div onClick={() => dispatch(removeAProduct({ idUser: dataUser._id as string, idVariant: item.variant._id }))} className="flex justify-end hover:text-danger cursor-pointer">
                                     <Trash2 size={20} />
                                 </div>
                             }
                         </div>
                         <div className="flex flex-col gap-y-1 sm:text-sm text-xs">
-                            {item.variant.values.map((value: any) => (
+                            {item.variant.values.map((value: IAttributeValue) => (
                                 <React.Fragment key={value._id}>
                                     <p>{value.type}: <span className="text-primary/60">{value.name}</span> </p>
                                 </React.Fragment>

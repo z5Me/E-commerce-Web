@@ -17,6 +17,7 @@ import { setDataVariant } from "@/store/slices/variantSlice";
 import { editProduct } from "@/store/thunks/productThunk";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import type { IVariant } from "@/common/types/variant";
 
 const ProductsEdit = () => {
     const dispatch = useAppDispatch();
@@ -55,7 +56,7 @@ const ProductsEdit = () => {
                 shortDesc: data.shortDesc,
                 productImage: typeof data.productImage === 'string' ? data.productImage : undefined,
                 variants: Array.isArray(data.variants)
-                    ? data.variants.map((variant: any) => ({
+                    ? data.variants.map((variant: IVariant) => ({
                         ...variant,
                         image: variant.image
                     }))

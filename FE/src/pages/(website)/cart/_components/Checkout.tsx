@@ -1,4 +1,5 @@
 import useScreenWidth from '@/common/hooks/useScreenWidth';
+import type { IAddress } from '@/common/types/address';
 import DeliveryAddress from '@/components/DeliveryAddress';
 import ProductInCart from '@/components/ProductInCart';
 import { useDialog } from '@/contexts/DialogContext';
@@ -8,8 +9,9 @@ import { Check, CircleDollarSign, CreditCard, Pencil, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import PriceList from './PriceList';
 import GoogleMap from '../../test/googleMap';
+import PriceList from './PriceList';
+import type { IItemCart } from '@/common/types/itemCart';
 
 const Checkout = () => {
     const { showDialog } = useDialog();
@@ -53,7 +55,7 @@ const Checkout = () => {
                             <div className='transition-all duration-300'>
                                 {dataUser.address.length > 0
                                     ?
-                                    dataUser.address.map((item: any, index: number) => (
+                                    dataUser.address.map((item: IAddress, index: number) => (
                                         item.selected &&
                                         <div className='group-hover:blur-[2px] group border-t-2 border-primary' key={index}>
                                             <DeliveryAddress item={item} />
@@ -87,7 +89,7 @@ const Checkout = () => {
                     <div className='flex flex-col gap-2'>
                         <p className='sm:text-lg text-base'>Review Products</p>
                         <div className='flex flex-col gap-y-6'>
-                            {cart && cart.products && cart.products.map((item: any, index: number) => (
+                            {cart && cart.products && cart.products.map((item: IItemCart, index: number) => (
                                 <div key={index} className='pb-6 border-b border-b-primary/10' >
                                     <ProductInCart checkout={true} item={item} cart={cart} dataUser={dataUser} />
                                 </div>

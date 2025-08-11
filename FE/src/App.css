@@ -24,7 +24,7 @@
 }
 
 @font-face {
-    font-family: DKLongreach;
+    font-family: Satoshi-Bold;
     src: url(../src/assets/fonts/MJ\ Satoshi-Bold.ttf);
 }
 
@@ -36,7 +36,7 @@
     --font-MJSatoshi: MJSatoshi;
     --font-IntegralCF: IntegralCF;
     --font-Roboto: Roboto;
-    --font-DKLongreach: DKLongreach;
+    --font-Satoshi-Bold: Satoshi-Bold;
     --container-840S: 840px;
 }
 

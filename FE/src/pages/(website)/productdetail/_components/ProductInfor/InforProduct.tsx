@@ -18,7 +18,9 @@ import { getAllAttribute } from '@/store/thunks/attributeThunk';
 //Hook
 import React, { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import AddToCartButton from './addToCartButton';
+import AddToCartButton from './AddToCartButton';
+import type { IAttributeValue } from '@/common/types/attributeValue';
+import type { IAttribute } from '@/common/types/attribute';
 
 type Props = {
     data: IProduct,
@@ -42,7 +44,7 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
 
     //Set giá trị mặc định cho phần chọn biến thể lúc vào trang
     const { idVariant } = useGetParams(['idVariant']);
-    const [chooseVariant, setChooseVariant] = useState<any>([]);
+    const [chooseVariant, setChooseVariant] = useState<IAttributeValue[]>([]);
     useEffect(() => {
         if (idVariant) {
             const filterVariant = variants.filter(item => item._id.toString() === idVariant.toString());
@@ -55,11 +57,11 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
     }, [idVariant]);
 
     //Chức năng chọn biến thể
-    const handleChooseVariant = ({ variant }: any) => (
-        setChooseVariant((prev: any) => {
-            const exitVariant = prev.findIndex((item: any) => item._id === variant._id);
+    const handleChooseVariant = ({ variant }: { variant: IAttributeValue }) => (
+        setChooseVariant((prev: IAttributeValue[]) => {
+            const exitVariant = prev.findIndex((item: IAttributeValue) => item._id === variant._id);
             if (exitVariant > -1) {
-                return prev.filter((_: any, index: number) => index !== exitVariant);
+                return prev.filter((_: IAttributeValue, index: number) => index !== exitVariant);
             }
 
             return [...prev, variant];
@@ -77,7 +79,7 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
         if (fitVariant.length === 1 && chooseVariant.length === fitVariant[0].values.length) {
             setProductInfor(fitVariant[0]);
             //tìm vị trí ảnh và target dựa vào các biến thể đã chọn
-            const imgIndex = imageList.findIndex((item: any) => item === fitVariant[0].image);
+            const imgIndex = imageList.findIndex((item: string) => item === fitVariant[0].image);
             mainSwiperRef.current?.slideTo(imgIndex);
             return;
         } else {
@@ -87,11 +89,13 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
 
     }, [chooseVariant]);
 
+    console.log('allAttributes', allAttributes)
+
     return (
         <>
             <div className='flex flex-col font-MJSatoshi'>
                 <div className="flex flex-col sm:gap-[14px] gap-3">
-                    <p className='font-DKLongreach uppercase sm:text-[40px] text-2xl font-bold tracking-[2px] text-primary'>{data.name}</p>
+                    <p className='font-Satoshi-Bold sm:text-[40px] text-2xl text-primary'>{data.name}</p>
                     <div className='flex gap-4 items-center'>
                         <div className="flex text-[#FFC633] gap-[7px] ">
                             <ShowRatingStar className="gap-[7px] sm:*:text-2xl text-lg" size={28} rating={4.5} />
@@ -112,16 +116,16 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
                     </span>
                 </div>
                 <div className="w-full h-[1px] bg-primary/10 my-6"></div>
-                {allAttributes && allAttributes.length > 0 && allAttributes.map((attributes: any) => (
+                {allAttributes && allAttributes.length > 0 && allAttributes.map((attributes: IAttribute) => (
                     <React.Fragment key={attributes._id}>
                         <div className="flex flex-col sm:gap-[21px] gap-4">
                             <p className="font-MJSatoshi sm:text-base text-sm text-primary/60">Select {attributes.name}</p>
                             <div className="flex sm:gap-[21px] gap-3">
-                                {attributes.value.map((item: any) => {
+                                {attributes.value.map((item: IAttributeValue) => {
                                     const isChoose = chooseVariant?.some(
-                                        (choosed: any) => choosed._id === item._id && choosed.type === item.type
+                                        (choosed: IAttributeValue) => choosed._id === item._id && choosed.type === item.type
                                     ) ?? false;
-                                    const item_filter = fitVariant.some((vari: any) => vari.values.some((v: any) => v._id === item._id))
+                                    const item_filter = fitVariant.some((vari: IVariant) => vari.values.some((v: IAttributeValue) => v._id === item._id))
 
                                     return (item && item.type === 'color')
                                         ?
@@ -150,13 +154,13 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
                     </React.Fragment>
 
                 ))}
-
-                <AddToCartButton
+                {productInfor && <AddToCartButton
                     data={data}
                     productInfor={productInfor}
                     fitVariant={fitVariant}
                     chooseVariant={chooseVariant}
-                />
+                />}
+
             </div>
         </>
     )

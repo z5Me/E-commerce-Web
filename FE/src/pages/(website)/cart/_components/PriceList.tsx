@@ -1,4 +1,7 @@
 import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
+import type { IAddress } from "@/common/types/address";
+import type { ICart } from "@/common/types/cart";
+import type { IProduct } from "@/common/types/product";
 import { useDialog } from "@/contexts/DialogContext";
 import { setChangePage } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/store";
@@ -7,7 +10,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payment?: string }) => {
+const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, payment?: string }) => {
     const dispatch = useAppDispatch();
     const { url } = useChangeStatusCart();
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
@@ -27,13 +30,20 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
                 toast.warning('Vui lòng tích vào ô điều khoản để tiếp tục');
                 return
             }
-            const filterAddress = dataUser.address.filter((item: any) => item.selected === true);
+            const filterAddress = dataUser.address.filter((item: IAddress) => item.selected === true);
             // console.log('filterAddress', filterAddress[0])
 
             const data = {
                 userId: dataUser._id,
                 address: filterAddress[0],
-                products: cart.products,
+                products: cart.products.map((item: any) => ({
+                    _id: item._id,
+                    name: item.name,
+                    desc: item.desc,
+                    shortDesc: item.shortDesc,
+                    productImage: item.productImage,
+                    variants: item.variants,
+                })),
                 payment: payment as "cod" | "momo",
                 total: cart.total,
                 updateStatus: [{
@@ -41,6 +51,7 @@ const PriceList = ({ cart, terms, payment }: { cart: any, terms?: boolean, payme
                     desc: 'Chờ xác nhận bên phía người bán',
                     date: new Date(),
                     status: 'pending',
+                    orderCode: '',
                     creator: {
                         userId: dataUser._id,
                         name: dataUser.userName,

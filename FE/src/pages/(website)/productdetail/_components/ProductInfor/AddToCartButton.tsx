@@ -1,4 +1,5 @@
 import { useGetParams } from '@/common/hooks/useGetParams';
+import type { IAttributeValue } from '@/common/types/attributeValue';
 import type { IProduct } from '@/common/types/product';
 import type { IVariant } from '@/common/types/variant';
 import { ChangeQuantity } from '@/components/ChangeQuantity';
@@ -14,8 +15,8 @@ import { toast } from 'sonner';
 
 type Props = {
     productInfor: IVariant,
-    fitVariant: any,
-    chooseVariant: any,
+    fitVariant: IVariant[],
+    chooseVariant: IAttributeValue[],
     data: IProduct
 }
 

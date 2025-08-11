@@ -1,4 +1,5 @@
 import useScreenWidth from '@/common/hooks/useScreenWidth';
+import type { IItemCart } from '@/common/types/itemCart';
 import ProductInCart from '@/components/ProductInCart';
 import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
@@ -47,7 +48,7 @@ const ShoppingCart = () => {
                     <p className="text-base">({cart && cart.products.length})</p>
                 </div>
                 <div className="flex flex-col py-5 gap-y-6">
-                    {cart && cart.products && cart.products.map((item: any) => (
+                    {cart && cart.products && cart.products.map((item: IItemCart) => (
                         <div key={item._id} className='pb-6 border-b border-b-primary/10'>
                             <ProductInCart item={item} cart={cart} dataUser={dataUser} />
                         </div>

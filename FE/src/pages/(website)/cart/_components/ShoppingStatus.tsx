@@ -2,7 +2,7 @@ import { useChangeStatusCart } from '@/common/hooks/useChangeStatusCart';
 import { Check, PackageCheck, ShoppingBasket, Wallet } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
-const ShoppingStatus = ({ screenWidth }: any) => {
+const ShoppingStatus = ({ screenWidth }: { screenWidth: number }) => {
     //Sau này thay bằng theo dõi url
     const { changeStatus } = useChangeStatusCart();
 
