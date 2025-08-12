@@ -6,7 +6,7 @@ export type ICreator = {
 }
 
 export type IUpdateStatus = {
-    status: string,
+    status: 'pending' | 'processing' | 'shipping' | 'complete' | 'cancel',
     title: string,
     desc: string,
     date: Date | string,

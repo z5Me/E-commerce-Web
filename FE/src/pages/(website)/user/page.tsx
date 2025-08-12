@@ -5,9 +5,7 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { useDialog } from '@/contexts/DialogContext';
 import { useLoading } from '@/contexts/LoadingScreen';
 import { useAppDispatch } from '@/store/store';
-import { reSignIn } from '@/store/thunks/userThunk';
 import { Outlet, useLocation, useNavigate } from 'react-router';
-import { toast } from 'sonner';
 import ManageSetting from './_components/ManageSetting';
 
 const columns = [

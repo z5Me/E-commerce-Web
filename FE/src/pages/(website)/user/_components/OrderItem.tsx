@@ -1,3 +1,4 @@
+import useScreenWidth from '@/common/hooks/useScreenWidth';
 import type { IOrder } from '@/common/types/order';
 import type { IUser } from '@/common/types/user';
 import { TextareaForm } from '@/components/TextareaForm';
@@ -6,8 +7,10 @@ import { useAppDispatch } from '@/store/store';
 import { updateStatus } from '@/store/thunks/orderThunk';
 import { Check, ClipboardList, Download, History, Hourglass, PackagePlus, Truck, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 
 const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IOrder[], dataUser: IUser, filterOrderCode: string, filterStatus: string }) => {
+    const screenWidth = useScreenWidth();
     const [allOrder, setAllOrder] = useState<IOrder[]>([]);
     useEffect(() => {
         if (data && data.length > 0) {
@@ -76,10 +79,10 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
                 allOrder.map((order: IOrder) => {
                     const Icon = themeColor[order.status || 'default']?.icon;
                     return (
-                        <div key={order.orderCode} className="border border-[#e5e7eb] rounded-md p-4 grid gap-4 h-fit">
+                        <div key={order.orderCode} className="border border-[#e5e7eb] rounded-md p-4 grid gap-4 h-fit sm:text-base text-sm">
                             <div className="grid grid-cols-2">
                                 <div className="flex flex-col gap-x-4 gap-y-2">
-                                    <div className="flex flex-wrap gap-4">
+                                    <div className="flex flex-wrap sm:gap-4 gap-2">
                                         <p className="text-[#6b7280] font-medium">Order ID: <span className="text-primary font-semibold">{order.orderCode}</span></p>
                                         <div>
                                             <div
@@ -95,11 +98,11 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
                                         </div>
                                     </div>
                                     <div className="w-fit flex gap-2 items-center text-[#1d4ed8] font-semibold hover:underline cursor-pointer">
-                                        <Download size={18} />
+                                        <Download size={16} />
                                         <p>Download invoice</p>
                                     </div>
                                 </div>
-                                <div className="flex flex-wrap justify-end select-none gap-4">
+                                <div className="flex flex-wrap justify-end select-none gap-x-4">
                                     {
                                         order.status === 'pending' && <div>
                                             <div
@@ -136,15 +139,15 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
 
                                     <div>
                                         <div className="border cursor-pointer text-primary px-3 py-1 rounded-sm p-2 flex items-center gap-1 hover:bg-primary/5">
-                                            <ClipboardList size={16} />
+                                            <ClipboardList size={screenWidth < 640 ? 14 : 16} />
                                             <p>Track order</p>
                                         </div>
                                     </div>
-                                    <div>
+                                    <Link to={`detail?orderCode=${order.orderCode}`}>
                                         <div className="border cursor-pointer text-primary px-3 py-1 rounded-sm p-2 flex items-center gap-1 hover:bg-primary/5">
                                             <p>Order details</p>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
                             </div>
                             <div className="w-full h-[1px] bg-primary/8"></div>
@@ -175,7 +178,7 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
                                     backgroundColor: themeColor[order.status ?? 'default']?.bg
                                 }}
                             >
-                                <Icon size={18} />
+                                <Icon size={screenWidth < 640 ? 16 : 18} />
                                 <p>Expected delivery on <span className="font-semibold">Monday 16 Jul 2024</span> </p>
                             </div>
                         </div>

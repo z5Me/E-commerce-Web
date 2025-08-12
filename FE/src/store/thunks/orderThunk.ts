@@ -8,7 +8,7 @@ const API = import.meta.env.VITE_API;
 export const createOrder = createAsyncThunk('order/createOrder', async (data: IOrder, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API}/order/createOrder`, data);
-
+        // console.log('dataOrder', data)
         return response.data;
     } catch (error: any) {
         console.log('Lỗi ở order/createOrder', error);
@@ -47,6 +47,19 @@ export const updateStatus = createAsyncThunk('order/updateStatus', async (data: 
         return response.data;
     } catch (error: any) {
         console.log('Lỗi ở updateStatus ', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
+export const getOrderByOrderCode = createAsyncThunk('order/getOrderByOrderCode', async ({ orderCode }: { orderCode: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(`${API}/order/getOrderByOrderCode`, {
+            params: { orderCode: orderCode }
+        })
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở getOrderByOrderCode', error);
         return rejectWithValue(error.response.data.error);
     }
 })

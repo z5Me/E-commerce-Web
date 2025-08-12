@@ -60,3 +60,16 @@ export const updateStatus = async (req, res) => {
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }
+
+export const getOrderByOrderCode = async (req, res) => {
+    const { orderCode } = req.query;
+    try {
+        const findOrder = await Order.findOne({ orderCode });
+        if (!findOrder) return res.status(404).json({ error: 'Order not found' });
+
+        return res.status(200).json(findOrder);
+    } catch (error) {
+        console.log('Lỗi ở getOrderByOrderCode', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+}

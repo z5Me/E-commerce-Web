@@ -89,8 +89,6 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
 
     }, [chooseVariant]);
 
-    console.log('allAttributes', allAttributes)
-
     return (
         <>
             <div className='flex flex-col font-MJSatoshi'>

@@ -1,22 +1,22 @@
 import { useGetParams } from "@/common/hooks/useGetParams";
+import type { IOrder } from "@/common/types/order";
 import { DataTable } from "@/components/data-table";
-import { useAppDispatch } from "@/store/store";
-import { getAllOrder, updateStatus } from "@/store/thunks/orderThunk";
-import { useEffect, useRef, useState } from "react";
-import { shallowEqual, useSelector } from "react-redux"
-import { useNavigate } from "react-router";
-import { toast } from "sonner";
-import { columnsStatus } from "./columnsStatus";
-import { email, z } from "zod"
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { IOrder } from "@/common/types/order";
 import { useDialog } from "@/contexts/DialogContext";
+import { useAppDispatch } from "@/store/store";
+import { getAllOrder, updateStatus } from "@/store/thunks/orderThunk";
 import { reSignIn } from "@/store/thunks/userThunk";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { shallowEqual, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+import { z } from "zod";
+import { columnsStatus } from "./columnsStatus";
 
 const formSchema = z.object({
     title: z.string()
@@ -134,87 +134,89 @@ const OrderUpdateStatus = () => {
         <div className="grid gap-4 md:gap-6">
             <div className="grid w-full gap-y-8">
                 <h1 className="sm:text-2xl text-lg font-bold">Update Status</h1>
-                <Form {...form} key={data.orderCode}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="status"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Status</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value} >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a verified status to display" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
+                {(data && data.status !== 'complete' && data.status !== 'cancel') &&
+                    <Form {...form} key={data.orderCode}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="status"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Status</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value} >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a verified status to display" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
 
-                                            <SelectItem
-                                                disabled={true}
-                                                value="pending"
-                                            >
-                                                Pending
-                                            </SelectItem>
-                                            <SelectItem
-                                                disabled={data?.status !== 'pending'}
-                                                value="processing"
-                                            >
-                                                Processing
-                                            </SelectItem>
-                                            <SelectItem
-                                                disabled={data?.status !== 'processing'}
-                                                value="shipping"
-                                            >
-                                                Shipping
-                                            </SelectItem>
-                                            <SelectItem
-                                                disabled={data?.status !== 'shipping'}
-                                                value="complete"
-                                            >
-                                                Complete
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Title</FormLabel>
-                                    <FormControl>
-                                        <Input readOnly={form.watch("status") === "processing"} placeholder="title..." {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        The title of this status.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="desc"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="description..." {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        The description of this status.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit">Submit</Button>
-                    </form>
-                </Form>
+                                                <SelectItem
+                                                    disabled={true}
+                                                    value="pending"
+                                                >
+                                                    Pending
+                                                </SelectItem>
+                                                <SelectItem
+                                                    disabled={data?.status !== 'pending'}
+                                                    value="processing"
+                                                >
+                                                    Processing
+                                                </SelectItem>
+                                                <SelectItem
+                                                    disabled={data?.status !== 'processing'}
+                                                    value="shipping"
+                                                >
+                                                    Shipping
+                                                </SelectItem>
+                                                <SelectItem
+                                                    disabled={data?.status !== 'shipping'}
+                                                    value="complete"
+                                                >
+                                                    Complete
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Title</FormLabel>
+                                        <FormControl>
+                                            <Input readOnly={form.watch("status") === "processing"} placeholder="title..." {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            The title of this status.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="desc"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="description..." {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            The description of this status.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button type="submit">Submit</Button>
+                        </form>
+                    </Form>
+                }
                 <div className="w-full overflow-x-auto pb-10">
                     <DataTable data={data?.updateStatus || []} columns={columnsStatus} />
                 </div>

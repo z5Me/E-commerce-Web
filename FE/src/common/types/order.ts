@@ -11,5 +11,6 @@ export type IOrder = {
     payment: 'cod' | 'momo',
     status?: 'pending' | 'processing' | 'shipping' | 'complete' | 'cancel',
     total: number,
-    updateStatus?: IUpdateStatus[]
+    updateStatus?: IUpdateStatus[],
+    createdAt?: Date
 }

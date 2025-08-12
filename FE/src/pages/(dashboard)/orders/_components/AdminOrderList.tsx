@@ -7,7 +7,7 @@ import { getAllOrder } from "@/store/thunks/orderThunk";
 
 const statusOptions = ['pending', 'processing', 'shipping', 'complete', 'cancel'];
 
-const OrderList = () => {
+const AdminOrderList = () => {
     const dispatch = useAppDispatch();
     const data = useSelector((state: any) => state.order.orderData, shallowEqual);
     useEffect(() => {
@@ -28,4 +28,4 @@ const OrderList = () => {
     )
 }
 
-export default OrderList
+export default AdminOrderList

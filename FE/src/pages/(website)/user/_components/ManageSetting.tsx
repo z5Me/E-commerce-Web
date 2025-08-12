@@ -88,7 +88,7 @@ const ManageSetting = ({ ...props }: ManageSettingProps) => {
                             {column.items.map((item: any) => (
                                 <React.Fragment key={item.name}>
                                     <Link to={item.url}>
-                                        <button className='flex justify-between items-center text-sm sm:text-base px-4 py-2 gap-2 bg-white hover:bg-primary/5 cursor-pointer w-full md:min-w-[300px]'>
+                                        <button className='flex justify-between items-center text-sm sm:text-base px-4 py-2 gap-2 bg-white hover:bg-primary/5 cursor-pointer w-full lg:min-w-[300px]'>
                                             <item.icon size={18} />
                                             <div className='flex-1 flex'>
                                                 <p>{item.name}</p>
