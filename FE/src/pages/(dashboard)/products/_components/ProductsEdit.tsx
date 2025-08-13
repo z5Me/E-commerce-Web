@@ -14,7 +14,7 @@ import { useAppDispatch } from "@/store/store";
 import { useGetParams } from "@/common/hooks/useGetParams";
 import type { IProduct } from "@/common/types/product";
 import { setDataVariant } from "@/store/slices/variantSlice";
-import { editProduct } from "@/store/thunks/productThunk";
+import { editProduct, getAllProducts } from "@/store/thunks/productThunk";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import type { IVariant } from "@/common/types/variant";
@@ -32,7 +32,7 @@ const ProductsEdit = () => {
 
     const dataProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
     const [data, setData] = useState<IProduct>();
-    //Lấy giá trị ở đường dẫn URL sau dấu ?
+    console.log('dataProducts', dataProducts)
     const { idProduct } = useGetParams(['idProduct']);
     useEffect(() => {
         if (dataProducts && dataProducts.length > 0) {
@@ -43,6 +43,8 @@ const ProductsEdit = () => {
             if (filterProduct) return setData(filterProduct[0]);
 
             return;
+        } else {
+            dispatch(getAllProducts({}));
         }
 
         return;
@@ -124,6 +126,12 @@ const ProductsEdit = () => {
             }
         })
     };
+
+    if (!data) return (
+        <div className='min-h-[500px] grid gap-4 justify-center items-center'>
+            <div>No result.</div>
+        </div>
+    )
 
     return (
         <div className="grid gap-3">

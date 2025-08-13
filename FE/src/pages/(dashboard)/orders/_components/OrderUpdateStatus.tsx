@@ -110,6 +110,7 @@ const OrderUpdateStatus = () => {
             ...data,
             date: new Date(),
             orderCode: orderCode,
+            status: statusValue as "pending" | "processing" | "shipping" | "complete" | "cancel",
             creator: {
                 userId: dataUser._id,
                 name: dataUser.userName,

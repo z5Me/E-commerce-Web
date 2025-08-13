@@ -143,7 +143,7 @@ export const columns: ColumnDef<IOrder>[] = [
             });
 
             return (
-                <div>{latestUpdate.title}</div>
+                <div>{latestUpdate ? latestUpdate.title : "N/A"}</div>
             )
         }
     },
@@ -170,15 +170,18 @@ export const columns: ColumnDef<IOrder>[] = [
             });
 
             return (
-                <div>{latestUpdate ? formatVietnamTime(latestUpdate.date) : "N/A"}</div>
+                <div>{latestUpdate ? formatVietnamTime(new Date(latestUpdate.date)) : "N/A"}</div>
             );
         },
         sortingFn: (rowA, rowB) => {
-            const getLatestDate = (updateStatus?: { date: string }[]) => {
+            const getLatestDate = (updateStatus?: { date: string | Date }[]) => {
                 if (!updateStatus?.length) return new Date(0);
-                return updateStatus.reduce((latest, curr) =>
-                    new Date(curr.date) > new Date(latest.date) ? curr : latest
-                ).date;
+                const latest = updateStatus.reduce((latest, curr) => {
+                    const currDate = typeof curr.date === "string" ? new Date(curr.date) : curr.date;
+                    const latestDate = typeof latest.date === "string" ? new Date(latest.date) : latest.date;
+                    return currDate > latestDate ? curr : latest;
+                });
+                return latest.date;
             };
 
             const dateA = new Date(getLatestDate(rowA.original.updateStatus));
@@ -198,7 +201,7 @@ export const columns: ColumnDef<IOrder>[] = [
             });
 
             return (
-                <div>{latestUpdate.creator.name}</div>
+                <div>{latestUpdate ? latestUpdate.creator.name : "N/A"}</div>
             )
         }
     },
@@ -229,6 +232,11 @@ export const columns: ColumnDef<IOrder>[] = [
                             <DropdownMenuItem>
                                 <Link to={`updatestatus?orderCode=${order.orderCode}`}>
                                     Update Status
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Link to={`detail?orderCode=${order.orderCode}`}>
+                                    Order detail
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

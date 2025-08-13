@@ -1,8 +1,7 @@
 "use client"
 
 import {
-    BookOpen,
-    Bot,
+    ChartBarStacked,
     Command,
     Frame,
     LayoutDashboard,
@@ -66,43 +65,11 @@ const data = {
             title: "Order",
             url: "order",
             icon: SquareChartGantt,
-            // items: [
-            //     {
-            //         title: "Genesis",
-            //         url: "#",
-            //     },
-            //     {
-            //         title: "Explorer",
-            //         url: "#",
-            //     },
-            //     {
-            //         title: "Quantum",
-            //         url: "#",
-            //     },
-            // ],
         },
         {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
+            title: "Categories",
+            url: "categories",
+            icon: ChartBarStacked,
         },
         {
             title: "Settings",

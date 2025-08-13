@@ -6,6 +6,7 @@ import userSlice from './slices/userSlice';
 import useVariant from './slices/variantSlice';
 import useProduct from './slices/productSlice';
 import useOrder from './slices/orderSlice';
+import useCategories from './slices/categoriesSlice';
 
 export const store = configureStore({
     reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
         variant: useVariant,
         product: useProduct,
         order: useOrder,
+        categories: useCategories,
     }
 })
 

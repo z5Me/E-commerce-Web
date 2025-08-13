@@ -61,7 +61,9 @@ const Header = () => {
                 smallMenuChildrenRef.current?.classList.add('w-1/2');
             }, 1)
 
-            return;
+            return () => {
+                document.body.classList.remove('overflow-hidden');
+            }
         } else {
             smallMenuChildrenRef.current?.classList.remove('w-1/2')
             smallMenuChildrenRef.current?.classList.add('w-0');
@@ -72,6 +74,10 @@ const Header = () => {
                 headerRef.current?.classList.remove('z-10');
                 document.body.classList.remove('overflow-hidden');
             }, 150)
+        }
+
+        return () => {
+            document.body.classList.remove('overflow-hidden');
         }
     }, [openMenu]);
 

@@ -1,7 +1,6 @@
 import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
 import type { IAddress } from "@/common/types/address";
 import type { ICart } from "@/common/types/cart";
-import type { IProduct } from "@/common/types/product";
 import { useDialog } from "@/contexts/DialogContext";
 import { setChangePage } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/store";
@@ -32,25 +31,18 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
             }
             const filterAddress = dataUser.address.filter((item: IAddress) => item.selected === true);
             // console.log('filterAddress', filterAddress[0])
-
+            // console.log(cart.products)
             const data = {
                 userId: dataUser._id,
                 address: filterAddress[0],
-                products: cart.products.map((item: any) => ({
-                    _id: item._id,
-                    name: item.name,
-                    desc: item.desc,
-                    shortDesc: item.shortDesc,
-                    productImage: item.productImage,
-                    variants: item.variants,
-                })),
+                products: cart.products,
                 payment: payment as "cod" | "momo",
                 total: cart.total,
                 updateStatus: [{
                     title: 'Chờ xác nhận',
                     desc: 'Chờ xác nhận bên phía người bán',
                     date: new Date(),
-                    status: 'pending',
+                    status: "pending" as "pending",
                     orderCode: '',
                     creator: {
                         userId: dataUser._id,

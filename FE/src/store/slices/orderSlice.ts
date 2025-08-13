@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createOrder, getAllOrder, getAllOrderByUserId, getOrderByOrderCode, updateStatus } from "../thunks/orderThunk";
+import { createOrder, generateInvoice, getAllOrder, getAllOrderByUserId, getOrderByOrderCode, updateStatus } from "../thunks/orderThunk";
 import type { IOrder } from "@/common/types/order";
 
 const orderSlice = createSlice({
@@ -86,6 +86,19 @@ const orderSlice = createSlice({
             })
             .addCase(getOrderByOrderCode.rejected, (state, action) => {
                 state.status = 'getOrderByOrderCode.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(generateInvoice.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(generateInvoice.fulfilled, (state) => {
+                state.status = 'generateInvoice.fulfilled';
+                state.error = '';
+            })
+            .addCase(generateInvoice.rejected, (state, action) => {
+                state.status = 'generateInvoice.rejected';
                 state.error = action.payload as string;
             })
     }

@@ -17,7 +17,7 @@ const OrderDetails = () => {
     const allOrder = useSelector((state: any) => state.order.orderData, shallowEqual);
     const [data, setData] = useState<any>();
     const navigate = useNavigate();
-
+    // console.log('allOrder', allOrder)
     useEffect(() => {
         if (allOrder.lenght > 0) {
             const filterOrder = allOrder.filter((order: any) => order.orderCode === orderCode);
@@ -79,8 +79,16 @@ const OrderDetails = () => {
 
     return (
         <div className='grid gap-4'>
-            <div className="sm:text-xl text-base font-bold">Order code: {data.orderCode}</div>
-            {data.createdAt && <div className="sm:text-base text-sm">{formatVietnamTime(data.createdAt)}</div>}
+            <div className="flex gap-2 sm:text-xl text-base">
+                <div>Order code: </div>
+                <div className="font-bold">{data.orderCode}</div>
+            </div>
+            {data.createdAt &&
+                <div className="flex gap-2">
+                    <p>Order At:</p>
+                    <div className="sm:text-base text-sm font-bold">{formatVietnamTime(data.createdAt)}</div>
+                </div>
+            }
             {data && data.address &&
                 <div className="border rounded-md grid gap-4 px-3 py-4">
                     <p className="font-bold">Information</p>
@@ -96,10 +104,10 @@ const OrderDetails = () => {
                         ?
                         <>
                             {data.products.map((item: IItemCart) => {
-                                // console.log('item: ', item)
+                                console.log('item: ', item)
                                 return (
                                     <div key={item._id} className="flex justify-between items-start gap-4 sm:text-base text-sm">
-                                        <div className="aspect-square sm:max-w-[120px] max-w-[100px] rounded-md border overflow-hidden">
+                                        <div className="aspect-square sm:max-w-[120px] max-w-[100px] w-full rounded-md border overflow-hidden">
                                             <img className="object-contain w-full h-full aspect-square" src={item.variant.image} alt={item.product.name} />
                                         </div>
                                         <div className="flex-1 h-full">
@@ -112,11 +120,8 @@ const OrderDetails = () => {
                                                     {item.variant.values.map((item) => (
                                                         <p key={item._id} className="flex gap-1 items-center justify-center">
                                                             {item.name}
-                                                            {/* {item.type === 'color' && <div className="p-2 rounded-sm" style={{ background: item.value }}></div>} */}
                                                         </p>
                                                     ))}
-                                                    {/* <p>Medium</p>
-                                                    <p>Black</p> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -136,6 +141,10 @@ const OrderDetails = () => {
                         <div></div>
                     }
                 </div>
+                <div className="flex justify-between items-center font-bold sm:text-base text-sm">
+                    <p>Payment method</p>
+                    <p className="uppercase">{data.payment}</p>
+                </div>
                 <div className="flex justify-between items-center font-bold sm:text-xl text-base">
                     <p>Total</p>
                     <p>${data.total}</p>
@@ -147,29 +156,33 @@ const OrderDetails = () => {
                     {data && data.updateStatus.length > 0
                         ?
                         <>
-                            {data.updateStatus.map((item: IUpdateStatus, index: number) => {
+                            {[...data.updateStatus].reverse().map((item: IUpdateStatus, index: number) => {
                                 const Icon = themeColor[item.status || 'default'].icon;
                                 return (
                                     <div
                                         key={index}
-                                        // style={{ backgroundColor: themeColor[item.status].bg }}
-                                        className="flex items-center justify-start gap-4 px-4 py-2 border rounded-md"
+                                        style={{ borderColor: index === 0 ? themeColor[item.status].text : '', backgroundColor: index === 0 ? themeColor[item.status].bg : '' }}
+                                        className={`flex items-center justify-start gap-4 px-4 py-2 border rounded-md`}
                                     >
-                                        <div style={{ backgroundColor: themeColor[item.status].text }} className="p-2 rounded-full"></div>
-                                        <div className="grid items-center justify-start gap-2">
-                                            <div className="flex flex-col gap-x-2 gap-y-1">
-                                                <p>{formatVietnamTime(new Date())}</p>
+                                        <div style={{ backgroundColor: index === 0 ? themeColor[item.status].text : '#d1d5dc' }} className="p-2 rounded-full"></div>
+                                        <div className="grid items-center justify-start gap-3">
+                                            <div className="flex gap-x-2 gap-y-1">
+                                                <p className="font-bold">{formatVietnamTime(new Date())}</p>
+                                                <p>-</p>
                                                 <div style={{
                                                     backgroundColor: themeColor[item.status || 'default'].bg,
                                                     color: themeColor[item.status || 'default'].text
                                                 }}
-                                                    className="flex flex-row gap-2 items-center capitalize w-fit px-2 rounded-sm"
+                                                    className={`flex flex-row gap-1 ${index !== 0 && 'px-2'} items-center capitalize w-fit rounded-sm`}
                                                 >
                                                     <Icon size={14} />
                                                     <p>{item.status}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-wrap gap-x-2">
+                                            <div
+                                                style={{ backgroundColor: themeColor[item.status].bg }}
+                                                className="flex flex-wrap gap-x-2 px-2 rounded-sm"
+                                            >
                                                 <p className="font-bold">{item.title}</p>
                                                 <p>-</p>
                                                 <p>{item.desc}</p>
@@ -187,7 +200,7 @@ const OrderDetails = () => {
                     }
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

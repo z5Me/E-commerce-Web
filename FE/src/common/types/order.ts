@@ -1,5 +1,5 @@
 import type { IAddress } from "./address"
-import type { IProduct } from "./product"
+import type { IItemCart } from "./itemCart"
 import type { IUpdateStatus } from "./updateStatus"
 
 export type IOrder = {
@@ -7,7 +7,7 @@ export type IOrder = {
     orderCode?: string,
     userId: string,
     address: IAddress,
-    products: IProduct[],
+    products: IItemCart[],
     payment: 'cod' | 'momo',
     status?: 'pending' | 'processing' | 'shipping' | 'complete' | 'cancel',
     total: number,

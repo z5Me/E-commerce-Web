@@ -4,7 +4,7 @@ import type { IUser } from '@/common/types/user';
 import { TextareaForm } from '@/components/TextareaForm';
 import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
-import { updateStatus } from '@/store/thunks/orderThunk';
+import { generateInvoice, updateStatus } from '@/store/thunks/orderThunk';
 import { Check, ClipboardList, Download, History, Hourglass, PackagePlus, Truck, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
@@ -76,7 +76,7 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
     return (
         <>
             {allOrder && allOrder.length > 0 ?
-                allOrder.map((order: IOrder) => {
+                [...allOrder].reverse().map((order: IOrder) => {
                     const Icon = themeColor[order.status || 'default']?.icon;
                     return (
                         <div key={order.orderCode} className="border border-[#e5e7eb] rounded-md p-4 grid gap-4 h-fit sm:text-base text-sm">
@@ -97,7 +97,10 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="w-fit flex gap-2 items-center text-[#1d4ed8] font-semibold hover:underline cursor-pointer">
+                                    <div
+                                        onClick={() => dispatch(generateInvoice(order.orderCode as string))}
+                                        className="w-fit flex gap-2 items-center text-[#1d4ed8] font-semibold hover:underline cursor-pointer"
+                                    >
                                         <Download size={16} />
                                         <p>Download invoice</p>
                                     </div>
@@ -137,12 +140,6 @@ const OrderItem = ({ data, dataUser, filterOrderCode, filterStatus }: { data: IO
                                         </div>
                                     }
 
-                                    <div>
-                                        <div className="border cursor-pointer text-primary px-3 py-1 rounded-sm p-2 flex items-center gap-1 hover:bg-primary/5">
-                                            <ClipboardList size={screenWidth < 640 ? 14 : 16} />
-                                            <p>Track order</p>
-                                        </div>
-                                    </div>
                                     <Link to={`detail?orderCode=${order.orderCode}`}>
                                         <div className="border cursor-pointer text-primary px-3 py-1 rounded-sm p-2 flex items-center gap-1 hover:bg-primary/5">
                                             <p>Order details</p>

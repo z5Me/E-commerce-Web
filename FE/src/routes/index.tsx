@@ -33,6 +33,8 @@ import NotFoundPage from "@/pages/(404)/page"
 import AdminOrderList from "@/pages/(dashboard)/orders/_components/AdminOrderList"
 import OrderList from "@/pages/(website)/user/_components/OrderList"
 import OrderDetails from "@/pages/(website)/user/_components/OrderDetails"
+import OrderDetailAdmin from "@/pages/(dashboard)/orders/_components/OrderDetailAdmin"
+import CategoriesPage from "@/pages/(dashboard)/categories/page"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -84,6 +86,10 @@ const Router = () => {
                 <Route path="order" element={<AdminOrderPage />}>
                     <Route index element={<AdminOrderList />} />
                     <Route path="updatestatus" element={<OrderUpdateStatus />} />
+                    <Route path="detail" element={<OrderDetailAdmin />} />
+                </Route>
+                <Route path="categories" element={<CategoriesPage />}>
+
                 </Route>
             </Route>
             <Route path="*" element={<NotFoundPage />} />

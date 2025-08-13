@@ -7,6 +7,8 @@ import { useLoading } from '@/contexts/LoadingScreen';
 import { useAppDispatch } from '@/store/store';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import ManageSetting from './_components/ManageSetting';
+import { reSignIn } from '@/store/thunks/userThunk';
+import { toast } from 'sonner';
 
 const columns = [
     {
@@ -74,23 +76,23 @@ const UserPage = () => {
 
     }, [userStatus]);
 
-    // useEffect(() => {
-    //     if (!dataUser || !dataUser._id) {
-    //         dispatch(reSignIn()).unwrap().then().catch(() => {
-    //             toast.warning('Phiên đăng nhập đã hết hạn!');
-    //             showDialog({
-    //                 title: 'Rời khỏi trang?',
-    //                 description: 'Bạn cần đăng nhập để tiếp tục chỉnh sửa!',
-    //                 onConfirm() {
-    //                     navigate('/auth');
-    //                 },
-    //                 onCancel() {
-    //                     navigate('/');
-    //                 },
-    //             })
-    //         })
-    //     }
-    // }, [dataUser]);
+    useEffect(() => {
+        if (!dataUser || !dataUser._id) {
+            dispatch(reSignIn()).unwrap().then().catch(() => {
+                toast.warning('Phiên đăng nhập đã hết hạn!');
+                showDialog({
+                    title: 'Rời khỏi trang?',
+                    description: 'Bạn cần đăng nhập để tiếp tục chỉnh sửa!',
+                    onConfirm() {
+                        navigate('/auth');
+                    },
+                    onCancel() {
+                        navigate('/');
+                    },
+                })
+            })
+        }
+    }, [dataUser]);
 
     const urlWeb = useLocation().pathname;
     const [itemName, setItemName] = useState<string>('');

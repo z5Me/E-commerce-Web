@@ -31,9 +31,12 @@ export const DialogProvider = ({ children }: { children: React.ReactNode }) => {
             setOnConfirm(() => () => { });
         }
         if (options?.onCancel) {
-            setOnCancel(() => options.onCancel);
+            setOnCancel(() => {
+                document.body.classList.remove('overflow-hidden');
+                return options.onCancel
+            });
         } else {
-            setOnCancel(() => () => { });
+            setOnCancel(() => () => document.body.classList.remove('overflow-hidden'));
         }
 
         setDialogOpen(true);

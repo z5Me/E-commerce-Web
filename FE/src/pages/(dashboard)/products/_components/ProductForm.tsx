@@ -102,18 +102,13 @@ const ProductForm = ({ previewImage, setPreviewImage, form }: Props) => {
                             <FormControl>
                                 <Editor
                                     apiKey={VITE_TINYMCE_KEY}
-                                    value={field.value} // <-- cần thêm
-                                    onEditorChange={(content) => field.onChange(content)} // <-- cần thêm
+                                    value={field.value}
+                                    onEditorChange={(content) => field.onChange(content)}
                                     init={{
                                         plugins: [
                                             'anchor', 'autolink', 'charmap', 'codesample', 'emoticons',
                                             'image', 'link', 'lists', 'media', 'searchreplace', 'table',
-                                            'visualblocks', 'wordcount', 'checklist', 'mediaembed', 'casechange',
-                                            'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker',
-                                            'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage',
-                                            'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents',
-                                            'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss',
-                                            'markdown', 'importword', 'exportword', 'exportpdf'
+                                            'visualblocks', 'wordcount'
                                         ],
                                         toolbar:
                                             'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',

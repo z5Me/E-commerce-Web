@@ -12,6 +12,7 @@ import attributeValueRouter from './routers/AttributeValue';
 import productRouter from './routers/Product';
 import cartRouter from './routers/Cart';
 import orderRouter from './routers/Order';
+import categoriesRouter from './routers/Categories';
 
 config();
 
@@ -45,6 +46,7 @@ app.use('/api/attribute', attributeRouter);
 app.use('/api/attributeValue', attributeValueRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/category', categoriesRouter);
 
 // Check connect
 app.listen(port, () => {
