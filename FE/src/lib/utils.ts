@@ -132,3 +132,15 @@ export function formatVietnamTime(dateInput: Date) {
     minute: '2-digit',
   });
 }
+
+//Tìm và lấy giá cao nhất
+export function getMaxPrice(allProducts: IProduct[]) {
+  const maxPrice = allProducts.reduce((acc: number, curr: IProduct) => {
+    const price = curr.variants.reduce((prev, current) => {
+      return current.price > prev ? current.price : prev
+    }, 0)
+    return price > acc ? price : acc
+  }, 0);
+
+  return maxPrice;
+}

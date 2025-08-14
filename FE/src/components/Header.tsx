@@ -54,8 +54,7 @@ const Header = () => {
             document.body.classList.add('overflow-hidden');
             smallMenuRef.current?.classList.remove('hidden');
             smallMenuRef.current?.classList.add('flex');
-            headerRef.current?.classList.add('relative');
-            headerRef.current?.classList.add('z-10');
+            headerRef.current?.classList.add('relative', 'z-10');
             setTimeout(() => {
                 smallMenuChildrenRef.current?.classList.remove('w-0')
                 smallMenuChildrenRef.current?.classList.add('w-1/2');
@@ -70,8 +69,7 @@ const Header = () => {
             setTimeout(() => {
                 smallMenuRef.current?.classList.remove('flex');
                 smallMenuRef.current?.classList.add('hidden');
-                headerRef.current?.classList.remove('relative');
-                headerRef.current?.classList.remove('z-10');
+                headerRef.current?.classList.remove('relative', 'z-10');
                 document.body.classList.remove('overflow-hidden');
             }, 150)
         }

@@ -1,13 +1,22 @@
+import type { IAttribute } from '@/common/types/attribute';
+import type { ICategory } from '@/common/types/category';
 import DefaultButton from '@/components/DefaultButton';
-import { Check, ChevronRight, SlidersVertical, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { debounce, getMaxPrice } from '@/lib/utils';
+import { useAppDispatch } from '@/store/store';
+import { getAllAttribute } from '@/store/thunks/attributeThunk';
+import { getAllCategories } from '@/store/thunks/categoriesThunk';
+import { getAllProducts } from '@/store/thunks/productThunk';
+import { ChevronRight, SlidersVertical, X } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
+import { useLocation } from 'react-router';
 
 const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: number, openFilter: boolean, setOpenFilter: (open: boolean) => void }) => {
     const minRef = useRef<HTMLInputElement>(null);
     const maxRef = useRef<HTMLInputElement>(null);
-    const maxRangeValue = 1000;
-    const [minValue, setMinValue] = useState(maxRangeValue * 0.2);
-    const [maxValue, setMaxValue] = useState(maxRangeValue * 0.8);
+    const [maxRangeValue, setMaxRangeValue] = useState<number>(0);
+    const [minValue, setMinValue] = useState(0);
+    const [maxValue, setMaxValue] = useState(maxRangeValue);
     const divParentRef = useRef<HTMLDivElement>(null);
     const divChildrenRef = useRef<HTMLDivElement>(null);
 
@@ -20,19 +29,10 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         if (openFilter) {
             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
-            document.body.classList.add('overflow-hidden');
-            document.body.classList.add('relative');
+            document.body.classList.add('overflow-hidden', 'relative');
 
             divParentRef.current?.classList.remove('hidden');
-            divParentRef.current?.classList.add('grid');
-            divParentRef.current?.classList.add('absolute');
-            divParentRef.current?.classList.add('w-full');
-            divParentRef.current?.classList.add('h-screen');
-            divParentRef.current?.classList.add('inset-0');
-            divParentRef.current?.classList.add('z-50');
-            divParentRef.current?.classList.add('bg-primary/50');
-            divParentRef.current?.classList.add('place-items-end');
-            divParentRef.current?.classList.add('overflow-y-scroll');
+            divParentRef.current?.classList.add('grid', 'absolute', 'w-full', 'h-screen', 'inset-0', 'z-50', 'bg-primary/50', 'place-items-end', 'overflow-y-scroll');
             setTimeout(() => {
                 divParentRef.current?.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
                 divParentRef.current?.classList.remove('pt-[200%]');
@@ -43,13 +43,8 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
                 }, 200);
             }, 100);
 
-            divChildrenRef.current?.classList.remove('hidden');
-            divChildrenRef.current?.classList.remove('rounded-[20px]');
-            divChildrenRef.current?.classList.add('grid');
-            divChildrenRef.current?.classList.add('rounded-tl-[20px]');
-            divChildrenRef.current?.classList.add('rounded-tr-[20px]');
-            divChildrenRef.current?.classList.add('rounded-bl-0');
-            divChildrenRef.current?.classList.add('rounded-br-0');
+            divChildrenRef.current?.classList.remove('hidden', 'rounded-[20px]');
+            divChildrenRef.current?.classList.add('grid', 'rounded-tl-[20px]', 'rounded-tr-[20px]', 'rounded-bl-0', 'rounded-br-0');
         }
 
         //Đóng filter
@@ -57,27 +52,13 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
             //Tự đóng khi screen >= 1024
             if (screenWidth >= 1024) {
                 divChildrenRef.current?.classList.add('opacity-100');
-                document.body.classList.remove('overflow-hidden');
-                document.body.classList.remove('relative');
+                document.body.classList.remove('overflow-hidden', 'relative');
 
                 divParentRef.current?.classList.add('hidden');
-                divParentRef.current?.classList.remove('grid');
-                divParentRef.current?.classList.remove('absolute');
-                divParentRef.current?.classList.remove('w-full');
-                divParentRef.current?.classList.remove('h-screen');
-                divParentRef.current?.classList.remove('inset-0');
-                divParentRef.current?.classList.remove('z-50');
-                divParentRef.current?.classList.remove('bg-primary/50');
-                divParentRef.current?.classList.remove('place-items-end');
-                divParentRef.current?.classList.remove('overflow-y-scroll');
+                divParentRef.current?.classList.remove('grid', 'absolute', 'w-full', 'h-screen', 'inset-0', 'z-50', 'bg-primary/50', 'place-items-end', 'overflow-y-scroll');
 
-                divChildrenRef.current?.classList.add('hidden');
-                divChildrenRef.current?.classList.add('rounded-[20px]');
-                divChildrenRef.current?.classList.remove('grid');
-                divChildrenRef.current?.classList.remove('rounded-tl-[20px]');
-                divChildrenRef.current?.classList.remove('rounded-tr-[20px]');
-                divChildrenRef.current?.classList.remove('rounded-bl-0');
-                divChildrenRef.current?.classList.remove('rounded-br-0');
+                divChildrenRef.current?.classList.add('hidden', 'rounded-[20px]');
+                divChildrenRef.current?.classList.remove('grid', 'rounded-tl-[20px]', 'rounded-tr-[20px]', 'rounded-bl-0', 'rounded-br-0');
                 setOpenFilter(false);
                 return
             }
@@ -89,27 +70,13 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
                 divChildrenRef.current?.classList.remove('opacity-100');
                 divChildrenRef.current?.classList.add('opacity-10');
                 setTimeout(() => {
-                    document.body.classList.remove('overflow-hidden');
-                    document.body.classList.remove('relative');
+                    document.body.classList.remove('overflow-hidden', 'relative');
 
                     divParentRef.current?.classList.add('hidden');
-                    divParentRef.current?.classList.remove('grid');
-                    divParentRef.current?.classList.remove('absolute');
-                    divParentRef.current?.classList.remove('w-full');
-                    divParentRef.current?.classList.remove('h-screen');
-                    divParentRef.current?.classList.remove('inset-0');
-                    divParentRef.current?.classList.remove('z-50');
-                    divParentRef.current?.classList.remove('bg-primary/50');
-                    divParentRef.current?.classList.remove('place-items-end');
-                    divParentRef.current?.classList.remove('overflow-y-scroll');
+                    divParentRef.current?.classList.remove('grid', 'absolute', 'w-full', 'h-screen', 'inset-0', 'z-50', 'bg-primary/50', 'place-items-end', 'overflow-y-scroll');
 
-                    divChildrenRef.current?.classList.add('hidden');
-                    divChildrenRef.current?.classList.add('rounded-[20px]');
-                    divChildrenRef.current?.classList.remove('grid');
-                    divChildrenRef.current?.classList.remove('rounded-tl-[20px]');
-                    divChildrenRef.current?.classList.remove('rounded-tr-[20px]');
-                    divChildrenRef.current?.classList.remove('rounded-bl-0');
-                    divChildrenRef.current?.classList.remove('rounded-br-0');
+                    divChildrenRef.current?.classList.add('hidden', 'rounded-[20px]');
+                    divChildrenRef.current?.classList.remove('grid', 'rounded-tl-[20px]', 'rounded-tr-[20px]', 'rounded-bl-0', 'rounded-br-0');
 
                     setOpenFilter(false);
                 }, 300)
@@ -134,9 +101,71 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         if (maxRef.current) maxRef.current.style.background = background;
     };
 
+    const updatePriceURL = (minValue: number, maxValue: number) => {
+        const newURL = new URLSearchParams(searchParams);
+        newURL.set('min', minValue.toString());
+        newURL.set('max', maxValue.toString());
+
+        setSearchParmas(newURL);
+    }
+
+    const debouncedUpdatePriceURL = useCallback(
+        debounce((min: number, max: number) => {
+            updatePriceURL(min, max);
+        }, 500), []);
+
     useEffect(() => {
         updateRangeTrack(minValue, maxValue);
+        debouncedUpdatePriceURL(minValue, maxValue);
+
     }, [minValue, maxValue]);
+
+    const dispatch = useAppDispatch();
+    const allCategories = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
+    const allProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
+    const allAttribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
+    useEffect(() => {
+        dispatch(getAllCategories({}));
+        dispatch(getAllProducts({}));
+        dispatch(getAllAttribute({}));
+    }, [])
+
+    useEffect(() => {
+        if (allProducts && allProducts.length > 0) {
+            const maxPrice = getMaxPrice(allProducts);
+            if (maxPrice) {
+                setMaxRangeValue(maxPrice);
+                setMaxValue(maxPrice);
+                updatePriceURL(0, maxPrice);
+            }
+        }
+    }, [allProducts]);
+
+    const getQueryParams = () => {
+        const params = new URLSearchParams(window.location.search);
+        const ojb: Record<string, string> = {};
+        params.forEach((value, key) => (
+            ojb[key] = value
+        ))
+
+        return ojb
+    }
+
+    const location = useLocation();
+    // console.log('location.search', allAttribute)
+    const [searchParams, setSearchParmas] = useState(new URLSearchParams(window.location.search));
+    useEffect(() => {
+        const newURL = `${location.pathname}?${searchParams.toString()}`;
+        window.history.replaceState({}, '', newURL);
+
+        // const query = getQueryParams();
+        // console.log('getQuery', query);
+        // dispatch(getAllProducts({}))
+    }, [searchParams]);
+
+    const handleFilter = () => {
+
+    }
 
     return (
         <div
@@ -157,92 +186,80 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
                         {openFilter ? <X /> : <SlidersVertical />}
                     </button>
                 </div>
+                {allCategories && allCategories.length > 0 &&
+                    <>
+                        <div className='h-[1px] w-full bg-primary/10'></div>
 
-                <div className='h-[1px] w-full bg-primary/10'></div>
-
-                <div className='grid gap-5 text-base *:hover:text-primary *:cursor-pointer *:hover:font-medium'>
-                    <div className='flex justify-between items-center text-primary/60'>
-                        <p>T-shirts</p>
-                        <div>
-                            <ChevronRight size={20} />
+                        <div className='grid gap-5 text-base *:hover:text-primary *:cursor-pointer *:hover:font-medium'>
+                            {allCategories.map((item: ICategory) => (
+                                <div
+                                    key={item._id}
+                                    className='flex justify-between items-center text-primary/60'
+                                    onClick={() => {
+                                        const newParams = new URLSearchParams(searchParams);
+                                        newParams.set('category', item.slug as string);
+                                        setSearchParmas(newParams);
+                                    }}
+                                >
+                                    <p>{item.name}</p>
+                                    <div>
+                                        <ChevronRight size={20} />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                    </>
+                }
 
-                    <div className='flex justify-between items-center text-primary/60'>
-                        <p>Shorts</p>
-                        <div>
-                            <ChevronRight size={20} />
+                {maxRangeValue && maxRangeValue > 0 &&
+                    <>
+                        <div className='h-[1px] w-full bg-primary/10'></div>
+
+                        <div className='grid gap-5'>
+                            <div className='flex justify-between items-center'>
+                                <p className='font-bold text-xl'>Price</p>
+                                <button className='text-primary -rotate-90'>
+                                    <ChevronRight size={20} />
+                                </button>
+                            </div>
+                            <div className="relative w-full mx-auto">
+                                {/* MAX range dưới */}
+                                <input
+                                    ref={maxRef}
+                                    type="range"
+                                    min="0"
+                                    max={maxRangeValue}
+                                    value={maxValue}
+                                    step="1"
+                                    onChange={(e) => {
+                                        const val = Math.max(Number(e.target.value), minValue + (maxRangeValue * 0.05));
+                                        setMaxValue(val);
+                                    }}
+                                    className="custom-range absolute w-full"
+                                />
+                                {/* MIN range trên */}
+                                <input
+                                    ref={minRef}
+                                    type="range"
+                                    min="0"
+                                    max={maxRangeValue}
+                                    value={minValue}
+                                    step="1"
+                                    onChange={(e) => {
+                                        const val = Math.min(Number(e.target.value), maxValue - (maxRangeValue * 0.05));
+                                        setMinValue(val);
+                                    }}
+                                    className="custom-range absolute w-full"
+                                />
+                                <p className="mt-4 text-sm text-center text-gray-700">
+                                    Giá: {minValue} - {maxValue}
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    </>
+                }
 
-                    <div className='flex justify-between items-center text-primary/60'>
-                        <p>Shirts</p>
-                        <div>
-                            <ChevronRight size={20} />
-                        </div>
-                    </div>
-
-                    <div className='flex justify-between items-center text-primary/60'>
-                        <p>Hoodie</p>
-                        <div>
-                            <ChevronRight size={20} />
-                        </div>
-                    </div>
-
-                    <div className='flex justify-between items-center text-primary/60'>
-                        <p>Jeans</p>
-                        <div>
-                            <ChevronRight size={20} />
-                        </div>
-                    </div>
-                </div>
-
-                <div className='h-[1px] w-full bg-primary/10'></div>
-
-                <div className='grid gap-5'>
-                    <div className='flex justify-between items-center'>
-                        <p className='font-bold text-xl'>Price</p>
-                        <button className='text-primary -rotate-90'>
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                    <div className="relative w-full mx-auto">
-                        {/* MAX range dưới */}
-                        <input
-                            ref={maxRef}
-                            type="range"
-                            min="0"
-                            max={maxRangeValue}
-                            value={maxValue}
-                            step="1"
-                            onChange={(e) => {
-                                const val = Math.max(Number(e.target.value), minValue + (maxRangeValue * 0.05));
-                                setMaxValue(val);
-                            }}
-                            className="custom-range absolute w-full"
-                        />
-                        {/* MIN range trên */}
-                        <input
-                            ref={minRef}
-                            type="range"
-                            min="0"
-                            max={maxRangeValue}
-                            value={minValue}
-                            step="1"
-                            onChange={(e) => {
-                                const val = Math.min(Number(e.target.value), maxValue - (maxRangeValue * 0.05));
-                                setMinValue(val);
-                            }}
-                            className="custom-range absolute w-full"
-                        />
-                        <p className="mt-4 text-sm text-center text-gray-700">
-                            Giá: {minValue} - {maxValue}
-                        </p>
-                    </div>
-                </div>
-
-
-                <div className='h-[1px] w-full bg-primary/10'></div>
+                {/* <div className='h-[1px] w-full bg-primary/10'></div>
 
                 <div className='grid gap-5'>
                     <div className='flex justify-between items-center'>
@@ -295,109 +312,43 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
                             className='w-full max-w-[37px] h-[49px] max-h-[37px] bg-[#000000] border border-primary/20 rounded-full relative'>
                         </button>
                     </div>
-                </div>
+                </div> */}
 
-                <div className='h-[1px] w-full bg-primary/10'></div>
+                {allAttribute && allAttribute.length > 0 &&
+                    allAttribute.map((attribute: IAttribute) => (
+                        <React.Fragment key={attribute._id}>
+                            <div className='h-[1px] w-full bg-primary/10'></div>
 
-                <div className='grid gap-5'>
-                    <div className='flex justify-between items-center'>
-                        <p className='font-bold text-xl'>Size</p>
-                        <button className='text-primary -rotate-90'>
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                    <div className='flex flex-wrap gap-2 text-sm *:hover:bg-primary *:hover:text-white'>
-                        <button
-                            className={`py-[10px] px-5 bg-primary text-white cursor-pointer rounded-[62px]`}
-                        >
-                            <p>XX-Small</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>X-Small</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>Small</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>Medium</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>Large</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>X-Large</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>XX-Large</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>3X-Large</p>
-                        </button>
-                        <button
-                            className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px]`}
-                        >
-                            <p>4X-Large</p>
-                        </button>
-                    </div>
-                </div>
+                            <div className='grid gap-5'>
+                                <div className='flex justify-between items-center'>
+                                    <p className='font-bold text-xl'>{attribute.name}</p>
+                                    <button className='text-primary -rotate-90'>
+                                        <ChevronRight size={20} />
+                                    </button>
+                                </div>
+                                <div className='flex flex-wrap gap-2 text-sm '>
+                                    {attribute.value && attribute.value.length > 0 &&
+                                        attribute.value.map((item) => (
+                                            <button
+                                                key={item._id}
+                                                onClick={() => {
+                                                    const newParams = new URLSearchParams(searchParams);
+                                                    newParams.set(attribute.type, item.value);
+                                                    setSearchParmas(newParams);
+                                                }}
+                                                className={`py-[10px] px-5 bg-[#F0F0F0] text-primary/60 cursor-pointer rounded-[62px] hover:bg-primary hover:text-white`}
+                                            >
+                                                <p>{item.name}</p>
+                                            </button>
+                                        ))
 
-                <div className='h-[1px] w-full bg-primary/10'></div>
+                                    }
 
-                <div className='grid gap-5'>
-                    <div className='flex justify-between items-center'>
-                        <p className='font-bold text-xl capitalize'>Dress Style</p>
-                        <button className='text-primary -rotate-90'>
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                    <div className='grid gap-5 text-base *:hover:text-primary *:cursor-pointer *:hover:font-medium'>
-                        <div
-                            className='flex justify-between items-center text-primary/60'>
-                            <p>Causal</p>
-                            <div>
-                                <ChevronRight size={20} />
+                                </div>
                             </div>
-                        </div>
-
-                        <div
-                            className='flex justify-between items-center text-primary/60'>
-                            <p>Formal</p>
-                            <div>
-                                <ChevronRight size={20} />
-                            </div>
-                        </div>
-
-                        <div
-                            className='flex justify-between items-center text-primary/60'>
-                            <p>Party</p>
-                            <div>
-                                <ChevronRight size={20} />
-                            </div>
-                        </div>
-
-                        <div
-                            className='flex justify-between items-center text-primary/60'>
-                            <p>Gym</p>
-                            <div>
-                                <ChevronRight size={20} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </React.Fragment>
+                    ))
+                }
 
                 <DefaultButton
                     title='Apply Filter'
