@@ -38,7 +38,7 @@ const AdminConfigVariant = ({ data, form, index }: Props) => {
 
     return (
         <>
-            <div className="flex flex-col gap-1">
+            <div key={data._id} className="flex flex-col gap-1">
                 <div
                     onClick={() => setOpenDropdownVariant((prev) => {
                         if (prev === 'id') return '';

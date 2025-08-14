@@ -36,6 +36,7 @@ const AdminProductsAdd = () => {
             desc: '',
             shortDesc: '',
             productImage: undefined,
+            categories: [],
             variants: [],
         },
     });
@@ -72,6 +73,7 @@ const AdminProductsAdd = () => {
                         desc: '',
                         shortDesc: '',
                         productImage: undefined,
+                        categories: [],
                         variants: [],
                     });
                     setPreviewImage(null);

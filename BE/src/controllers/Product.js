@@ -3,7 +3,10 @@ import Product from "../models/Product";
 export const getAllProducts = async (req, res) => {
     const { filterDelete, filterHidden } = req.query;
     try {
-        let getAll = await Product.find().populate('variants');
+        let getAll = await Product.find().populate([
+            { path: 'variants' },
+            { path: 'categories' }
+        ]);
         if (!getAll) return res.status(404).json({ error: 'Products not found.' });
 
         if (filterDelete && filterDelete === 'true') {

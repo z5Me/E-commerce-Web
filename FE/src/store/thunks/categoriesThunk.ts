@@ -42,6 +42,7 @@ export const createCategory = createAsyncThunk('category/createCategory', async 
 })
 
 export const editCategory = createAsyncThunk('category/editCategory', async (data: ICategory, { rejectWithValue }) => {
+    console.log('data', data)
     try {
         const response = await axios.post(`${API}/category/editCategory`, data);
 

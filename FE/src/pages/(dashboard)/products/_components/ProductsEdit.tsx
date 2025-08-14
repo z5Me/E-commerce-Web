@@ -32,7 +32,7 @@ const ProductsEdit = () => {
 
     const dataProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
     const [data, setData] = useState<IProduct>();
-    console.log('dataProducts', dataProducts)
+    // console.log('data', data)
     const { idProduct } = useGetParams(['idProduct']);
     useEffect(() => {
         if (dataProducts && dataProducts.length > 0) {
@@ -57,6 +57,7 @@ const ProductsEdit = () => {
                 desc: data.desc,
                 shortDesc: data.shortDesc,
                 productImage: typeof data.productImage === 'string' ? data.productImage : undefined,
+                categories: data.categories ? data.categories.map(item => item._id) : [],
                 variants: Array.isArray(data.variants)
                     ? data.variants.map((variant: IVariant) => ({
                         ...variant,
@@ -79,6 +80,14 @@ const ProductsEdit = () => {
     const form = useForm<z.infer<typeof productSchema>>({
         mode: 'onChange',
         resolver: zodResolver(productSchema),
+        defaultValues: {
+            name: '',
+            desc: '',
+            shortDesc: '',
+            productImage: undefined,
+            categories: [],
+            variants: []
+        }
     });
 
     async function onSubmit(data: any) {

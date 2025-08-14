@@ -80,7 +80,7 @@ export const columns: ColumnDef<ICategory>[] = [
                             </DropdownMenuItem>
                             {/* <DropdownMenuSeparator /> */}
                             <DropdownMenuItem>
-                                <Link to={``} className="w-full">
+                                <Link to={`edit?categoryId=${category._id}`} className="w-full">
                                     Edit
                                 </Link>
                             </DropdownMenuItem>

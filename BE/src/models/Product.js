@@ -19,6 +19,7 @@ const productSchema = new mongoose.Schema({
         required: true,
         default: ''
     },
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Categories' }],
     variants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Variant' }],
     slug: {
         type: String,

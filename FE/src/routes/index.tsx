@@ -35,6 +35,8 @@ import OrderList from "@/pages/(website)/user/_components/OrderList"
 import OrderDetails from "@/pages/(website)/user/_components/OrderDetails"
 import OrderDetailAdmin from "@/pages/(dashboard)/orders/_components/OrderDetailAdmin"
 import CategoriesPage from "@/pages/(dashboard)/categories/page"
+import EditCategoryForm from "@/pages/(dashboard)/categories/_components/EditCategoryForm"
+import CategoryList from "@/pages/(dashboard)/categories/_components/CategoryList"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -89,7 +91,8 @@ const Router = () => {
                     <Route path="detail" element={<OrderDetailAdmin />} />
                 </Route>
                 <Route path="categories" element={<CategoriesPage />}>
-
+                    <Route index element={<CategoryList />} />
+                    <Route path="edit" element={<EditCategoryForm />} />
                 </Route>
             </Route>
             <Route path="*" element={<NotFoundPage />} />

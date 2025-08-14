@@ -4,7 +4,7 @@ import axios from "axios";
 
 const API = import.meta.env.VITE_API;
 
-export const createProduct = createAsyncThunk('product/createProduct', async (data: any, { rejectWithValue }) => {
+export const createProduct = createAsyncThunk('product/createProduct', async (data: IProduct, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API}/product/createProduct`, data);
 

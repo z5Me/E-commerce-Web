@@ -9,6 +9,12 @@ import type { UseFormReturn } from "react-hook-form";
 import type z from "zod";
 import ProductData from "./ProductData";
 import { Editor } from '@tinymce/tinymce-react';
+import { shallowEqual, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useAppDispatch } from "@/store/store";
+import { getAllCategories } from "@/store/thunks/categoriesThunk";
+import type { ICategory } from "@/common/types/category";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const VITE_TINYMCE_KEY = import.meta.env.VITE_TINYMCE_KEY;
 
@@ -19,7 +25,12 @@ type Props = {
 }
 
 const ProductForm = ({ previewImage, setPreviewImage, form }: Props) => {
-
+    const dispatch = useAppDispatch();
+    const allCategories = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
+    useEffect(() => {
+        dispatch(getAllCategories({}));
+    }, []);
+    // console.log('allCategories', allCategories)
     return (
         <div className="w-full flex flex-row-reverse gap-4">
             <div className="w-full max-w-[500px]">
@@ -75,6 +86,56 @@ const ProductForm = ({ previewImage, setPreviewImage, form }: Props) => {
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
+                <div>
+                    <FormField
+                        control={form.control}
+                        name="categories"
+                        render={() => (
+                            <FormItem>
+                                <div className="mb-4">
+                                    <FormLabel className="text-base">Categories</FormLabel>
+                                    <FormDescription>
+                                        Select the Category for this product.
+                                    </FormDescription>
+                                </div>
+                                {allCategories.map((item: ICategory) => (
+                                    <FormField
+                                        key={item._id}
+                                        control={form.control}
+                                        name="categories"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem
+                                                    key={item._id}
+                                                    className="flex flex-row items-center gap-2"
+                                                >
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value?.includes(item._id as string)}
+                                                            onCheckedChange={(checked) => {
+                                                                return checked
+                                                                    ? field.onChange([...field.value, item._id])
+                                                                    : field.onChange(
+                                                                        field.value?.filter(
+                                                                            (value) => value !== item._id
+                                                                        )
+                                                                    )
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormLabel className="text-sm font-normal">
+                                                        {item.name}
+                                                    </FormLabel>
+                                                </FormItem>
+                                            )
+                                        }}
+                                    />
+                                ))}
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
             </div>
             <div className="w-full space-y-6">
                 <FormField
