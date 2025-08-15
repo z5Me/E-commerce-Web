@@ -1,7 +1,8 @@
 import Product from "../models/Product";
 
 export const getAllProducts = async (req, res) => {
-    const { filterDelete, filterHidden } = req.query;
+    const { filterDelete, filterHidden, min, max, category, kichThuoc } = req.query;
+    console.log('kickThuoc', kichThuoc);
     try {
         let getAll = await Product.find().populate([
             { path: 'variants' },
@@ -15,6 +16,18 @@ export const getAllProducts = async (req, res) => {
 
         if (filterHidden && filterHidden === 'true') {
             getAll = getAll.filter(item => item.isHidden === false);
+        }
+
+        if (min && max) {
+            getAll = getAll.filter(product => product.variants.some(item => Number(min) < item.price && item.price < Number(max)));
+        }
+
+        if (category) {
+            getAll = getAll.filter(product => product.categories.some(cate => cate.slug === category))
+        }
+
+        if (kichThuoc) {
+            getAll = getAll.filter(product => product.variants.some(variant => variant.values.some(value => value.value === kichThuoc)))
         }
 
         return res.status(200).json(getAll);

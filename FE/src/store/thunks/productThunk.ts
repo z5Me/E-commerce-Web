@@ -15,10 +15,11 @@ export const createProduct = createAsyncThunk('product/createProduct', async (da
     }
 });
 
-export const getAllProducts = createAsyncThunk('product/getAllProducts', async ({ filterDelete = 'true', filterHidden = 'false', query }: { filterDelete?: string, filterHidden?: string, query?: string } = {}, { rejectWithValue }) => {
-    console.log('query', query);
+export const getAllProducts = createAsyncThunk('product/getAllProducts', async ({ filterDelete = 'true', filterHidden = 'false', query }: { filterDelete?: string, filterHidden?: string, query?: object } = {}, { rejectWithValue }) => {
+    // console.log('query', query);
+    const newQuery = { ...query, filterDelete, filterHidden }
     try {
-        const response = await axios.get(`${API}/product/getAllProducts`, { params: { filterDelete, filterHidden, query } });
+        const response = await axios.get(`${API}/product/getAllProducts`, { params: newQuery });
 
         return response.data;
     } catch (error: any) {

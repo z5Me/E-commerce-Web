@@ -10,6 +10,7 @@ import { ChevronRight, SlidersVertical, X } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
+import { toast } from 'sonner';
 
 const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: number, openFilter: boolean, setOpenFilter: (open: boolean) => void }) => {
     const minRef = useRef<HTMLInputElement>(null);
@@ -19,6 +20,13 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
     const [maxValue, setMaxValue] = useState(maxRangeValue);
     const divParentRef = useRef<HTMLDivElement>(null);
     const divChildrenRef = useRef<HTMLDivElement>(null);
+
+    const dispatch = useAppDispatch();
+    const allCategories = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
+    const allProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
+    const allAttribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
+
+    const flag = useRef(false);
 
     const handleCloseFilter = () => {
         setOpenFilter(false);
@@ -85,6 +93,47 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
 
     }, [openFilter, screenWidth]);
 
+    const location = useLocation();
+    const [searchParams, setSearchParmas] = useState(new URLSearchParams(window.location.search));
+    useEffect(() => {
+        const newURL = `${location.pathname}?${searchParams.toString()}`;
+        window.history.replaceState({}, '', newURL);
+    }, [searchParams]);
+
+    //debounce
+    const debouncedUpdatePriceURL = useCallback(
+        debounce((min: number, max: number) => {
+            updatePriceURL(min, max);
+        }, 500), []);
+
+    //Lấy những dữ liệu cần thiết khi mới tải trang hoặc re-load
+    useEffect(() => {
+        const query = getQueryParams();
+        dispatch(getAllCategories({}));
+        //Cập nhật giá cao nhất (cập nhật 1 lần duy nhất)
+        dispatch(getAllProducts({})).unwrap()
+            .then((products) => {
+                if (products && products.length > 0) {
+                    const maxPrice = getMaxPrice(products);
+                    if (maxPrice && flag.current === false) {
+                        setMaxRangeValue(maxPrice);
+                        setMaxValue(maxPrice);
+                        //Chỉ cập nhật URL giá trị min max 1 lần duy nhất khi maxValue > 0 để tránh làm lỗi URL
+                        debouncedUpdatePriceURL(minValue, maxPrice);
+                    }
+                }
+            })
+            .catch((error) => {
+                toast.error(`Error: ${error}`);
+            });
+        dispatch(getAllAttribute({}));
+
+        setTimeout(() => {
+            dispatch(getAllProducts({ query }));
+        }, 500);
+    }, [])
+
+    //update UI
     const updateRangeTrack = (min: number, max: number) => {
         const minPercent = (min / maxRangeValue) * 100;
         const maxPercent = (max / maxRangeValue) * 100;
@@ -101,6 +150,7 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         if (maxRef.current) maxRef.current.style.background = background;
     };
 
+    //update min max URL
     const updatePriceURL = (minValue: number, maxValue: number) => {
         const newURL = new URLSearchParams(searchParams);
         newURL.set('min', minValue.toString());
@@ -109,38 +159,15 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         setSearchParmas(newURL);
     }
 
-    const debouncedUpdatePriceURL = useCallback(
-        debounce((min: number, max: number) => {
-            updatePriceURL(min, max);
-        }, 500), []);
-
+    //Cập nhật URL phần lọc giá
     useEffect(() => {
+        updatePriceURL(minValue, maxValue);
+        //Cập nhật thanh rage
         updateRangeTrack(minValue, maxValue);
-        debouncedUpdatePriceURL(minValue, maxValue);
 
     }, [minValue, maxValue]);
 
-    const dispatch = useAppDispatch();
-    const allCategories = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
-    const allProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
-    const allAttribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
-    useEffect(() => {
-        dispatch(getAllCategories({}));
-        dispatch(getAllProducts({}));
-        dispatch(getAllAttribute({}));
-    }, [])
-
-    useEffect(() => {
-        if (allProducts && allProducts.length > 0) {
-            const maxPrice = getMaxPrice(allProducts);
-            if (maxPrice) {
-                setMaxRangeValue(maxPrice);
-                setMaxValue(maxPrice);
-                updatePriceURL(0, maxPrice);
-            }
-        }
-    }, [allProducts]);
-
+    //Hàm lấy các điều kiện filter trên URL
     const getQueryParams = () => {
         const params = new URLSearchParams(window.location.search);
         const ojb: Record<string, string> = {};
@@ -151,21 +178,14 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         return ojb
     }
 
-    const location = useLocation();
-    // console.log('location.search', allAttribute)
-    const [searchParams, setSearchParmas] = useState(new URLSearchParams(window.location.search));
-    useEffect(() => {
-        const newURL = `${location.pathname}?${searchParams.toString()}`;
-        window.history.replaceState({}, '', newURL);
-
-        // const query = getQueryParams();
-        // console.log('getQuery', query);
-        // dispatch(getAllProducts({}))
-    }, [searchParams]);
-
     const handleFilter = () => {
-
+        const query = getQueryParams();
+        console.log('getQuery', query);
+        dispatch(getAllProducts({ query }))
+        // check query bên back-end để làm filter
     }
+
+    // console.log('allProducts', allProducts);
 
     return (
         <div
@@ -199,6 +219,7 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
                                         const newParams = new URLSearchParams(searchParams);
                                         newParams.set('category', item.slug as string);
                                         setSearchParmas(newParams);
+                                        setTimeout(() => handleFilter(), 1);
                                     }}
                                 >
                                     <p>{item.name}</p>
@@ -354,7 +375,7 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
                     title='Apply Filter'
                     classNameButton='bg-primary border border-primary hover:border-primary/10 hover:bg-white group cursor-pointer'
                     classNameText='text-white group-hover:text-primary'
-                    onClick={() => setOpenFilter(false)}
+                    onClick={() => { setOpenFilter(false); handleFilter() }}
                 />
             </div>
         </div>

@@ -7,6 +7,7 @@ import Image_Product2 from '@/assets/product2.svg';
 import Image_Product4 from '@/assets/product4.svg';
 import Image_Product5 from '@/assets/product5.svg';
 import { useEffect, useState } from 'react';
+import { shallowEqual, useSelector } from 'react-redux';
 
 const products = [
     {
@@ -99,6 +100,10 @@ const Casual = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
             setOpenSortBy(false);
         }
     }, [screenWidth]);
+
+    //Map các sản phẩm vào đây
+    // const getAllProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
+    // console.log('getAllProducts at Casual', getAllProducts);
 
     return (
         <div className='flex flex-col gap-4'>
