@@ -1,6 +1,7 @@
 import type { IAttribute } from '@/common/types/attribute';
 import type { ICategory } from '@/common/types/category';
 import DefaultButton from '@/components/DefaultButton';
+import { useAppContext } from '@/contexts/ContextData';
 import { debounce, getMaxPrice } from '@/lib/utils';
 import { useAppDispatch } from '@/store/store';
 import { getAllAttribute } from '@/store/thunks/attributeThunk';
@@ -31,6 +32,8 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
     const handleCloseFilter = () => {
         setOpenFilter(false);
     }
+
+    const { search, isChoosen } = useAppContext();
 
     useEffect(() => {
         //mở filter
@@ -95,10 +98,21 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
 
     const location = useLocation();
     const [searchParams, setSearchParmas] = useState(new URLSearchParams(window.location.search));
+    const keyword = location.state?.keyword;
+
     useEffect(() => {
         const newURL = `${location.pathname}?${searchParams.toString()}`;
         window.history.replaceState({}, '', newURL);
     }, [searchParams]);
+
+    //update min max URL
+    const updatePriceURL = (minValue: number, maxValue: number) => {
+        const newURL = new URLSearchParams(searchParams);
+        newURL.set('min', minValue.toString());
+        newURL.set('max', maxValue.toString());
+
+        setSearchParmas(newURL);
+    }
 
     //debounce
     const debouncedUpdatePriceURL = useCallback(
@@ -111,7 +125,7 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         const query = getQueryParams();
         dispatch(getAllCategories({}));
         //Cập nhật giá cao nhất (cập nhật 1 lần duy nhất)
-        dispatch(getAllProducts({})).unwrap()
+        dispatch(getAllProducts({ query: { keyword: keyword ?? '' } })).unwrap()
             .then((products) => {
                 if (products && products.length > 0) {
                     const maxPrice = getMaxPrice(products);
@@ -150,15 +164,6 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
         if (maxRef.current) maxRef.current.style.background = background;
     };
 
-    //update min max URL
-    const updatePriceURL = (minValue: number, maxValue: number) => {
-        const newURL = new URLSearchParams(searchParams);
-        newURL.set('min', minValue.toString());
-        newURL.set('max', maxValue.toString());
-
-        setSearchParmas(newURL);
-    }
-
     //Cập nhật URL phần lọc giá
     useEffect(() => {
         updatePriceURL(minValue, maxValue);
@@ -180,10 +185,28 @@ const Filter = ({ screenWidth, openFilter, setOpenFilter }: { screenWidth: numbe
 
     const handleFilter = () => {
         const query = getQueryParams();
-        console.log('getQuery', query);
+        // console.log('getQuery', query);
         dispatch(getAllProducts({ query }))
         // check query bên back-end để làm filter
     }
+
+    useEffect(() => {
+        if (!isChoosen) return;
+
+        if (searchParams) {
+            const maxValue = Number(searchParams.get('max'));
+            if (!isNaN(maxValue) && maxValue > 0) {
+                console.log('search', search);
+                const newURL = new URLSearchParams(searchParams);
+                newURL.set('keyword', search ?? '');
+                setSearchParmas(newURL);
+                const query = getQueryParams();
+                dispatch(getAllProducts({ query: { ...query, keyword: search } }));
+
+                return;
+            }
+        }
+    }, [search, isChoosen, window.location]);
 
     // console.log('allProducts', allProducts);
 

@@ -10,14 +10,14 @@ import { logOut, resetStatus } from '@/store/slices/userSlice';
 import { type AppDispatch } from '@/store/store';
 import { reSignIn } from '@/store/thunks/userThunk';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { useAppContext } from '@/contexts/ContextData';
 
 const Header = () => {
     const [openMenu, setOpenMenu] = useState<boolean>(false);
     const smallMenuRef = useRef<HTMLDivElement>(null);
     const smallMenuChildrenRef = useRef<HTMLDivElement>(null);
     const [openSearch, setOpenSearch] = useState<boolean>(false);
-    const inputSearchRef = useRef<HTMLInputElement>(null);
     const navRef = useRef<HTMLElement>(null);
     const headerRef = useRef<HTMLHeadElement>(null);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -124,6 +124,36 @@ const Header = () => {
 
     }, [openAccount])
 
+    const dataProducts = useSelector((state: any) => state.product.dataProducts, shallowEqual);
+    // console.log('dataProducts', dataProducts);
+    const { search, setSearch, isChoosen, setIsChoosen } = useAppContext();
+    const [suggest, setSuggest] = useState<string[]>([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (search !== '' && !isChoosen) {
+            const timer = setTimeout(() => {
+                const filterProduct = dataProducts.filter((product: any) => product.name.toLowerCase().includes(search.toLowerCase()));
+                // console.log('filter', filterProduct);
+                setSuggest(filterProduct)
+            }, 100);
+
+            return () => clearTimeout(timer);
+        }
+        setSuggest([]);
+    }, [search]);
+
+
+    const location = useLocation();
+    const handleChooseSearch = (value: string) => {
+        setSearch(value);
+        setIsChoosen(true);
+        setSuggest([]);
+        if (location.pathname !== '/category') {
+            navigate(`/category`, { state: { keyword: value } });
+        }
+    };
+
     return (
         <>
             <section className='FIRST_TIME_SIGN_UP bg-primary text-white font-MJSatoshi flex select-none text-xs sm:text-sm py-[9px] defaultPadding'>
@@ -170,23 +200,56 @@ const Header = () => {
                                 </li>
                             </ul>
                         </nav>
-                        <div className='SEARCH bg-[#F0F0F0] flex-1 rounded-full lg:gap-x-[14px] gap-x-2 px-[18px] items-center min-w-[125px] lg:flex hidden'>
+                        <div className='SEARCH bg-[#F0F0F0] flex-1 rounded-full lg:gap-x-[14px] gap-x-2 px-[18px] items-center min-w-[125px] lg:flex hidden relative'>
                             <Search />
-                            <input className='w-full py-3 border-0 outline-0' type="text" placeholder='Search for product...' />
+                            <input
+                                className='w-full py-3 border-0 outline-0'
+                                type="text"
+                                placeholder='Search for product...'
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setIsChoosen(false);
+                                }}
+                            />
+                            <div className='absolute top-[100%] left-0 w-full bg-white lg:grid hidden'>
+                                {suggest && suggest.length > 0 &&
+                                    suggest.map((item: any) => (
+                                        <div key={item._id} onClick={() => handleChooseSearch(item.name)} className='p-2 hover:bg-gray-50 hover:cursor-pointer'>
+                                            <p>{item.name}</p>
+                                        </div>
+                                    ))
+                                }
+                            </div>
                         </div>
                         <div className={`CART flex items-center justify-end gap-x-[14px] ${openSearch === true ? 'w-full' : 'w-[100px] lg:w-auto'} transition-all duration-500 lg:self-auto self-end`}>
                             <button
                                 onClick={() => setOpenSearch(!openSearch)}
-                                className={`SEARCH transition-all duration-500 ${openSearch === true ? 'bg-[#F0F0F0] gap-x-2 px-[18px] w-full' : 'bg-transparent gap-x-0 px-0 w-6'} flex lg:hidden items-center rounded-full`}
+                                className={`SEARCH transition-all duration-500 ${openSearch === true ? 'bg-[#F0F0F0] gap-x-2 px-[18px] w-full' : 'bg-transparent gap-x-0 px-0 w-6'} flex lg:hidden items-center rounded-full relative`}
                             >
                                 <Search className='lg:hidden flex cursor-pointer' />
                                 <input
-                                    ref={inputSearchRef}
                                     onClick={(e) => e.stopPropagation()}
+                                    value={search}
                                     className={`${openSearch === true ? 'w-full' : 'w-0'} transition-all duration-500 py-3 border-0 outline-0`}
                                     type="text"
+                                    onChange={(e) => {
+                                        setSearch(e.target.value);
+                                        setIsChoosen(false);
+                                    }}
                                     placeholder='Search for product...'
                                 />
+                                <div className={`absolute top-[100%] left-0 w-full bg-white ${openSearch === true ? 'grid' : 'hidden'} text-start`}>
+                                    <div className='p-2 hover:bg-gray-50 hover:cursor-pointer'>
+                                        <p>Áo thun nam</p>
+                                    </div>
+                                    <div className='p-2 hover:bg-gray-50 hover:cursor-pointer'>
+                                        <p>Áo thun nam</p>
+                                    </div>
+                                    <div className='p-2 hover:bg-gray-50 hover:cursor-pointer'>
+                                        <p>Áo thun nam</p>
+                                    </div>
+                                </div>
                             </button>
                             <Link to={'/cart'}>
                                 <div className='block cursor-pointer'>
