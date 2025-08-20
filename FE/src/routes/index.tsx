@@ -37,6 +37,9 @@ import OrderDetailAdmin from "@/pages/(dashboard)/orders/_components/OrderDetail
 import CategoriesPage from "@/pages/(dashboard)/categories/page"
 import EditCategoryForm from "@/pages/(dashboard)/categories/_components/EditCategoryForm"
 import CategoryList from "@/pages/(dashboard)/categories/_components/CategoryList"
+import AdminVoucherPage from "@/pages/(dashboard)/vouchers/page"
+import ListVoucher from "@/pages/(dashboard)/vouchers/_components/ListVoucher"
+import AddVoucher from "@/pages/(dashboard)/vouchers/_components/AddVoucher"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -93,6 +96,10 @@ const Router = () => {
                 <Route path="categories" element={<CategoriesPage />}>
                     <Route index element={<CategoryList />} />
                     <Route path="edit" element={<EditCategoryForm />} />
+                </Route>
+                <Route path="voucher" element={<AdminVoucherPage />}>
+                    <Route index element={<ListVoucher />} />
+                    <Route path="add" element={<AddVoucher />} />
                 </Route>
             </Route>
             <Route path="*" element={<NotFoundPage />} />

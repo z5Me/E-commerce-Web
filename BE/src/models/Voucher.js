@@ -16,6 +16,7 @@ const voucherSchema = new mongoose.Schema({
     },
     minBill: {
         type: Number,
+        default: 0,
         required: true
     },
     maxDiscount: {

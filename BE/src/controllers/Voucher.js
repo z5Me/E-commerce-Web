@@ -68,16 +68,15 @@ export const removeVoucher = async (req, res) => {
 }
 
 export const changeActiveVoucher = async (req, res) => {
-    const { _id, startDate } = req.body;
+    const { _id, startDate, endDate } = req.body;
     try {
         const findVoucher = await Voucher.findOne({ _id });
         if (!findVoucher) return res.status(404).json({ error: 'Voucher not found' });
 
-        // if (findVoucher.isActive === false) {
-        //     const presentDate = new Date();
-        //     const start = new Date(startDate);
-        //     if (presentDate < start) return res.status(422).json({ error: 'Cannot active before start date' })
-        // }
+        const startTime = new Date(startDate);
+        const endTime = new Date(endDate);
+
+        if (startTime >= endTime) return res.status(422).json({ error: 'Start date must be before end date!' });
 
         findVoucher.isActive = !findVoucher.isActive;
         await findVoucher.save();
@@ -99,6 +98,7 @@ export const editVoucher = async (req, res) => {
         const endTime = new Date(endDate);
 
         if (startTime >= endTime) return res.status(422).json({ error: 'Start date must be before end date!' });
+
     } catch (error) {
         console.log('Lỗi ở editVoucher', error);
         return res.status(500).json({ message: 'Internal server', error: error.message });

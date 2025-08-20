@@ -11,7 +11,8 @@ import {
     PieChart,
     Send,
     Settings2,
-    SquareChartGantt
+    SquareChartGantt,
+    Ticket
 } from "lucide-react"
 import * as React from "react"
 
@@ -70,6 +71,11 @@ const data = {
             title: "Categories",
             url: "categories",
             icon: ChartBarStacked,
+        },
+        {
+            title: "Vouchers",
+            url: 'voucher',
+            icon: Ticket
         },
         {
             title: "Settings",
