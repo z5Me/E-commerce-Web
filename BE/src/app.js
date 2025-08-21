@@ -1,18 +1,19 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import morgan from 'morgan';
 
 import { config } from 'dotenv';
 import { connectDB } from './config/db';
-import userRouter from './routers/User';
-import variantRouter from './routers/Variant';
 import attributeRouter from './routers/Attribute';
 import attributeValueRouter from './routers/AttributeValue';
-import productRouter from './routers/Product';
 import cartRouter from './routers/Cart';
-import orderRouter from './routers/Order';
 import categoriesRouter from './routers/Categories';
+import orderRouter from './routers/Order';
+import productRouter from './routers/Product';
+import userRouter from './routers/User';
+import variantRouter from './routers/Variant';
+import voucherRouter from './routers/Voucher';
 
 config();
 
@@ -47,6 +48,7 @@ app.use('/api/attributeValue', attributeValueRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/category', categoriesRouter);
+app.use('/api/voucher', voucherRouter);
 
 // Check connect
 app.listen(port, () => {

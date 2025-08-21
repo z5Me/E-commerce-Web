@@ -4,7 +4,7 @@ import { ErrorMessage } from '@hookform/error-message'
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { shallowEqual, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/store/store';
 import { getAllCategories } from '@/store/thunks/categoriesThunk';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,7 +14,6 @@ import { SelectValue } from '@radix-ui/react-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { divIcon } from 'leaflet';
 
 const AddVoucher = () => {
     const dispatch = useAppDispatch();
@@ -34,6 +33,8 @@ const AddVoucher = () => {
     });
     const typeOfDiscount = watch('typeOfDiscount');
     const valueStartDate = watch('startDate');
+    const [openStartDate, setOpenStartDate] = useState<boolean>(false);
+    const [openEndDate, setOpenEndDate] = useState<boolean>(false);
 
     const onSubmit = (data: any) => {
         console.log('dataFormVoucher', data);
@@ -44,7 +45,7 @@ const AddVoucher = () => {
     }, []);
     const categoryData = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
 
-    console.log('categoryData')
+    // console.log('categoryData')
 
     return (
         <>
@@ -139,28 +140,33 @@ const AddVoucher = () => {
                             <Controller
                                 name='startDate'
                                 control={control}
-                                render={({ field }) => (
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                id="date"
-                                                className="w-48 justify-between font-normal"
-                                            >
-                                                {field.value ? field.value.toLocaleDateString() : "Select date"}
-                                                <ChevronDownIcon />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                captionLayout="dropdown"
-                                                onSelect={field.onChange}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                )}
+                                render={({ field }) => {
+                                    return (
+                                        <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    id="date"
+                                                    className="w-48 justify-between font-normal"
+                                                >
+                                                    {field.value ? field.value.toLocaleDateString() : "Select date"}
+                                                    <ChevronDownIcon />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    captionLayout="dropdown"
+                                                    onSelect={(date) => {
+                                                        setOpenStartDate(false);
+                                                        return field.onChange(date);
+                                                    }}
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    );
+                                }}
                             />
                             <ErrorMessage errors={errors} name='startDate' render={({ message }) => <p className='text-danger'>{message}</p>} />
                         </div>
@@ -170,28 +176,37 @@ const AddVoucher = () => {
                                 name='endDate'
                                 control={control}
                                 rules={{ required: "End date must be required", validate: (value: any) => new Date(value) > new Date(valueStartDate) || 'End date must be older than start date' }}
-                                render={({ field }) => (
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                id="date"
-                                                className="w-48 justify-between font-normal"
-                                            >
-                                                {field.value ? field.value.toLocaleDateString() : "Select date"}
-                                                <ChevronDownIcon />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                captionLayout="dropdown"
-                                                onSelect={field.onChange}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                )}
+                                render={({ field }) => {
+                                    const value = field.value as Date | undefined;
+                                    return (
+                                        <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    id="date"
+                                                    className="w-48 justify-between font-normal"
+                                                >
+                                                    {value instanceof Date && !isNaN(value.getTime())
+                                                        ? value.toLocaleDateString()
+                                                        : "Select date"}
+                                                    <ChevronDownIcon />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={value}
+                                                    captionLayout="dropdown"
+                                                    onSelect={(date) => {
+                                                        setOpenEndDate(false);
+                                                        return field.onChange(date);
+                                                    }}
+
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    );
+                                }}
                             />
                             <ErrorMessage errors={errors} name='endDate' render={({ message }) => <p className='text-danger'>{message}</p>} />
                         </div>
@@ -201,23 +216,28 @@ const AddVoucher = () => {
                                 name='categories'
                                 control={control}
                                 render={({ field }) => (
-                                    categoryData.map((category: ICategory) => (
-                                        <div key={category._id}>
-                                            <Label htmlFor={category._id}>{category.name}</Label>
-                                            <Checkbox
-                                                checked={field.value?.includes(category._id as string)}
-                                                onCheckedChange={(checked) => {
-                                                    // Làm tiếp ở đây
-                                                }}
-                                            />
-                                        </div>
-                                    ))
+                                    <div className='grid gap-y-3 overflow-y-auto max-h-[200px]'>
+                                        {categoryData.map((category: ICategory) => (
+                                            <div key={category._id} className='flex gap-x-2'>
+                                                <Checkbox
+                                                    id={category._id}
+                                                    checked={field.value?.includes(category._id as string)}
+                                                    onCheckedChange={(checked) => {
+                                                        return checked
+                                                            ? field.onChange([...field.value, category._id])
+                                                            : field.onChange(field.value.filter((value) => value !== category._id))
+                                                    }}
+                                                />
+                                                <Label htmlFor={category._id}>{category.name}</Label>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             />
                             <ErrorMessage errors={errors} name='categories' render={({ message }) => <p className='text-danger'>{message}</p>} />
                         </div>
                     </div>
-                    <Button type='submit'>Submit</Button>
+                    <Button className='mt-6' type='submit'>Submit</Button>
                 </form>
             </div>
         </>

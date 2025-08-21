@@ -16,7 +16,6 @@ const voucherSchema = new mongoose.Schema({
     },
     minBill: {
         type: Number,
-        default: 0,
         required: true
     },
     maxDiscount: {
@@ -28,6 +27,7 @@ const voucherSchema = new mongoose.Schema({
         required: true
     },
     typeOfDiscount: {
+        type: String,
         enum: ['percent', 'fixed'],
         default: 'fixed'
     },
@@ -45,7 +45,7 @@ const voucherSchema = new mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        required: false
+        default: false
     },
     isDelete: {
         type: Boolean,
