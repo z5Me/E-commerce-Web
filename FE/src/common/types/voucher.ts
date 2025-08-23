@@ -6,12 +6,12 @@ export type IVoucher = {
     slug?: string,
     minBill: number,
     maxDiscount: number,
-    categories: ICategory[],
+    categories: string[],
     discount: number,
     typeOfDiscount: 'percent' | 'fixed',
     startDate: Date,
     endDate: Date,
     quantity: number,
-    isActive: boolean,
+    isActive?: boolean,
     isDelete?: boolean
 }

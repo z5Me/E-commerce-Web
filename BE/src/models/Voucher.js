@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const voucherSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
     voucherCode: {
         type: String,
         unique: true,

@@ -1,10 +1,13 @@
 import Voucher from "../models/Voucher";
 
 export const createVoucher = async (req, res) => {
-    const { startDate, endDate, discount, typeOfDiscount, minBill, maxDiscount } = req.body;
+    const { voucherCode, startDate, endDate, discount, typeOfDiscount, minBill, maxDiscount } = req.body;
     try {
         const startTime = new Date(startDate);
         const endTime = new Date(endDate);
+
+        const findVoucherCode = await Voucher.findOne({ voucherCode });
+        if (findVoucherCode) return res.status(409).json({ error: 'Voucher code đã tồn tại!' });
 
         if (startTime >= endTime) return res.status(422).json({ error: 'Start date must be before end date!' });
 
@@ -19,7 +22,11 @@ export const createVoucher = async (req, res) => {
         const newVoucher = await Voucher.create(req.body);
         if (!newVoucher) return res.status(400).json({ error: 'Fail to create Voucher' });
 
-        return res.status(201).json(newVoucher);
+        const populateVoucher = await newVoucher.populate([
+            { path: 'categories' }
+        ])
+
+        return res.status(201).json(populateVoucher);
     } catch (error) {
         console.log('Lỗi ở createVoucher', error);
         return res.status(500).json({ message: 'Internal server', error: error.message })
@@ -27,8 +34,11 @@ export const createVoucher = async (req, res) => {
 }
 
 export const getAllVoucher = async (req, res) => {
+    const { filterDelete } = req.params;
     try {
-        const findAllVoucher = await Voucher.find();
+        const findAllVoucher = await Voucher.find({ isDelete: filterDelete === 'true' ? true : false }).populate([
+            { path: 'categories' }
+        ]);
         if (!findAllVoucher) return res.status(404).json({ error: 'Voucher not found' });
 
         return res.status(200).json(findAllVoucher);

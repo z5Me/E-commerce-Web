@@ -75,7 +75,18 @@ const data = {
         {
             title: "Vouchers",
             url: 'voucher',
-            icon: Ticket
+            icon: Ticket,
+            isActive: true,
+            items: [
+                {
+                    title: "List Vouchers",
+                    url: "/admin/voucher",
+                },
+                {
+                    title: "Add Voucher",
+                    url: "voucher/add",
+                },
+            ]
         },
         {
             title: "Settings",

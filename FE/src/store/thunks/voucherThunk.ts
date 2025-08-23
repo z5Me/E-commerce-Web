@@ -15,9 +15,11 @@ export const createVoucher = createAsyncThunk('voucher/createVoucher', async (da
     }
 });
 
-export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async (_, { rejectWithValue }) => {
+export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async ({ filterDelete = 'false' }: { filterDelete?: string }, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${API}/voucher/getAllVoucher`);
+        const response = await axios.get(`${API}/voucher/getAllVoucher`, {
+            params: { filterDelete }
+        });
 
         return response.data;
     } catch (error: any) {
@@ -37,9 +39,9 @@ export const getOneVoucher = createAsyncThunk('voucher/getOneVoucher', async (_,
     }
 });
 
-export const removeVoucher = createAsyncThunk('voucher/removeVoucher', async (_, { rejectWithValue }) => {
+export const removeVoucher = createAsyncThunk('voucher/removeVoucher', async ({ _id }: { _id: string }, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API}/voucher/removeVoucher`);
+        const response = await axios.post(`${API}/voucher/removeVoucher`, { _id });
 
         return response.data;
     } catch (error: any) {

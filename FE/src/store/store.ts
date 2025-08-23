@@ -7,6 +7,7 @@ import useVariant from './slices/variantSlice';
 import useProduct from './slices/productSlice';
 import useOrder from './slices/orderSlice';
 import useCategories from './slices/categoriesSlice';
+import useVoucher from './slices/voucherSlice';
 
 export const store = configureStore({
     reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
         product: useProduct,
         order: useOrder,
         categories: useCategories,
+        voucher: useVoucher
     }
 })
 

@@ -14,30 +14,49 @@ import { SelectValue } from '@radix-ui/react-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDownIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
+import { createVoucher } from '@/store/thunks/voucherThunk';
+import { createSlug } from '@/lib/utils';
+import type { IVoucher } from '@/common/types/voucher';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
+
+const initValue = {
+    voucherCode: '',
+    minBill: 0,
+    maxDiscount: 0,
+    categories: [],
+    typeOfDiscount: 'fixed' as 'fixed' | 'percent',
+    discount: 0,
+    quantity: 0,
+    startDate: new Date(),
+    endDate: undefined
+}
 
 const AddVoucher = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-    const { register, handleSubmit, formState: { errors }, reset, watch, control } = useForm({
-        defaultValues: {
-            voucherCode: '',
-            minBill: 0,
-            maxDiscount: 0,
-            categories: ['689c68363e8f91fd6ad16fcc', '689d59017569068a08383cc5'],
-            typeOfDiscount: 'fixed',
-            discount: 0,
-            quantity: 0,
-            startDate: new Date(),
-            endDate: undefined
-        }
+    const { register, handleSubmit, formState: { errors }, reset, watch, control } = useForm<IVoucher>({
+        defaultValues: initValue
     });
     const typeOfDiscount = watch('typeOfDiscount');
     const valueStartDate = watch('startDate');
     const [openStartDate, setOpenStartDate] = useState<boolean>(false);
     const [openEndDate, setOpenEndDate] = useState<boolean>(false);
 
-    const onSubmit = (data: any) => {
-        console.log('dataFormVoucher', data);
+    const onSubmit = (data: IVoucher) => {
+        // console.log('dataFormVoucher', data);
+        dispatch(createVoucher({ ...data, slug: createSlug(data.voucherCode) })).unwrap()
+            .then(() => {
+                toast.success('Success');
+                reset();
+                navigate('/admin/voucher');
+            })
+            .catch((e) => {
+                console.log('Lỗi createVoucher', e);
+                return toast.error(`${e}`)
+            });
+
     }
 
     useEffect(() => {
@@ -52,7 +71,7 @@ const AddVoucher = () => {
             <p className="text-2xl font-bold">Add Voucher</p>
             <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className='grid grid-cols-2 gap-x-6 gap-y-8'>
+                    <div className='grid grid-cols-2 gap-x-6 gap-y-8 *:grid *:gap-y-1'>
                         <div>
                             <Label htmlFor='voucherCode'>Voucher code</Label>
                             <Input
@@ -60,6 +79,7 @@ const AddVoucher = () => {
                                 placeholder='Voucher code'
                                 {...register('voucherCode', {
                                     required: false,
+                                    onChange: (e) => e.target.value = e.target.value.toUpperCase(), //Ép dữ liệu thành UpperCase
                                     validate: {
                                         minLength: (value) => value.length > 3 || 'Voucher code phải có ít nhất 3 kí tự',
                                         noSpace: (value) => !/\s/.test(value) || 'Voucher code không được chứa khoảng trắng',

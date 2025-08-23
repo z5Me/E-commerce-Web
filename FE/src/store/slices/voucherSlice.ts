@@ -1,6 +1,6 @@
 import type { IVoucher } from "@/common/types/voucher";
 import { createSlice } from "@reduxjs/toolkit";
-import { createVoucher, getAllVoucher } from "../thunks/voucherThunk";
+import { createVoucher, getAllVoucher, removeVoucher } from "../thunks/voucherThunk";
 
 const voucherSlice = createSlice({
     name: 'voucher',
@@ -37,6 +37,20 @@ const voucherSlice = createSlice({
             })
             .addCase(createVoucher.rejected, (state, action) => {
                 state.status = 'createVoucher.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(removeVoucher.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(removeVoucher.fulfilled, (state, action) => {
+                state.status = 'removeVoucher.fulfilled';
+                state.error = '';
+                state.dataVoucher = state.dataVoucher.filter((item) => item._id !== action.payload._id);
+            })
+            .addCase(removeVoucher.rejected, (state, action) => {
+                state.status = 'removeVoucher.rejected';
                 state.error = action.payload as string;
             })
     },
