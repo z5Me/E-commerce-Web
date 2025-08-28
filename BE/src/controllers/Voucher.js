@@ -49,9 +49,10 @@ export const getAllVoucher = async (req, res) => {
 }
 
 export const getOneVoucher = async (req, res) => {
-    const { _id } = req.query;
+    const { idVoucher } = req.query;
+    console.log(idVoucher)
     try {
-        const findVoucher = await Voucher.findOne({ _id });
+        const findVoucher = await Voucher.findOne({ _id: idVoucher });
         if (!findVoucher) return res.status(404).json({ error: 'Voucher not found' });
 
         return res.status(200).json(findVoucher);
@@ -78,15 +79,10 @@ export const removeVoucher = async (req, res) => {
 }
 
 export const changeActiveVoucher = async (req, res) => {
-    const { _id, startDate, endDate } = req.body;
+    const { _id } = req.body;
     try {
         const findVoucher = await Voucher.findOne({ _id });
         if (!findVoucher) return res.status(404).json({ error: 'Voucher not found' });
-
-        const startTime = new Date(startDate);
-        const endTime = new Date(endDate);
-
-        if (startTime >= endTime) return res.status(422).json({ error: 'Start date must be before end date!' });
 
         findVoucher.isActive = !findVoucher.isActive;
         await findVoucher.save();
@@ -109,8 +105,14 @@ export const editVoucher = async (req, res) => {
 
         if (startTime >= endTime) return res.status(422).json({ error: 'Start date must be before end date!' });
 
+        await Voucher.findByIdAndUpdate({ _id }, req.body, { new: true });
+        const voucherAfterEdit = await Voucher.findOne({ _id }).populate('categories');
+        if (!voucherAfterEdit) return res.status(404).json({ error: 'Complete edit but not found after edit' });
+
+        return res.status(200).json(voucherAfterEdit);
+
     } catch (error) {
-        console.log('Lỗi ở editVoucher', error);
+        console.log('Lỗi ở editVoucher', error.message);
         return res.status(500).json({ message: 'Internal server', error: error.message });
     }
 }

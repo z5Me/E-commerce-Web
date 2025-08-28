@@ -28,9 +28,11 @@ export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async ({ 
     }
 });
 
-export const getOneVoucher = createAsyncThunk('voucher/getOneVoucher', async (_, { rejectWithValue }) => {
+export const getOneVoucher = createAsyncThunk('voucher/getOneVoucher', async (idVoucher: string, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${API}/voucher/getOneVoucher`);
+        const response = await axios.get(`${API}/voucher/getOneVoucher`, {
+            params: { idVoucher }
+        });
 
         return response.data;
     } catch (error: any) {
@@ -46,6 +48,28 @@ export const removeVoucher = createAsyncThunk('voucher/removeVoucher', async ({ 
         return response.data;
     } catch (error: any) {
         console.log('Lỗi ở voucher/removeVoucher', error);
+        return rejectWithValue(error.response.data.error);
+    }
+});
+
+export const editVoucher = createAsyncThunk('voucher/editVoucher', async (data: IVoucher, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/voucher/editVoucher`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở voucher/editVoucher', error);
+        return rejectWithValue(error.response.data.error);
+    }
+});
+
+export const changeActiveVoucher = createAsyncThunk('voucher/changeActiveVoucher', async (_id: string, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/voucher/changeActiveVoucher`, { _id });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở voucher/changeActiveVoucher', error);
         return rejectWithValue(error.response.data.error);
     }
 })

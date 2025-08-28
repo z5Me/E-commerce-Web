@@ -1,6 +1,6 @@
 import type { IVoucher } from "@/common/types/voucher";
 import { createSlice } from "@reduxjs/toolkit";
-import { createVoucher, getAllVoucher, removeVoucher } from "../thunks/voucherThunk";
+import { changeActiveVoucher, createVoucher, editVoucher, getAllVoucher, removeVoucher } from "../thunks/voucherThunk";
 
 const voucherSlice = createSlice({
     name: 'voucher',
@@ -51,6 +51,39 @@ const voucherSlice = createSlice({
             })
             .addCase(removeVoucher.rejected, (state, action) => {
                 state.status = 'removeVoucher.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(editVoucher.pending, (state) => {
+                state.status = 'pending';
+                state.error = ''
+            })
+            .addCase(editVoucher.fulfilled, (state, action) => {
+                state.status = 'editVoucher.fulfilled';
+                const findIndex = state.dataVoucher.findIndex((voucher) => voucher._id === action.payload._id);
+                if (findIndex !== -1) {
+                    state.dataVoucher[findIndex] = action.payload;
+                }
+            })
+            .addCase(editVoucher.rejected, (state, action) => {
+                state.status = 'editVoucher.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(changeActiveVoucher.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(changeActiveVoucher.fulfilled, (state, action) => {
+                state.status = 'changeActiveVoucher.fulfilled';
+                state.error = '';
+                const findIndex = state.dataVoucher.findIndex((voucher) => voucher._id === action.payload._id);
+                if (findIndex !== -1) {
+                    state.dataVoucher[findIndex].isActive = action.payload.isActive;
+                }
+            })
+            .addCase(changeActiveVoucher.rejected, (state, action) => {
+                state.status = 'changeActiveVoucher.rejected';
                 state.error = action.payload as string;
             })
     },

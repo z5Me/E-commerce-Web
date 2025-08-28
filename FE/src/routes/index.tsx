@@ -40,6 +40,7 @@ import CategoryList from "@/pages/(dashboard)/categories/_components/CategoryLis
 import AdminVoucherPage from "@/pages/(dashboard)/vouchers/page"
 import ListVoucher from "@/pages/(dashboard)/vouchers/_components/ListVoucher"
 import AddVoucher from "@/pages/(dashboard)/vouchers/_components/AddVoucher"
+import EditVoucher from "@/pages/(dashboard)/vouchers/_components/EditVoucher"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));
@@ -100,6 +101,7 @@ const Router = () => {
                 <Route path="voucher" element={<AdminVoucherPage />}>
                     <Route index element={<ListVoucher />} />
                     <Route path="add" element={<AddVoucher />} />
+                    <Route path="edit" element={<EditVoucher />} />
                 </Route>
             </Route>
             <Route path="*" element={<NotFoundPage />} />

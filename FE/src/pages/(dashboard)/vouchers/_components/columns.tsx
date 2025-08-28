@@ -9,12 +9,13 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useDialog } from "@/contexts/DialogContext";
 import { formatVietnamTime } from "@/lib/utils";
 import { useAppDispatch } from "@/store/store";
-import { removeVoucher } from "@/store/thunks/voucherThunk";
+import { changeActiveVoucher, removeVoucher } from "@/store/thunks/voucherThunk";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Link } from "react-router";
@@ -165,8 +166,18 @@ export const columns: ColumnDef<IVoucher>[] = [
         header: "Actions",
         cell: ({ row }) => {
             const voucher = row.original;
-            const dispatch = useAppDispatch();
             const { showDialog } = useDialog();
+            const dispatch = useAppDispatch();
+            const changeActive = (_id: string) => {
+                dispatch(changeActiveVoucher(_id)).unwrap()
+                    .then(() => {
+                        toast.success('Success');
+                    })
+                    .catch((error) => {
+                        toast.error('Lỗi thay đổi trạng thái voucher');
+                        console.log('error', error);
+                    })
+            }
             return (
                 <>
                     <DropdownMenu>
@@ -179,12 +190,13 @@ export const columns: ColumnDef<IVoucher>[] = [
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(voucher._id as string)}
+                                onClick={() => changeActive(voucher._id as string)}
                             >
-                                Copy product ID
+                                <p>{voucher.isActive ? 'Unactive voucher' : 'Active voucher'}</p>
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                <Link to={`edit?idProduct=${voucher._id}`} className="w-full">
+                                <Link to={`edit?idVoucher=${voucher._id}`} className="w-full">
                                     Edit
                                 </Link>
                             </DropdownMenuItem>
