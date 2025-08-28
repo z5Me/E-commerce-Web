@@ -5,6 +5,7 @@ import type { IVariant } from '@/common/types/variant';
 import { ChangeQuantity } from '@/components/ChangeQuantity';
 import DefaultButton from '@/components/DefaultButton'
 import { useDialog } from '@/contexts/DialogContext';
+import { debounce } from '@/lib/utils';
 import { useAppDispatch } from '@/store/store';
 import { addToCart } from '@/store/thunks/cartThunk';
 import { reSignIn } from '@/store/thunks/userThunk';
@@ -31,6 +32,7 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
     const navigate = useNavigate();
 
     const handleAddToCart = () => {
+        const promise = dispatch(addToCart({ idUser: dataUser._id, idProduct: data._id as string, idVariant: productInfor._id as string, quantity: quantity })).unwrap();
         if (!productInfor) {
             toast.warning('Vui lòng chọn đủ biến thể trước khi thêm vào giỏ hàng!');
             return;
@@ -42,8 +44,14 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
                 dispatch(reSignIn())
                     .unwrap()
                     .then(() => {
-                        dispatch(addToCart({ idUser: dataUser._id, idProduct: data._id as string, idVariant: productInfor._id ?? idVariant, quantity: quantity }))
-
+                        toast.promise(promise, {
+                            loading: '...loading',
+                            success: 'Thêm giỏ hàng thành công',
+                            error: (error) => {
+                                console.log('error', error);
+                                return `Thêm giỏ hàng thất bại`;
+                            }
+                        });
                     })
                     .catch(() => {
                         toast.warning('Phiên đăng nhập đã hết hạn!');
@@ -53,11 +61,10 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
                             onConfirm: () => {
                                 navigate('/auth')
                             },
-                        })
+                        });
                     })
                 return;
             }
-            const promise = dispatch(addToCart({ idUser: dataUser._id, idProduct: data._id as string, idVariant: productInfor._id as string, quantity: quantity }));
             toast.promise(promise, {
                 loading: '...loading',
                 success: 'Thêm giỏ hàng thành công',
@@ -73,6 +80,10 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
 
     }
 
+    const debounceHandleAddToCart = debounce(() => {
+        return handleAddToCart()
+    }, 300)
+
     return (
         <div className="flex sm:gap-5 gap-3">
             <ChangeQuantity
@@ -83,7 +94,7 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
                 onClickPlus={() => setQuantity(quantity + 1)}
             />
             <DefaultButton
-                onClick={() => handleAddToCart()}
+                onClick={() => debounceHandleAddToCart()}
                 title="Add to Card"
                 classNameButton="bg-primary rounded-full w-full cursor-pointer max-sm:px-0"
                 classNameText="text-white"

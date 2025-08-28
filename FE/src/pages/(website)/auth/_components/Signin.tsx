@@ -1,16 +1,16 @@
 import Logo from '@/assets/logo.svg';
 
-import { FaFacebook } from "react-icons/fa";
+import { FaFacebook, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
 
-import { Link, useNavigate } from 'react-router';
+import { resetStatus } from '@/store/slices/userSlice';
+import type { AppDispatch } from '@/store/store';
+import { signIn } from '@/store/thunks/userThunk';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch } from '@/store/store';
-import { useEffect, useState } from 'react';
-import { signIn } from '@/store/thunks/userThunk';
-import { resetStatus } from '@/store/slices/userSlice';
+import { Link, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 const Signin = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
@@ -22,13 +22,15 @@ const Signin = () => {
     const dispatch = useDispatch<AppDispatch>();
     const userState = useSelector((state: any) => state.user.status);
 
-    // console.log(userState);
-
     const onSubmit = (data: any) => {
-        // console.log('data: ', data)
-        // console.log('userState: ', userState)
-        if (isLoading) return;
-        dispatch(signIn(data));
+        dispatch(signIn(data)).unwrap()
+            .then(() => {
+                toast.success('Success');
+            })
+            .catch((error) => {
+                toast.error(error);
+                console.log('error dispatch(signIn(data))', error);
+            });
     }
 
     const navigate = useNavigate();
@@ -43,26 +45,8 @@ const Signin = () => {
         }
     }, [userState]);
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    useEffect(() => {
-        if (['signIn.pending', 'signIn.fulfilled'].includes(userState)) {
-            // console.log('chạy vào đây', userState)
-            setIsLoading(true);
-        } else {
-            setIsLoading(false)
-        }
-        return;
-    }, [userState])
-
-
     return (
         <>
-            {isLoading && (
-                <div className="fixed inset-0 bg-black/30 z-[9999] pointer-events-auto cursor-wait grid place-items-center">
-                    <div className="loaderSpinner" />
-                </div>
-            )}
-
             <div className='flex flex-col justify-between items-center md:gap-y-10 gap-y-5 w-full h-full'>
                 <div className='mt-[4%]'>
                     <img src={Logo} alt="logo" />
@@ -109,10 +93,10 @@ const Signin = () => {
                             </div>
                             {errors?.password && <p className='text-danger text-sm'>*{errors.password.message?.toString()}</p>}
                             <button
-                                disabled={isLoading}
+                                disabled={(userState && userState === 'pending')}
                                 className='bg-primary text-white flex items-center justify-center border rounded-[5px] py-[10px] cursor-pointer mt-4 disabled:opacity-50 disabled:cursor-not-allowed'
                             >
-                                {isLoading
+                                {(userState && userState === 'pending')
                                     ?
                                     <div className="loader" />
                                     :
