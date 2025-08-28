@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import GoogleAuth from './GoogleAuth';
 
 const Signin = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
@@ -115,6 +116,8 @@ const Signin = () => {
                                 <FcGoogle size={24} />
                                 <p>Continue with Google</p>
                             </div>
+
+                            <GoogleAuth />
                             <div className='border border-gray-300 bg-transparent hover:bg-gray-100 cursor-pointer rounded-[5px] flex gap-4 font-medium px-4 py-3'>
                                 <FaGithub size={24} className='bg-white rounded-full' />
                                 <p>Continue with Github</p>

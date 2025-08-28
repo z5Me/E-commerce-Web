@@ -1,7 +1,9 @@
 import type { IUser } from '@/common/types/user';
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
-import { reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
+import { authGoogle, reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
+
+const EXPIRES_IN = import.meta.env.VITE_JWT_EXPIRES_IN;
 
 const initialState: IUser = {
     _id: '',
@@ -67,10 +69,11 @@ const userSlice = createSlice({
                 }
                 if (action.payload.token) {
                     Cookies.set('auth_token', action.payload.token, {
-                        expires: 1, // 1 ngày
+                        expires: Number(EXPIRES_IN), // 1 ngày
                         path: '/',
                         sameSite: 'lax'
                     })
+
                 }
             })
             .addCase(signIn.rejected, (state, action) => {
@@ -92,6 +95,30 @@ const userSlice = createSlice({
                 state.status = 'reSignIn.rejected';
                 state.error = action.payload as string;
                 return;
+            })
+
+            .addCase(authGoogle.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(authGoogle.fulfilled, (state, action) => {
+                state.status = 'authGoogle.fulfilled';
+                state.dataUser = {
+                    ...state.dataUser,
+                    ...action.payload.user
+                };
+                state.error = '';
+                if (action.payload.token) {
+                    Cookies.set('auth_token', action.payload.token, {
+                        expires: Number(EXPIRES_IN), // 1 ngày
+                        path: '/',
+                        sameSite: 'lax'
+                    })
+                }
+            })
+            .addCase(authGoogle.rejected, (state, action) => {
+                state.status = 'authGoogle.rejected';
+                state.error = action.payload as string;
             })
 
             .addCase(saveUserInformation.pending, (state) => {

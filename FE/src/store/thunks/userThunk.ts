@@ -70,3 +70,14 @@ export const saveAddress = createAsyncThunk('user/saveAddress', async (data: { _
         return rejectWithValue(error.response.data.error);
     }
 })
+
+export const authGoogle = createAsyncThunk('user/authGoogle', async ({ credential }: { credential: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/authGoogle`, { credential });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở user/authGoogle', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})

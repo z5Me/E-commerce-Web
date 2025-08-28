@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
+import bodyParser from "body-parser";
 
 import { config } from 'dotenv';
 import { connectDB } from './config/db';
@@ -26,6 +27,7 @@ app.use(cors({
     origin: 'http://localhost:5173', // Cho phép FE từ localhost:5173
     credentials: true // Cho phép gửi cookie qua CORS
 }));
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(morgan('dev'));
 

@@ -1,11 +1,9 @@
-import { useGetParams } from '@/common/hooks/useGetParams';
 import type { IAttributeValue } from '@/common/types/attributeValue';
 import type { IProduct } from '@/common/types/product';
 import type { IVariant } from '@/common/types/variant';
 import { ChangeQuantity } from '@/components/ChangeQuantity';
-import DefaultButton from '@/components/DefaultButton'
+import DefaultButton from '@/components/DefaultButton';
 import { useDialog } from '@/contexts/DialogContext';
-import { debounce } from '@/lib/utils';
 import { useAppDispatch } from '@/store/store';
 import { addToCart } from '@/store/thunks/cartThunk';
 import { reSignIn } from '@/store/thunks/userThunk';
@@ -22,9 +20,10 @@ type Props = {
 }
 
 const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Props) => {
-    const { idVariant } = useGetParams(['idVariant']);
+    // const { idVariant } = useGetParams(['idVariant']);
     const dispatch = useAppDispatch();
     //Xử lý thêm giỏ hàng
+    const cartStatus = useSelector((state: any) => state.cart.status, shallowEqual);
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
     const [quantity, setQuantity] = useState<number>(1);
     // console.log('quantity: ', quantity)
@@ -80,10 +79,6 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
 
     }
 
-    const debounceHandleAddToCart = debounce(() => {
-        return handleAddToCart()
-    }, 300)
-
     return (
         <div className="flex sm:gap-5 gap-3">
             <ChangeQuantity
@@ -94,10 +89,11 @@ const AddToCartButton = ({ productInfor, fitVariant, chooseVariant, data }: Prop
                 onClickPlus={() => setQuantity(quantity + 1)}
             />
             <DefaultButton
-                onClick={() => debounceHandleAddToCart()}
+                onClick={() => handleAddToCart()}
                 title="Add to Card"
-                classNameButton="bg-primary rounded-full w-full cursor-pointer max-sm:px-0"
+                classNameButton="bg-primary hover:opacity-90 rounded-full w-full max-sm:px-0"
                 classNameText="text-white"
+                disabled={cartStatus === 'pending' ? true : false}
             />
         </div>
 

@@ -108,6 +108,31 @@
     z-index: 50;
 }
 
+/* HTML: <div class="loaderAddToCart"></div> */
+.loaderAddToCart {
+    width: fit-content;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 16px;
+    color: white;
+    /* đổi màu chữ thành trắng */
+    clip-path: inset(0 100% 0 0);
+    animation: l5 2s steps(14) infinite;
+    /* số steps = số ký tự */
+}
+
+.loaderAddToCart:before {
+    content: "Add to cart...";
+    /* đổi text */
+}
+
+@keyframes l5 {
+    to {
+        clip-path: inset(0 -1ch 0 0);
+    }
+}
+
+
 /* HTML: <div class="loader"></div> */
 .loader {
     width: fit-content;

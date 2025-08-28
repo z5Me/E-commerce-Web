@@ -1,6 +1,9 @@
 import User from "../models/User";
 import bcrypt from 'bcryptjs';
 import { generateToken } from "../utils/generateToken";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const SignUp = async (req, res) => {
     const { email, password, userNameFile, userName, avatar } = req.body;
@@ -101,5 +104,44 @@ export const saveAddress = async (req, res) => {
     } catch (error) {
         console.log('Lỗi saveAddress BE');
         return res.status(500).json({ message: 'Lỗi server', error: error.message })
+    }
+}
+
+export const authGoogle = async (req, res) => {
+    try {
+        const { credential } = req.body;
+        //Xác thực id_token với google
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID
+        });
+        if (!ticket) return res.status(400).json({ error: 'Lỗi khi lấy ticket' });
+        //Lấy thông tin
+        const payload = ticket.getPayload();
+        //Tìm tài khoản
+        const findUser = await User.findOne({ email: payload.email });
+        //Đăng nhập nếu tài khoản tồn tại
+        if (findUser) {
+            const token = generateToken({ userId: findUser._id });
+            return res.status(200).json({ user: findUser, token });
+        };
+
+        const createUser = await User.create({
+            email: payload.email,
+            password: process.env.DEFAULT_PASSWORD,
+            userNameFile: `${payload.given_name} ${payload.family_name}`,
+            userName: `${payload.given_name} ${payload.family_name}`,
+            avatar: 'https://avatars.githubusercontent.com/u/124599?v=4'
+        });
+        if (!createUser) {
+            console.log('Lỗi ở authGoogle');
+            return res.status(400).json({ error: 'Lỗi khi tạo tài khoản!' })
+        }
+        const token = generateToken({ userId: createUser._id });
+
+        return res.status(201).json({ user: createUser, token });
+    } catch (error) {
+        console.log('Lỗi ở authGoogle', error);
+        return res.status(500).json({ message: 'Internal Server', error: error.message })
     }
 }

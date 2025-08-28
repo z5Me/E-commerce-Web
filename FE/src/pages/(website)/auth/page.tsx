@@ -1,7 +1,7 @@
-import { useLoading } from "@/contexts/LoadingScreen"
+import { useLoading } from "@/contexts/LoadingScreen";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Outlet } from "react-router"
+import { Outlet } from "react-router";
 
 const AuthPage = () => {
     const { show, hide } = useLoading();
