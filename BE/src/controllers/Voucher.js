@@ -34,12 +34,24 @@ export const createVoucher = async (req, res) => {
 }
 
 export const getAllVoucher = async (req, res) => {
-    const { filterDelete } = req.params;
+    const { filterDelete, filterActive } = req.query;
+    console.log('delete', filterDelete);
+    console.log('active', filterActive);
+    //sửa phần active
     try {
-        const findAllVoucher = await Voucher.find({ isDelete: filterDelete === 'true' ? true : false }).populate([
+        let findAllVoucher = await Voucher.find().populate([
             { path: 'categories' }
         ]);
+
         if (!findAllVoucher) return res.status(404).json({ error: 'Voucher not found' });
+
+        if (filterDelete && filterDelete === 'true') {
+            findAllVoucher = findAllVoucher.filter(voucher => voucher.isDelete === false);
+        }
+
+        if (filterActive && filterActive === 'true') {
+            findAllVoucher = findAllVoucher.filter(voucher => voucher.isActive === true);
+        }
 
         return res.status(200).json(findAllVoucher);
     } catch (error) {

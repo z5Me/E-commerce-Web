@@ -15,13 +15,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ChevronDownIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { createVoucher } from '@/store/thunks/voucherThunk';
-import { createSlug } from '@/lib/utils';
+import { createSlug, uploadSingleImage } from '@/lib/utils';
 import type { IVoucher } from '@/common/types/voucher';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 
 const initValue = {
     voucherCode: '',
+    image: '',
     minBill: 0,
     maxDiscount: 0,
     categories: [],
@@ -43,10 +44,12 @@ const AddVoucher = () => {
     const valueStartDate = watch('startDate');
     const [openStartDate, setOpenStartDate] = useState<boolean>(false);
     const [openEndDate, setOpenEndDate] = useState<boolean>(false);
+    const [previewImage, setPreviewImage] = useState<string>('');
 
-    const onSubmit = (data: IVoucher) => {
-        // console.log('dataFormVoucher', data);
-        dispatch(createVoucher({ ...data, slug: createSlug(data.voucherCode) })).unwrap()
+    const onSubmit = async (data: IVoucher) => {
+        const uploadImage = await uploadSingleImage(data.image[0]);
+
+        dispatch(createVoucher({ ...data, slug: createSlug(data.voucherCode), image: uploadImage })).unwrap()
             .then(() => {
                 toast.success('Success');
                 reset();
@@ -65,13 +68,41 @@ const AddVoucher = () => {
     const categoryData = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
 
     // console.log('categoryData')
+    const image = watch('image');
+    useEffect(() => {
+        if (image && image?.length > 0) {
+            const file = URL.createObjectURL(image[0]);
+            return setPreviewImage(file);
+        }
+    }, [image]);
 
     return (
         <>
             <p className="text-2xl font-bold">Add Voucher</p>
             <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className='grid grid-cols-2 gap-x-6 gap-y-8 *:grid *:gap-y-1'>
+                    <div className='grid grid-cols-2 gap-x-6 gap-y-8 *:grid *:gap-y-1 *:h-max'>
+                        <div className='w-full '>
+                            <Label htmlFor='image'>Voucher image</Label>
+                            <Input
+                                type='file'
+                                // accept='image/*'
+                                id='image'
+                                {...register('image', {
+                                    validate: {
+                                        lessThan2MB: (files: any) => files?.[0] ? files?.[0]?.size <= 2 * 1024 * 1024 || 'Ảnh tối đa 2MB' : true,
+                                        acceptFormat: (files) => ['image/jpeg', 'image/jpg', 'image/png', 'image/svg', 'image/webp+xml'].includes(files[0]?.type) || 'Chỉ chấp nhập JPEG/JPG/PNG/SVG/WebP'
+                                    }
+                                })}
+                            />
+                            <ErrorMessage errors={errors} name='image' render={({ message }) => <p className='text-danger'>{message}</p>} />
+                        </div>
+                        <div>
+                            <Label>Preview image</Label>
+                            <div className='flex items-center'>
+                                {previewImage && previewImage !== '' && <img className='border-2 border-dotted max-h-[300px]' src={previewImage} alt='voucher image' />}
+                            </div>
+                        </div>
                         <div>
                             <Label htmlFor='voucherCode'>Voucher code</Label>
                             <Input
@@ -122,8 +153,8 @@ const AddVoucher = () => {
                                         </SelectTrigger>
                                         <SelectContent id='typeOfDiscount'>
                                             <SelectGroup>
-                                                <SelectItem value='fixed'>Fixed</SelectItem>
-                                                <SelectItem value='percent'>Percent</SelectItem>
+                                                <SelectItem value='fixed'>Fixed (VNĐ)</SelectItem>
+                                                <SelectItem value='percent'>Percent (%)</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

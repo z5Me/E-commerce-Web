@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from 'js-cookie';
 
 const API = import.meta.env.VITE_API;
+const API_GOOGLE = import.meta.env.VITE_GOOGLE_API;
 
 export const signUp = createAsyncThunk('user/signUp', async (data: { email: string, password: string, userNameFile: string, userName: string }, { rejectWithValue }) => {
     try {
@@ -45,6 +46,21 @@ export const reSignIn = createAsyncThunk('user/reSignIn', async (_, { rejectWith
     }
 })
 
+export const getUserInfo = createAsyncThunk('user/getUserInfo', async (token, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(`${API_GOOGLE}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở user/getUserInfo', error);
+        return rejectWithValue(error.Response.data.error);
+    }
+})
+
 export const saveUserInformation = createAsyncThunk('user/saveUserInformation', async (data, { rejectWithValue }) => {
     // console.log('data_userThunk: ', data);
     try {
@@ -71,9 +87,9 @@ export const saveAddress = createAsyncThunk('user/saveAddress', async (data: { _
     }
 })
 
-export const authGoogle = createAsyncThunk('user/authGoogle', async ({ credential }: { credential: string }, { rejectWithValue }) => {
+export const authGoogle = createAsyncThunk('user/authGoogle', async (data, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API}/authGoogle`, { credential });
+        const response = await axios.post(`${API}/authGoogle`, data);
 
         return response.data;
     } catch (error: any) {

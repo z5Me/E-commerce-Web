@@ -1,4 +1,3 @@
-import type { ICategory } from './category';
 
 export type IVoucher = {
     _id?: string,
@@ -7,6 +6,7 @@ export type IVoucher = {
     minBill: number,
     maxDiscount: number,
     categories: string[],
+    image?: any;
     discount: number,
     typeOfDiscount: 'percent' | 'fixed',
     startDate: Date,

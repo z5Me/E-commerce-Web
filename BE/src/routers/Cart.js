@@ -1,5 +1,5 @@
 import express from 'express';
-import { addToCart, clearCart, decreaseQuantity, getSingleCart, increaseQuantity, removeAProduct, updateQuantity } from '../controllers/Cart';
+import { addToCart, addVoucher, clearCart, decreaseQuantity, getSingleCart, increaseQuantity, removeAProduct, updateQuantity } from '../controllers/Cart';
 
 const cartRouter = express.Router();
 
@@ -10,5 +10,6 @@ cartRouter.post('/decreaseQuantity', decreaseQuantity);
 cartRouter.post('/updateQuantity', updateQuantity);
 cartRouter.post('/clearCart', clearCart);
 cartRouter.post('/removeAProduct', removeAProduct);
+cartRouter.post('/addVoucher', addVoucher);
 
 export default cartRouter

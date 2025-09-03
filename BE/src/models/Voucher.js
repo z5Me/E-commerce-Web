@@ -27,6 +27,9 @@ const voucherSchema = new mongoose.Schema({
         enum: ['percent', 'fixed'],
         default: 'fixed'
     },
+    image: {
+        type: String
+    },
     startDate: {
         type: Date,
         default: new Date()

@@ -15,10 +15,11 @@ export const createVoucher = createAsyncThunk('voucher/createVoucher', async (da
     }
 });
 
-export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async ({ filterDelete = 'false' }: { filterDelete?: string }, { rejectWithValue }) => {
+export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async ({ filterDelete = 'false', filterActive = 'false' }: { filterDelete?: string, filterActive?: string }, { rejectWithValue }) => {
+    //filterDelete = 'true' lọc những voucher chưa bị xóa, filterActive = 'true' lọc những voucher đang được kích hoạt
     try {
         const response = await axios.get(`${API}/voucher/getAllVoucher`, {
-            params: { filterDelete }
+            params: { filterDelete, filterActive }
         });
 
         return response.data;

@@ -1,6 +1,7 @@
 import Cart from '../models/Cart';
 import Product from '../models/Product';
 import Variant from '../models/Variant';
+import Voucher from '../models/Voucher';
 
 export const getSingleCart = async (req, res) => {
     const { idUser } = req.query;
@@ -196,5 +197,43 @@ export const removeAProduct = async (req, res) => {
     } catch (error) {
         console.log('Lỗi ở removeAProduct', error);
         return res.status(500).json({ message: 'Lỗi server', error: error.message })
+    }
+}
+
+export const addVoucher = async (req, res) => {
+    const { idUser, idVoucher, voucherCode } = req.body;
+    try {
+        const getCart = await Cart.findOne({ idUser });
+        if (!getCart) return res.status(404).json({ error: 'Cart not found' });
+
+        const findVoucher = await Voucher.findOne({ _id: idVoucher }) || await Voucher.findOne({ voucherCode });
+        if (!findVoucher) return res.staus(404).json({ error: 'Voucher not found' });
+
+        //Check voucher đã có trong giỏ hàng chưa
+        const findIndex = getCart.voucherUsage.findIndex(voucher => voucher === findVoucher._id);
+        if (findIndex !== -1) return res.status(409).json({ error: 'Voucher đã được sử dụng' });
+
+        if (findVoucher) {
+            //Check trạng thái active
+            if (findVoucher.isActive === false) return res.status(409).json({ error: 'Voucher chưa được kích hoạt' });
+            //Check ngày bắt đầu và kết thúc
+            const startDate = new Date(findVoucher.startDate);
+            const endDate = new Date(findVoucher.endDate);
+            const presentDate = new Date();
+            if (presentDate < startDate) return res.status(409).json({ error: 'Voucher chưa đến ngày sử dụng' });
+            if (presentDate > endDate) return res.status(409).json({ error: 'Voucher đã hết hạn sử dụng' });
+            //Check người dùng này đã sử dụng voucher chưa
+            const findUsage = await voucherUsage.findOne({ idUser, idVoucher });
+            if (findUsage) return res.status(409).json({ error: 'Voucher đã qua sử dụng' });
+        }
+
+        getCart.voucherUsage.push(findVoucher._id);
+        await getCart.save();
+
+        return res.status(200).json(getCart);
+
+    } catch (error) {
+        console.log('Lỗi ở addVoucher', error);
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }

@@ -1,28 +1,29 @@
+import { useGetParams } from '@/common/hooks/useGetParams';
+import type { ICategory } from '@/common/types/category';
+import type { IVoucher } from '@/common/types/voucher';
 import { Button } from '@/components/ui/button';
-import { Controller, useForm } from 'react-hook-form';
-import { ErrorMessage } from '@hookform/error-message'
+import { Calendar } from '@/components/ui/calendar';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { shallowEqual, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { useAppDispatch } from '@/store/store';
-import { Checkbox } from '@/components/ui/checkbox';
-import type { ICategory } from '@/common/types/category';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '@/components/ui/select';
-import { SelectValue } from '@radix-ui/react-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ChevronDownIcon } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { createVoucher, editVoucher, getOneVoucher } from '@/store/thunks/voucherThunk';
-import { createSlug } from '@/lib/utils';
-import type { IVoucher } from '@/common/types/voucher';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
-import { useGetParams } from '@/common/hooks/useGetParams';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '@/components/ui/select';
+import { uploadSingleImage } from '@/lib/utils';
+import { useAppDispatch } from '@/store/store';
 import { getAllCategories } from '@/store/thunks/categoriesThunk';
+import { editVoucher, getOneVoucher } from '@/store/thunks/voucherThunk';
+import { ErrorMessage } from '@hookform/error-message';
+import { SelectValue } from '@radix-ui/react-select';
+import { ChevronDownIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { shallowEqual, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 const initValue = {
     voucherCode: '',
+    image: '',
     minBill: 0,
     maxDiscount: 0,
     categories: [],
@@ -45,6 +46,7 @@ const EditVoucher = () => {
     const valueStartDate = watch('startDate');
     const [openStartDate, setOpenStartDate] = useState<boolean>(false);
     const [openEndDate, setOpenEndDate] = useState<boolean>(false);
+    const [previewImage, setPreviewImage] = useState<string>('');
 
     const categoryData = useSelector((state: any) => state.categories.categoriesData, shallowEqual);
 
@@ -54,9 +56,18 @@ const EditVoucher = () => {
         }
     }, []);
 
-    const onSubmit = (data: IVoucher) => {
-        // console.log('dataFormVoucher', data);
-        dispatch(editVoucher(data)).unwrap()
+    const onSubmit = async (data: IVoucher) => {
+        console.log('dataFormVoucher', data);
+        let uploadImage = '';
+
+        //Nếu thay ảnh mới thì upload ảnh và lấy URL
+        if (data.image.length > 0) {
+            uploadImage = await uploadSingleImage(data.image[0]);
+        } else {
+            uploadImage = previewImage;
+        }
+
+        dispatch(editVoucher({ ...data, image: uploadImage })).unwrap()
             .then(() => {
                 toast.success('Success');
                 navigate(-1);
@@ -72,15 +83,18 @@ const EditVoucher = () => {
         if (idVoucher) {
             dispatch(getOneVoucher(idVoucher)).unwrap()
                 .then((data) => {
+                    console.log('data', data);
+                    setPreviewImage(data.image);
                     reset({
                         ...data,
+                        image: undefined,
                         startDate: data.startDate ? new Date(data.startDate) : undefined,
                         endDate: data.endDate ? new Date(data.endDate) : undefined
                     });
                 })
                 .catch((error) => {
                     toast.error('Lỗi khi lấy thông tin voucher');
-                    console.log('error',error);
+                    console.log('error', error);
                     return navigate(-1);
                 });
         }
@@ -91,7 +105,28 @@ const EditVoucher = () => {
             <p className="text-2xl font-bold">Edit Voucher</p>
             <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className='grid grid-cols-2 gap-x-6 gap-y-8 *:grid *:gap-y-1'>
+                    <div className='grid grid-cols-2 gap-x-6 gap-y-8 *:grid *:gap-y-1 *:h-max'>
+                        <div className='w-full'>
+                            <Label htmlFor='image'>Voucher image</Label>
+                            <Input
+                                type='file'
+                                // accept='image/*'
+                                id='image'
+                                {...register('image', {
+                                    validate: {
+                                        lessThan2MB: (files: any) => files?.[0] ? files?.[0]?.size <= 2 * 1024 * 1024 || 'Ảnh tối đa 2MB' : true,
+                                        acceptFormat: (files) => files?.[0] ? ['image/jpeg', 'image/jpg', 'image/png', 'image/svg', 'image/webp+xml'].includes(files[0]?.type) || 'Chỉ chấp nhập JPEG/JPG/PNG/SVG/WebP' : true
+                                    }
+                                })}
+                            />
+                            <ErrorMessage errors={errors} name='image' render={({ message }) => <p className='text-danger'>{message}</p>} />
+                        </div>
+                        <div>
+                            <Label>Preview image</Label>
+                            <div className='flex items-center'>
+                                {previewImage && previewImage !== '' && <img className='border-2 border-dotted max-h-[300px]' src={previewImage} alt='voucher image' />}
+                            </div>
+                        </div>
                         <div>
                             <Label htmlFor='voucherCode'>Voucher code</Label>
                             <Input
@@ -142,8 +177,8 @@ const EditVoucher = () => {
                                         </SelectTrigger>
                                         <SelectContent id='typeOfDiscount'>
                                             <SelectGroup>
-                                                <SelectItem value='fixed'>Fixed</SelectItem>
-                                                <SelectItem value='percent'>Percent</SelectItem>
+                                                <SelectItem value='fixed'>Fixed (VNĐ)</SelectItem>
+                                                <SelectItem value='percent'>Percent (%)</SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

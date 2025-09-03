@@ -26,6 +26,12 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    voucherUsage: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Voucher'
+        }
+    ],
     address: {},
     total: {
         type: Number,

@@ -4,6 +4,7 @@ import { generateToken } from "../utils/generateToken";
 import { OAuth2Client } from "google-auth-library";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const defaultPassword = process.env.DEFAULT_PASSWORD;
 
 export const SignUp = async (req, res) => {
     const { email, password, userNameFile, userName, avatar } = req.body;
@@ -109,35 +110,30 @@ export const saveAddress = async (req, res) => {
 
 export const authGoogle = async (req, res) => {
     try {
-        const { credential } = req.body;
-        //Xác thực id_token với google
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: process.env.GOOGLE_CLIENT_ID
-        });
-        if (!ticket) return res.status(400).json({ error: 'Lỗi khi lấy ticket' });
-        //Lấy thông tin
-        const payload = ticket.getPayload();
+        const { email, name, picture } = req.body;
         //Tìm tài khoản
-        const findUser = await User.findOne({ email: payload.email });
+        const findUser = await User.findOne({ email });
         //Đăng nhập nếu tài khoản tồn tại
         if (findUser) {
             const token = generateToken({ userId: findUser._id });
             return res.status(200).json({ user: findUser, token });
         };
 
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
         const createUser = await User.create({
-            email: payload.email,
-            password: process.env.DEFAULT_PASSWORD,
-            userNameFile: `${payload.given_name} ${payload.family_name}`,
-            userName: `${payload.given_name} ${payload.family_name}`,
-            avatar: 'https://avatars.githubusercontent.com/u/124599?v=4'
+            email: email,
+            password: hashedPassword,
+            userNameFile: name,
+            userName: name,
+            avatar: picture
         });
         if (!createUser) {
             console.log('Lỗi ở authGoogle');
             return res.status(400).json({ error: 'Lỗi khi tạo tài khoản!' })
         }
         const token = generateToken({ userId: createUser._id });
+        //check lỗi khi call API này
 
         return res.status(201).json({ user: createUser, token });
     } catch (error) {

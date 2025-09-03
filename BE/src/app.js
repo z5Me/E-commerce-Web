@@ -15,6 +15,7 @@ import productRouter from './routers/Product';
 import userRouter from './routers/User';
 import variantRouter from './routers/Variant';
 import voucherRouter from './routers/Voucher';
+import voucherUsageRouter from './routers/VoucherUsage';
 
 config();
 
@@ -51,6 +52,7 @@ app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/category', categoriesRouter);
 app.use('/api/voucher', voucherRouter);
+app.use('/api/voucherUsage', voucherUsageRouter);
 
 // Check connect
 app.listen(port, () => {

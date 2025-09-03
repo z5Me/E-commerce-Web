@@ -17,7 +17,7 @@ import { formatVietnamTime } from "@/lib/utils";
 import { useAppDispatch } from "@/store/store";
 import { changeActiveVoucher, removeVoucher } from "@/store/thunks/voucherThunk";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Ticket } from "lucide-react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 
@@ -51,6 +51,18 @@ export const columns: ColumnDef<IVoucher>[] = [
             const voucher = row.original;
             return (
                 <p>{voucher.voucherCode}</p>
+            )
+        }
+    },
+    {
+        accessorKey: "image",
+        header: "Image",
+        cell: ({ row }) => {
+            const voucher = row.original;
+            return (
+                <>
+                    {!voucher.image ? <Ticket /> : <img src={voucher.image} alt="image voucher" className="max-w-[100px]" />}
+                </>
             )
         }
     },
@@ -111,16 +123,16 @@ export const columns: ColumnDef<IVoucher>[] = [
             )
         }
     },
-    {
-        accessorKey: "typeOfDiscount",
-        header: "Type",
-        cell: ({ row }) => {
-            const voucher = row.original;
-            return (
-                <p>{voucher.typeOfDiscount}</p>
-            )
-        }
-    },
+    // {
+    //     accessorKey: "typeOfDiscount",
+    //     header: "Type",
+    //     cell: ({ row }) => {
+    //         const voucher = row.original;
+    //         return (
+    //             <p>{voucher.typeOfDiscount}</p>
+    //         )
+    //     }
+    // },
     {
         accessorKey: "startDate",
         header: "Start date",
