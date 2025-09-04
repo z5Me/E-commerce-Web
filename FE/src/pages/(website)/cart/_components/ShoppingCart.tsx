@@ -1,23 +1,21 @@
 import useScreenWidth from '@/common/hooks/useScreenWidth';
 import type { IItemCart } from '@/common/types/itemCart';
+import type { IVoucher } from '@/common/types/voucher';
 import ProductInCart from '@/components/ProductInCart';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useDialog } from '@/contexts/DialogContext';
+import { formatPriceVietNam, formatVietnamTime } from '@/lib/utils';
 import { useAppDispatch } from '@/store/store';
-import { clearCart, getSingleCart } from '@/store/thunks/cartThunk';
+import { addVoucher, clearCart, getSingleCart, removeVoucher } from '@/store/thunks/cartThunk';
 import { reSignIn } from '@/store/thunks/userThunk';
-import { Tag, Ticket } from 'lucide-react';
+import { getAllVoucher } from '@/store/thunks/voucherThunk';
+import { Check, Tag, Ticket } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import PriceList from './PriceList';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { getAllVoucher } from '@/store/thunks/voucherThunk';
-import type { IVoucher } from '@/common/types/voucher';
-import { formatVietnamTime } from '@/lib/utils';
 
 const ShoppingCart = () => {
     //Theo dõi chiều ngang của web
@@ -25,7 +23,7 @@ const ShoppingCart = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     //Dữ liệu giỏ hàng của người dùng
-    const cart = useSelector((state: any) => state.cart.cartData, shallowEqual);
+    const cart = useSelector((state: any) => state.cart.cartData);
     //Dữ liệu của người dùng
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
     //Dữ liệu tất cả voucher của shop
@@ -55,6 +53,30 @@ const ShoppingCart = () => {
     }, [dataUser]);
 
     const [openVoucher, setOpenVoucher] = useState<boolean>(false);
+
+    const handleChooseVoucher = (voucher: IVoucher) => {
+        dispatch(addVoucher({ idUser: dataUser._id, idVoucher: voucher._id as string })).unwrap()
+            .then(() => {
+                toast.success('Success');
+            })
+            .catch((error) => {
+                console.log('error handleChooseVoucher', error);
+                // dispatch(getAllVoucher({ filterDelete: 'true', filterActive: 'true' }))
+                return toast.error(error);
+            })
+    }
+
+    //Test chức năng bỏ voucher ra khỏi cart
+    const handleRemoveVoucher = (idVoucher: string) => {
+        dispatch(removeVoucher({ idUser: dataUser._id, idVoucher })).unwrap()
+            .then(() => {
+                toast.success('Success');
+            })
+            .catch((error) => {
+                console.log('error handleRemoveVoucher', error);
+                return toast.error(error);
+            })
+    }
 
     return (
         <>
@@ -129,37 +151,49 @@ const ShoppingCart = () => {
                             </div>
                             <div className="grid gap-3">
                                 <Label htmlFor="username-2">Chọn Voucher</Label>
-                                <div className='max-h-[500px] overflow-auto grid gap-y-2'>
-                                    {dataVoucher.map((voucher: IVoucher) => (
-                                        <div key={voucher._id} className='flex border gap-x-2'>
-                                            {voucher.image
-                                                ?
-                                                <img src={voucher.image} alt="voucher image" className='aspect-3/2 max-w-[90px]' />
-                                                :
-                                                <div className='min-w-[90px] aspect-3/2 flex flex-col items-center justify-center bg-primary text-white'>
-                                                    <Ticket />
-                                                    <p className='text-xs'>{voucher.voucherCode}</p>
+                                <div className='max-h-[500px] overflow-auto grid gap-y-2 select-none'>
+                                    {dataVoucher.map((voucher: IVoucher) => {
+                                        const isChoosen = cart.voucherUsage[0] === voucher._id; //check voucher được chọn
+                                        const isNotReady = new Date() < new Date(voucher.startDate); //check ngày bắt đầu
+                                        const isEnd = new Date() > new Date(voucher.endDate); //check ngày kết thúc
+                                        const isActive = !voucher.isActive; //Check trạng thái kích hoạt
+                                        return (
+                                            <div
+                                                key={voucher._id}
+                                                className={`flex border ${isChoosen ? 'border-primary' : 'cursor-pointer'} gap-x-2 ${(isNotReady || isEnd || isActive) === true && 'opacity-50'}`}
+                                                onClick={() => !isChoosen ? handleChooseVoucher(voucher) : handleRemoveVoucher(voucher._id as string)}
+                                            >
+                                                {voucher.image
+                                                    ?
+                                                    <img src={voucher.image} alt="voucher image" className='aspect-3/2 max-w-[90px]' />
+                                                    :
+                                                    <div className='min-w-[90px] aspect-3/2 flex flex-col items-center justify-center bg-primary text-white'>
+                                                        <Ticket />
+                                                        <p className='text-xs'>{voucher.voucherCode}</p>
+                                                    </div>
+                                                }
+                                                <div className='flex flex-wrap gap-x-1 items-center'>
+                                                    <p className='bg-primary text-white text-xs px-1 py-0.5 rounded-sm'>Số lượng có hạn</p>
+                                                    <p className='text-base font-bold'>Giảm {voucher.typeOfDiscount === 'fixed' ? formatPriceVietNam(voucher.discount) : `${voucher.discount}%`}</p>
+                                                    {voucher.typeOfDiscount === 'percent' && <p className='text-sm font-medium'>Giảm tối đa {formatPriceVietNam(voucher.maxDiscount)}</p>}
+                                                    <p className='text-xs'>Đơn tối thiểu {formatPriceVietNam(voucher.minBill)}</p>
+                                                    {/* <p className='text-sm flex'>
+                                                        {voucher.categories.map((category: any) => <span key={category._id}>{category.name}</span>)}
+                                                    </p> */}
+                                                    <div className='flex flex-row gap-x-1 items-center'>
+                                                        <p className='text-xs'>Còn lại: {voucher.quantity}</p>
+                                                        <p>-</p>
+                                                        <p className='text-xs truncate text-danger'>HSD: {formatVietnamTime(voucher.endDate).slice(6)}</p>
+                                                    </div>
                                                 </div>
-                                            }
-                                            <div className='flex flex-wrap gap-x-1 items-center'>
-                                                <p className='bg-primary text-white text-xs px-1 py-0.5 rounded-sm'>Số lượng có hạn</p>
-                                                <p className='text-base font-bold'>Giảm {voucher.discount}{voucher.typeOfDiscount === 'fixed' ? 'k' : '%'}</p>
-                                                <p className='text-sm font-medium'>Giảm tối đa {voucher.maxDiscount}k</p>
-                                                <p className='text-xs'>Đơn tối thiểu {voucher.minBill}k</p>
-                                                {/* <p className='text-sm flex'>
-                                                    {voucher.categories.map((category: any) => <span key={category._id}>{category.name}</span>)}
-                                                </p> */}
-                                                <div className='flex flex-row gap-x-1 items-center'>
-                                                    <p className='text-xs'>Còn lại: {voucher.quantity}</p>
-                                                    <p>-</p>
-                                                    <p className='text-xs truncate text-danger'>HSD: {formatVietnamTime(voucher.endDate).slice(6)}</p>
+                                                <div className='flex items-center justify-center text-center pr-2'>
+                                                    <div className={`p-1 rounded-full border border-primary text-white ${isChoosen ? 'bg-primary' : 'bg-white'}`}>
+                                                        <Check size={12} strokeWidth={4} />
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className='flex items-center justify-center text-center'>
-                                                <p className='text-sm cursor-pointer text-primary hover:text-white bg-transparent hover:bg-primary border border-primary px-3 py-1'>Dùng ngay</p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -171,7 +205,7 @@ const ShoppingCart = () => {
                         </DialogFooter> */}
                     </DialogContent>
                 </form>
-            </Dialog>
+            </Dialog >
         </>
     )
 }

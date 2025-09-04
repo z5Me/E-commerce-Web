@@ -54,6 +54,28 @@ export const removeAProduct = createAsyncThunk('cart/removeAProduct', async ({ i
         return response.data;
     } catch (error: any) {
         console.log('Lỗi ở cart/removeAProduct', error);
-        return rejectWithValue(error.response.daat.error);
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
+export const addVoucher = createAsyncThunk('cart/addVoucher', async (data: { idUser: string, idVoucher: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/cart/addVoucher`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở cart/addVoucher', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})
+
+export const removeVoucher = createAsyncThunk('cart/removeVoucher', async (data: { idUser: string, idVoucher: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/cart/removeVoucher`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở cart/removeVoucher', error);
+        return rejectWithValue(error.response.data.error);
     }
 })

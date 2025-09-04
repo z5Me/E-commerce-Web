@@ -1,3 +1,4 @@
+import { VietNamPrice } from "@/lib/utils"
 
 const DiscountIcon = (
     { price, oldPrice, discountPrice, className, classNamePrice, classNameOldPrice, classNameDPercent }:
@@ -6,10 +7,10 @@ const DiscountIcon = (
 
     return (
         <div className={`flex items-center ${className}`}>
-            <p className={`font-bold ${classNamePrice}`}>${price}</p>
+            <p className={`font-bold ${classNamePrice}`}>{(VietNamPrice(price))}<span className="underline">đ</span></p>
             {(oldPrice && oldPrice > 0 && price < oldPrice)
                 ?
-                <p className={`font-bold text-primary/30 line-through ${classNameOldPrice}`}>${oldPrice}</p>
+                <p className={`font-bold text-primary/30 line-through ${classNameOldPrice}`}>{VietNamPrice(oldPrice)}<span className="underline">đ</span></p>
                 :
                 ''
             }

@@ -144,3 +144,35 @@ export function getMaxPrice(allProducts: IProduct[]) {
 
   return maxPrice;
 }
+
+//Fomart tiền việt nam
+export function formatPriceVietNam(value: string | number, decimal = 1) {
+  if (typeof value === 'string') {
+    value = Number(value);
+  };
+
+  if (isNaN(value)) return "";
+
+  if (value < 1000) {
+    return value.toLocaleString("vi-VN") + 'đ'
+  };
+
+  if (value < 1000000) {
+    return (value / 1000).toFixed(decimal).replace(/\.0+$/, "") + 'k';
+  }
+
+  if (value >= 1000000) {
+    return (value / 1000000).toFixed(decimal).replace(/\.0+$/, "") + 'tr';
+  }
+}
+
+//Format thêm dấu phân cách tiền lớn
+export function VietNamPrice(value: string | number) {
+  if (typeof value === 'string') {
+    value = Number(value);
+  };
+
+  if (isNaN(value)) return "";
+
+  return value.toLocaleString('vi-VN');
+}

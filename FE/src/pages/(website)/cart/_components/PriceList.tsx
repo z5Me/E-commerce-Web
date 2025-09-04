@@ -2,6 +2,7 @@ import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
 import type { IAddress } from "@/common/types/address";
 import type { ICart } from "@/common/types/cart";
 import { useDialog } from "@/contexts/DialogContext";
+import { VietNamPrice } from "@/lib/utils";
 import { setChangePage } from "@/store/slices/cartSlice";
 import { useAppDispatch } from "@/store/store";
 import { createOrder } from "@/store/thunks/orderThunk";
@@ -86,24 +87,24 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
                 <div className="flex flex-col gap-y-4 border-b pb-5 border-b-primary/10">
                     <div className="flex justify-between items-center sm:text-base text-sm">
                         <p className="text-primary/60">Subtotal</p>
-                        <p className="font-bold">$565</p>
+                        <p className="font-bold">{VietNamPrice(cart.totalProduct)}<span className="underline">đ</span></p>
                     </div>
                     <div className="flex justify-between items-center sm:text-base text-sm">
                         <p className="text-primary/60">Discount</p>
-                        <p className="font-bold text-danger">-$113</p>
+                        <p className="font-bold text-danger">-{VietNamPrice(cart.discountProduct)}<span className="underline">đ</span></p>
                     </div>
-                    <div className="flex justify-between items-center sm:text-base text-sm">
+                    <div className="flex justify-between items-center sm:text-base text-sm line-through">
                         <p className="text-primary/60">Delivery Fee</p>
                         <p className="font-bold">$15</p>
                     </div>
                     <div className="flex justify-between items-center sm:text-base text-sm">
                         <p className="text-primary/60">Voucher</p>
-                        <p className="font-bold text-danger">-$10</p>
+                        <p className="font-bold text-danger">-{VietNamPrice(cart.discountVoucher)}<span className="underline">đ</span></p>
                     </div>
                 </div>
                 <div className="flex justify-between items-center sm:text-lg text-base">
                     <p className="text-primary font-medium">Total</p>
-                    <p className="font-bold">${cart?.total}</p>
+                    <p className="font-bold">{VietNamPrice(cart.total)}<span className="underline">đ</span></p>
                 </div>
                 <div onClick={() => handleCreateOrder()}>
                     <div className="w-full px-10 flex justify-center items-center bg-[#C8C9CB] hover:bg-primary rounded-full select-none cursor-pointer">

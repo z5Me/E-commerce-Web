@@ -1,16 +1,16 @@
 import useScreenWidth from '@/common/hooks/useScreenWidth'
+import type { IAttributeValue } from '@/common/types/attributeValue'
+import type { ICart } from '@/common/types/cart'
+import type { IItemCart } from '@/common/types/itemCart'
+import type { IUser } from '@/common/types/user'
 import { debounce } from '@/lib/utils'
 import { useAppDispatch } from '@/store/store'
 import { removeAProduct, updateQuantity } from '@/store/thunks/cartThunk'
 import { Trash2 } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { ChangeQuantity } from './ChangeQuantity'
 import DiscountIcon from './Discount'
-import type { IItemCart } from '@/common/types/itemCart'
-import type { ICart } from '@/common/types/cart'
-import type { IUser } from '@/common/types/user'
-import type { IAttributeValue } from '@/common/types/attributeValue'
 
 type Props = {
     item: IItemCart,
@@ -23,6 +23,7 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
     const screenWidth = useScreenWidth();
     const dispatch = useAppDispatch();
     const [quantity, setQuantity] = useState<number>(item.quantity);
+    const firstRender = useRef(true); //Ngăn chạy useEffect khi mới mount
     // console.log('item: ', cart);
 
     const debouncedUpdateQuantity = useMemo(() =>
@@ -37,6 +38,14 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
             }
         }, 500)
         , [dataUser._id, item.product._id, item.variant._id, dispatch]);
+
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+        debouncedUpdateQuantity(quantity);
+    }, [quantity]);
 
     return (
         <div className="flex gap-x-4">
@@ -75,7 +84,7 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
                             ?
                             <div className='w-full flex justify-between'>
                                 <p>Price:</p>
-                                <span className="text-primary">${(item.variant.price ?? 0) - (item.variant.discount ?? 0)}</span>
+                                <span className="text-primary">{((item.variant.price ?? 0) - (item.variant.discount ?? 0))}</span>
                             </div>
                             :
                             <DiscountIcon

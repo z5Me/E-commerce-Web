@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "sonner";
-import { addToCart, clearCart, getSingleCart, removeAProduct, updateQuantity } from "../thunks/cartThunk";
+import { addToCart, addVoucher, clearCart, getSingleCart, removeAProduct, removeVoucher, updateQuantity } from "../thunks/cartThunk";
 
 
 const cartSlice = createSlice({
@@ -10,7 +9,9 @@ const cartSlice = createSlice({
             _id: '',
             idUser: '',
             products: [] as any[],
+            voucherUsage: [],
             totalProduct: 0,
+            discountProduct: 0,
             discountVoucher: 0,
             total: 0,
         },
@@ -51,16 +52,33 @@ const cartSlice = createSlice({
                 state.status = 'addToCart.fulfilled';
                 state.error = '';
                 const indexProduct = state.cartData.products.findIndex((item) => {
-                    return item.variant._id.toString() === action.payload.variant
+                    return item.variant._id.toString() === action.payload.variant._id.toString()
                 })
 
                 if (indexProduct !== -1) {
+                    //Cập nhật số lượng
                     state.cartData.products[indexProduct].quantity = action.payload.quantity;
-                    toast.success('Thêm giỏ hàng thành công');
-                    setTimeout(() => {
-                        state.status = 'idle'
-                    }, 500)
+
+                    //Cập nhật lại tiền
+                    state.cartData.totalProduct = action.payload.totalProduct;
+                    state.cartData.discountProduct = action.payload.discountProduct;
+                    state.cartData.discountVoucher = action.payload.discountVoucher;
+                    state.cartData.total = action.payload.total;
+                    return;
                 }
+
+                //Thêm sp mới vào
+                state.cartData.products.push({
+                    product: action.payload.product,
+                    variant: action.payload.variant,
+                    quantity: action.payload.quantity
+                })
+
+                //Cập nhật lại tiền
+                state.cartData.totalProduct = action.payload.totalProduct;
+                state.cartData.discountProduct = action.payload.discountProduct;
+                state.cartData.discountVoucher = action.payload.discountVoucher;
+                state.cartData.total = action.payload.total;
 
             })
             .addCase(addToCart.rejected, (state, action) => {
@@ -75,15 +93,7 @@ const cartSlice = createSlice({
             .addCase(updateQuantity.fulfilled, (state, action) => {
                 state.status = 'updateQuantity.fulfilled';
                 state.error = '';
-                const index = state.cartData.products.findIndex(item => item.variant._id.toString() === action.payload.variant._id.toString());
-
-                if (index !== -1) {
-                    state.cartData.products[index].quantity = action.payload.quantity;
-                }
-
-                state.cartData.total = state.cartData.products.reduce((acc, curr) => {
-                    return acc + ((curr.variant.price - curr.variant.discount) * curr.quantity)
-                }, 0);
+                state.cartData = action.payload;
             })
             .addCase(updateQuantity.rejected, (state, action) => {
                 state.status = 'updateQuantity.rejected';
@@ -118,6 +128,34 @@ const cartSlice = createSlice({
             })
             .addCase(removeAProduct.rejected, (state, action) => {
                 state.status = 'removeAProduct.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(addVoucher.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(addVoucher.fulfilled, (state, action) => {
+                state.status = 'addVoucher.fulfilled';
+                state.error = '';
+                state.cartData.voucherUsage = action.payload.voucherUsage;
+            })
+            .addCase(addVoucher.rejected, (state, action) => {
+                state.status = 'addVoucher.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(removeVoucher.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(removeVoucher.fulfilled, (state, action) => {
+                state.status = 'removeVoucher.fulfilled';
+                state.error = '';
+                state.cartData.voucherUsage = action.payload.voucherUsage;
+            })
+            .addCase(removeVoucher.rejected, (state, action) => {
+                state.status = 'removeVoucher.rejected';
                 state.error = action.payload as string;
             })
     },
