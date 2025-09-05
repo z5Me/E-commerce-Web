@@ -1,6 +1,8 @@
 import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
 import type { IAddress } from "@/common/types/address";
 import type { ICart } from "@/common/types/cart";
+import type { IUser } from "@/common/types/user";
+import { OTP } from "@/components/OTP";
 import { useDialog } from "@/contexts/DialogContext";
 import { VietNamPrice } from "@/lib/utils";
 import { setChangePage } from "@/store/slices/cartSlice";
@@ -20,8 +22,15 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
 
     const handleCreateOrder = () => {
         if (url === '/cart/checkout') {
-            dispatch(setChangePage(url));
-            naviagte(url);
+            if (dataUser && dataUser.phone === '') {
+                showDialog({
+                    title: 'Số điện thoại chưa được xác thực',
+                    description: 'Bạn cần xác minh số điện thoại để tiếp tục mua hàng!'
+                })
+                return
+            }
+            // dispatch(setChangePage(url));
+            // naviagte(url);
             return;
         }
 
@@ -31,49 +40,49 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
                 return
             }
             const filterAddress = dataUser.address.filter((item: IAddress) => item.selected === true);
-            // console.log('filterAddress', filterAddress[0])
+            if (!filterAddress[0]) return toast.warning('Vui lòng cung cấp thông tin địa chỉ');
             // console.log(cart.products)
-            const data = {
-                userId: dataUser._id,
-                address: filterAddress[0],
-                products: cart.products,
-                payment: payment as "cod" | "momo",
-                total: cart.total,
-                updateStatus: [{
-                    title: 'Chờ xác nhận',
-                    desc: 'Chờ xác nhận bên phía người bán',
-                    date: new Date(),
-                    status: "pending" as "pending",
-                    orderCode: '',
-                    creator: {
-                        userId: dataUser._id,
-                        name: dataUser.userName,
-                        email: dataUser.email,
-                        role: dataUser.role
-                    }
-                }]
-            }
+            // const data = {
+            //     userId: dataUser._id,
+            //     address: filterAddress[0],
+            //     products: cart.products,
+            //     payment: payment as "cod" | "momo",
+            //     total: cart.total,
+            //     updateStatus: [{
+            //         title: 'Chờ xác nhận',
+            //         desc: 'Chờ xác nhận bên phía người bán',
+            //         date: new Date(),
+            //         status: "pending" as "pending",
+            //         orderCode: '',
+            //         creator: {
+            //             userId: dataUser._id,
+            //             name: dataUser.userName,
+            //             email: dataUser.email,
+            //             role: dataUser.role
+            //         }
+            //     }]
+            // }
 
-            if (data.products.length === 0) {
-                toast.warning('Giỏ hàng rỗng');
-                showDialog({
-                    title: 'Rời khỏi trang?',
-                    description: 'Rời khỏi trang và bắt đầu mua sắm nào!',
-                    onCancel: () => naviagte('/cart'),
-                    onConfirm: () => naviagte('/')
-                })
-                return;
-            }
+            // if (data.products.length === 0) {
+            //     toast.warning('Giỏ hàng rỗng');
+            //     showDialog({
+            //         title: 'Rời khỏi trang?',
+            //         description: 'Rời khỏi trang và bắt đầu mua sắm nào!',
+            //         onCancel: () => naviagte('/cart'),
+            //         onConfirm: () => naviagte('/')
+            //     })
+            //     return;
+            // }
 
-            dispatch(createOrder(data)).unwrap()
-                .then(() => {
-                    dispatch(setChangePage(url))
-                    naviagte('/cart/order');
-                })
-                .catch(() => {
-                    console.log('orderError: ', orderError)
-                    toast.error(`Lỗi tạo đơn hàng, vui lòng thử lại sau`)
-                });
+            // dispatch(createOrder(data)).unwrap()
+            //     .then(() => {
+            //         dispatch(setChangePage(url))
+            //         naviagte('/cart/order');
+            //     })
+            //     .catch(() => {
+            //         console.log('orderError: ', orderError)
+            //         toast.error(`Lỗi tạo đơn hàng, vui lòng thử lại sau`)
+            //     });
         }
         return;
     }
@@ -93,18 +102,20 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
                         <p className="text-primary/60">Discount</p>
                         <p className="font-bold text-danger">-{VietNamPrice(cart.discountProduct)}<span className="underline">đ</span></p>
                     </div>
-                    <div className="flex justify-between items-center sm:text-base text-sm line-through">
-                        <p className="text-primary/60">Delivery Fee</p>
-                        <p className="font-bold">$15</p>
-                    </div>
                     <div className="flex justify-between items-center sm:text-base text-sm">
                         <p className="text-primary/60">Voucher</p>
                         <p className="font-bold text-danger">-{VietNamPrice(cart.discountVoucher)}<span className="underline">đ</span></p>
                     </div>
+                    {url === '/cart/order' &&
+                        <div className="flex justify-between items-center sm:text-base text-sm">
+                            <p className="text-primary/60">Delivery Fee</p>
+                            <p className="font-bold">{VietNamPrice(15000)}<span className="underline">đ</span></p>
+                        </div>
+                    }
                 </div>
                 <div className="flex justify-between items-center sm:text-lg text-base">
                     <p className="text-primary font-medium">Total</p>
-                    <p className="font-bold">{VietNamPrice(cart.total)}<span className="underline">đ</span></p>
+                    <p className="font-bold">{url !== '/cart/order' ? VietNamPrice(cart.total) : VietNamPrice(cart.total + 15000)}<span className="underline">đ</span></p>
                 </div>
                 <div onClick={() => handleCreateOrder()}>
                     <div className="w-full px-10 flex justify-center items-center bg-[#C8C9CB] hover:bg-primary rounded-full select-none cursor-pointer">

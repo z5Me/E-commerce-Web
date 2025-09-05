@@ -23,7 +23,22 @@ export const caculateTotalCart = (cart) => {
         return acc + (curr.variant.discount * curr.quantity);
     }, 0)
 
-    total = totalProduct - discountProduct;
+    if (cart.voucherUsage && cart.voucherUsage.length > 0) {
+        discountVoucher = cart.voucherUsage.reduce((acc, curr) => {
+            if (curr.typeOfDiscount === 'fixed') return acc + curr.discount;
+            if (curr.typeOfDiscount === 'percent') {
+                if (curr.maxDiscount && curr.maxDiscount > 0) {
+                    const total = acc + ((totalProduct - discountProduct) * curr.discount / 100)
+                    if (total <= curr.maxDiscount) return total
+                    return curr.maxDiscount
+                }
+            }
+
+        }, 0)
+    }
+
+    total = totalProduct - discountProduct - discountVoucher;
+    if (total < 0) total = 0;
 
     allData = {
         ...cart._doc,

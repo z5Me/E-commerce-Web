@@ -125,6 +125,12 @@ const cartSlice = createSlice({
                 state.status = 'removeAProduct.fulfilled';
                 state.error = '';
                 state.cartData.products = state.cartData.products.filter(item => item.variant._id !== action.payload.idVariant.toString());
+
+                //Cập nhật lại tiền
+                state.cartData.totalProduct = action.payload.totalProduct;
+                state.cartData.discountProduct = action.payload.discountProduct;
+                state.cartData.discountVoucher = action.payload.discountVoucher;
+                state.cartData.total = action.payload.total;
             })
             .addCase(removeAProduct.rejected, (state, action) => {
                 state.status = 'removeAProduct.rejected';
@@ -139,6 +145,12 @@ const cartSlice = createSlice({
                 state.status = 'addVoucher.fulfilled';
                 state.error = '';
                 state.cartData.voucherUsage = action.payload.voucherUsage;
+
+                //Cập nhật lại tiền
+                state.cartData.totalProduct = action.payload.totalProduct;
+                state.cartData.discountProduct = action.payload.discountProduct;
+                state.cartData.discountVoucher = action.payload.discountVoucher;
+                state.cartData.total = action.payload.total;
             })
             .addCase(addVoucher.rejected, (state, action) => {
                 state.status = 'addVoucher.rejected';
@@ -153,6 +165,12 @@ const cartSlice = createSlice({
                 state.status = 'removeVoucher.fulfilled';
                 state.error = '';
                 state.cartData.voucherUsage = action.payload.voucherUsage;
+
+                //Cập nhật lại tiền
+                state.cartData.totalProduct = action.payload.totalProduct;
+                state.cartData.discountProduct = action.payload.discountProduct;
+                state.cartData.discountVoucher = action.payload.discountVoucher;
+                state.cartData.total = action.payload.total;
             })
             .addCase(removeVoucher.rejected, (state, action) => {
                 state.status = 'removeVoucher.rejected';

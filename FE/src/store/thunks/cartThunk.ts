@@ -58,7 +58,7 @@ export const removeAProduct = createAsyncThunk('cart/removeAProduct', async ({ i
     }
 })
 
-export const addVoucher = createAsyncThunk('cart/addVoucher', async (data: { idUser: string, idVoucher: string }, { rejectWithValue }) => {
+export const addVoucher = createAsyncThunk('cart/addVoucher', async (data: { idUser: string, idVoucher?: string, voucherCode?: string }, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API}/cart/addVoucher`, data);
 

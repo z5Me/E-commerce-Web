@@ -16,6 +16,10 @@ export const getSingleCart = async (req, res) => {
             .populate({
                 path: "products.variant",
                 model: "Variant"
+            })
+            .populate({
+                path: "voucherUsage",
+                model: "Voucher"
             });
         if (!getCart) {
             let newCart = await Cart.create({ idUser });
@@ -36,7 +40,8 @@ export const addToCart = async (req, res) => {
     try {
         const getCart = await Cart.findOne({ idUser }).populate([
             { path: 'products.product' },
-            { path: 'products.variant' }
+            { path: 'products.variant' },
+            { path: 'voucherUsage' }
         ]);
         if (!getCart) {
             const newCart = await Cart.create({ idUser });
@@ -77,11 +82,14 @@ export const addToCart = async (req, res) => {
             return res.status(200).json(newCart);
         }
 
+        //add sp mới không bị trùng lặp
         getCart.products.push({ product: idProduct, variant: idVariant, quantity: quantity });
-        await getCart.save();
+        await getCart.save(); //lưu dữ liệu vào Database
+        //Xử lý dữ liệu trả về FE
         await getCart.populate([
             { path: 'products.product' },
-            { path: 'products.variant' }
+            { path: 'products.variant' },
+            { path: 'voucherUsage' }
         ])
 
         const findIndex = getCart.products.findIndex(item => item.product._id.toString() === idProduct.toString() && item.variant._id.toString() === idVariant.toString())
@@ -95,7 +103,7 @@ export const addToCart = async (req, res) => {
             discountVoucher,
             total
         }
-        // console.log('chay vao day', newCart)
+
         return res.status(200).json(newCart);
     } catch (error) {
         console.log('Lỗi ở addToCart', error);
@@ -113,7 +121,7 @@ export const increaseQuantity = async (req, res) => {
         if (index === -1) return res.status(404).json({ error: 'Cannot found index' });
 
         const findVariant = await Variant.findOne({ _id: idVariant, isDelete: false });
-        if (!findVariant) return res.staus(404).json({ error: 'Variant not found' });
+        if (!findVariant) return res.status(404).json({ error: 'Variant not found' });
 
         if (getCart.products[index].quantity >= findVariant.countOnStock) return res.status(409).json({ error: 'Max count on stock' });
 
@@ -123,7 +131,7 @@ export const increaseQuantity = async (req, res) => {
         return res.status(200).json(getCart.products[index]);
     } catch (error) {
         console.log('Lỗi ở increaseQuantity', error);
-        return res.staus(500).json({ message: 'Lỗi server', error: error.message });
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 }
 
@@ -156,27 +164,27 @@ export const decreaseQuantity = async (req, res) => {
 export const updateQuantity = async (req, res) => {
     const { idProduct, idVariant, idUser, quantity } = req.body;
     try {
-        const getCart = await Cart.findOne({ idUser })
-            .populate({
+        const getCart = await Cart.findOne({ idUser }).populate([
+            {
                 path: "products.product",
                 model: "Product"
-            })
-            .populate({
+            },
+            {
                 path: "products.variant",
                 model: "Variant"
-            });
+            },
+            {
+                path: "voucherUsage",
+                model: "Voucher"
+            }
+        ]);
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
 
         const index = getCart.products.findIndex(item => item.product._id.toString() === idProduct && item.variant._id.toString() === idVariant);
         if (index === -1) return res.status(404).json({ error: 'Can not found index' });
 
         getCart.products[index].quantity = quantity;
-        await getCart.save();
-
-        // let total = 0;
-        getCart.total = getCart.products.reduce((acc, curr) => {
-            return acc + ((curr.variant.price - curr.variant.discount) * curr.quantity);
-        }, 0)
+        // await getCart.save();
 
         const { totalProduct, discountProduct, discountVoucher, total } = caculateTotalCart(getCart);
         getCart.totalProduct = totalProduct;
@@ -215,7 +223,11 @@ export const clearCart = async (req, res) => {
 export const removeAProduct = async (req, res) => {
     const { idUser, idVariant } = req.body;
     try {
-        const getCart = await Cart.findOne({ idUser });
+        const getCart = await Cart.findOne({ idUser }).populate([
+            { path: 'products.product' },
+            { path: 'products.variant' },
+            { path: 'voucherUsage' }
+        ]);
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
 
         const findIndex = getCart.products.findIndex(item => item.variant._id.toString() === idVariant);
@@ -223,8 +235,9 @@ export const removeAProduct = async (req, res) => {
 
         getCart.products = getCart.products.filter((_, index) => index !== findIndex);
         await getCart.save();
+        const { totalProduct, discountProduct, discountVoucher, total } = caculateTotalCart(getCart);
 
-        return res.status(200).json({ idVariant })
+        return res.status(200).json({ idVariant, totalProduct, discountProduct, discountVoucher, total });
     } catch (error) {
         console.log('Lỗi ở removeAProduct', error);
         return res.status(500).json({ message: 'Lỗi server', error: error.message })
@@ -242,15 +255,19 @@ export const addVoucher = async (req, res) => {
             {
                 path: 'products.variant',
                 model: 'Variant'
+            },
+            {
+                path: 'voucherUsage',
+                model: 'Voucher'
             }
         ]);
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
 
         const findVoucher = await Voucher.findOne({ _id: idVoucher }) || await Voucher.findOne({ voucherCode });
-        if (!findVoucher) return res.staus(404).json({ error: 'Voucher not found' });
+        if (!findVoucher) return res.status(404).json({ error: 'Voucher not found' });
 
         //Check voucher đã có trong giỏ hàng chưa
-        const findIndex = getCart.voucherUsage.findIndex(voucher => voucher.toString() === findVoucher._id.toString());
+        const findIndex = getCart.voucherUsage.findIndex(voucher => voucher._id.toString() === findVoucher._id.toString());
         if (findIndex !== -1) return res.status(409).json({ error: 'Voucher đã được sử dụng' });
 
         if (findVoucher) {
@@ -263,8 +280,8 @@ export const addVoucher = async (req, res) => {
             if (presentDate < startDate) return res.status(409).json({ error: 'Voucher chưa đến ngày sử dụng' });
             if (presentDate > endDate) return res.status(409).json({ error: 'Voucher đã hết hạn sử dụng' });
             //Check giá tối thiểu để dùng voucher
-            // const totalPriceProduct = caculateTotalProduct(getCart);
-            // console.log('totalPriceProduct', totalPriceProduct)
+            const { totalProduct, discountProduct } = caculateTotalCart(getCart);
+            if ((totalProduct - discountProduct) < findVoucher.minBill) return res.status(422).json({ error: "Chưa thỏa mãn điều kiện 'đơn tối thiểu'" })
             //Check danh mục sản phẩm được áp dụng (đang phát triển)
             //Check người dùng này đã sử dụng voucher chưa
             const findUsage = await VoucherUsage.findOne({ idUser, idVoucher });
@@ -277,8 +294,24 @@ export const addVoucher = async (req, res) => {
         }
         getCart.voucherUsage.push(findVoucher._id);
         await getCart.save();
-
-        return res.status(200).json(getCart);
+        await getCart.populate([
+            {
+                path: 'products.product',
+                model: 'Product'
+            },
+            {
+                path: 'products.variant',
+                model: 'Variant'
+            },
+            {
+                path: 'voucherUsage',
+                model: 'Voucher'
+            }
+        ])
+        console.log('getCart', getCart)
+        const { allData } = caculateTotalCart(getCart);
+        // console.log('allData', allData);
+        return res.status(200).json(allData);
 
     } catch (error) {
         console.log('Lỗi ở addVoucher', error);
@@ -294,13 +327,29 @@ export const removeVoucher = async (req, res) => {
 
         //tìm vị trí lưu voucher
         const findIndex = getCart.voucherUsage.findIndex(usage => usage.toString() === idVoucher);
-        if (findIndex === -1) return res.status(409).json({ error: 'Voucher đã bị xóa khỏi giỏ hàng' });
+        // if (findIndex === -1) return res.status(409).json({ error: 'Voucher đã bị xóa khỏi giỏ hàng' });
 
         //lọc voucher ra khỏi nơi lưu chữ
         getCart.voucherUsage = getCart.voucherUsage.filter((_, index) => index !== findIndex);
         await getCart.save();
+        await getCart.populate([
+            {
+                path: 'products.product',
+                model: 'Product'
+            },
+            {
+                path: 'products.variant',
+                model: 'Variant'
+            },
+            {
+                path: 'voucherUsage',
+                model: 'Voucher'
+            }
+        ]);
 
-        return res.status(200).json(getCart);
+        const { allData } = caculateTotalCart(getCart);
+
+        return res.status(200).json(allData);
     } catch (error) {
         console.log('Lỗi ở removeVoucher', error);
         return res.status(500).json({ message: 'Internal Server', error: error.message });
