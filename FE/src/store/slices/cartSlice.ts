@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addToCart, addVoucher, clearCart, getSingleCart, removeAProduct, removeVoucher, updateQuantity } from "../thunks/cartThunk";
+import { addToCart, addVoucher, calculateShipping, clearCart, getSingleCart, removeAProduct, removeVoucher, updateQuantity } from "../thunks/cartThunk";
 
 
 const cartSlice = createSlice({
@@ -175,6 +175,16 @@ const cartSlice = createSlice({
             .addCase(removeVoucher.rejected, (state, action) => {
                 state.status = 'removeVoucher.rejected';
                 state.error = action.payload as string;
+            })
+
+            .addCase(calculateShipping.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(calculateShipping.fulfilled, (state, action) => {
+                state.status = 'calculateShipping.fulfilled';
+                state.error = '';
+                // state.cartData
             })
     },
 })

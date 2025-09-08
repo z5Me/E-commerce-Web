@@ -25,12 +25,16 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
             if (dataUser && dataUser.phone === '') {
                 showDialog({
                     title: 'Số điện thoại chưa được xác thực',
-                    description: 'Bạn cần xác minh số điện thoại để tiếp tục mua hàng!'
+                    description: 'Bạn cần xác minh số điện thoại để tiếp tục mua hàng!',
+                    onConfirm() {
+                        naviagte('/user/profile')
+                    },
                 })
                 return
             }
-            // dispatch(setChangePage(url));
-            // naviagte(url);
+            if (cart && cart.products && cart.products.length === 0) return toast.warning('Giỏ hàng rỗng :(')
+            dispatch(setChangePage(url));
+            naviagte(url);
             return;
         }
 
@@ -42,47 +46,36 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
             const filterAddress = dataUser.address.filter((item: IAddress) => item.selected === true);
             if (!filterAddress[0]) return toast.warning('Vui lòng cung cấp thông tin địa chỉ');
             // console.log(cart.products)
-            // const data = {
-            //     userId: dataUser._id,
-            //     address: filterAddress[0],
-            //     products: cart.products,
-            //     payment: payment as "cod" | "momo",
-            //     total: cart.total,
-            //     updateStatus: [{
-            //         title: 'Chờ xác nhận',
-            //         desc: 'Chờ xác nhận bên phía người bán',
-            //         date: new Date(),
-            //         status: "pending" as "pending",
-            //         orderCode: '',
-            //         creator: {
-            //             userId: dataUser._id,
-            //             name: dataUser.userName,
-            //             email: dataUser.email,
-            //             role: dataUser.role
-            //         }
-            //     }]
-            // }
+            const data = {
+                userId: dataUser._id,
+                address: filterAddress[0],
+                products: cart.products,
+                payment: payment as "cod" | "momo",
+                total: cart.total,
+                updateStatus: [{
+                    title: 'Chờ xác nhận',
+                    desc: 'Chờ xác nhận bên phía người bán',
+                    date: new Date(),
+                    status: "pending" as "pending",
+                    orderCode: '',
+                    creator: {
+                        userId: dataUser._id,
+                        name: dataUser.userName,
+                        email: dataUser.email,
+                        role: dataUser.role
+                    }
+                }]
+            }
 
-            // if (data.products.length === 0) {
-            //     toast.warning('Giỏ hàng rỗng');
-            //     showDialog({
-            //         title: 'Rời khỏi trang?',
-            //         description: 'Rời khỏi trang và bắt đầu mua sắm nào!',
-            //         onCancel: () => naviagte('/cart'),
-            //         onConfirm: () => naviagte('/')
-            //     })
-            //     return;
-            // }
-
-            // dispatch(createOrder(data)).unwrap()
-            //     .then(() => {
-            //         dispatch(setChangePage(url))
-            //         naviagte('/cart/order');
-            //     })
-            //     .catch(() => {
-            //         console.log('orderError: ', orderError)
-            //         toast.error(`Lỗi tạo đơn hàng, vui lòng thử lại sau`)
-            //     });
+            dispatch(createOrder(data)).unwrap()
+                .then((data) => {
+                    dispatch(setChangePage(url))
+                    naviagte('/cart/order', { state: { orderCode: data.orderCode } });
+                })
+                .catch(() => {
+                    console.log('orderError: ', orderError)
+                    toast.error(`Lỗi tạo đơn hàng, vui lòng thử lại sau`)
+                });
         }
         return;
     }
@@ -109,20 +102,20 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
                     {url === '/cart/order' &&
                         <div className="flex justify-between items-center sm:text-base text-sm">
                             <p className="text-primary/60">Delivery Fee</p>
-                            <p className="font-bold">{VietNamPrice(15000)}<span className="underline">đ</span></p>
+                            <p className="font-bold">{VietNamPrice(cart.shippingFee)}<span className="underline">đ</span></p>
                         </div>
                     }
                 </div>
                 <div className="flex justify-between items-center sm:text-lg text-base">
                     <p className="text-primary font-medium">Total</p>
-                    <p className="font-bold">{url !== '/cart/order' ? VietNamPrice(cart.total) : VietNamPrice(cart.total + 15000)}<span className="underline">đ</span></p>
+                    <p className="font-bold">{url !== '/cart/order' ? VietNamPrice(cart.total - cart.shippingFee) : VietNamPrice(cart.total)}<span className="underline">đ</span></p>
                 </div>
                 <div onClick={() => handleCreateOrder()}>
                     <div className="w-full px-10 flex justify-center items-center bg-[#C8C9CB] hover:bg-primary rounded-full select-none cursor-pointer">
                         <div className="text-white sm:h-[56px] h-[48px] sm:text-lg text-base font-medium flex justify-center items-center gap-x-4">
                             <p>{url === '/cart/checkout' ? 'Checkout' : url === '/cart/order' && 'Order'}</p>
                             <div className="bg-white w-[2px] h-3"></div>
-                            <p>$467.00</p>
+                            <p>{url !== '/cart/order' ? VietNamPrice(cart.total - cart.shippingFee) : VietNamPrice(cart.total)}<span className="underline">đ</span></p>
                         </div>
                     </div>
                 </div>

@@ -30,6 +30,10 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    shippingFee: {
+        type: Number,
+        default: 0
+    },
     voucherUsage: [
         {
             type: mongoose.Schema.Types.ObjectId,

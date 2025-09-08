@@ -42,7 +42,7 @@ import ListVoucher from "@/pages/(dashboard)/vouchers/_components/ListVoucher"
 import AddVoucher from "@/pages/(dashboard)/vouchers/_components/AddVoucher"
 import EditVoucher from "@/pages/(dashboard)/vouchers/_components/EditVoucher"
 import ConfirmPage from "@/pages/(website)/confirm/page"
-import ConfirmPhone from "@/pages/(website)/confirm/confirmPhone"
+import ConfirmPhone from "@/pages/(website)/confirm/ConfirmPhone"
 
 const Router = () => {
     const TestPage = lazy(() => import('@/pages/(website)/test/page'));

@@ -58,23 +58,23 @@ export const columns: ColumnDef<IOrder>[] = [
     {
         accessorKey: "receiver",
         header: "Receiver",
-        cell: ({ row }) => (
-            <div>{row.original.address.receiver}</div>
-        )
+        cell: ({ row }) => {
+            return <div>{row.original.address.receiver}</div>
+        }
     },
     {
         accessorKey: "phone",
         header: "Phone",
-        cell: ({ row }) => (
-            <div>{row.original.address.phone}</div>
-        )
+        cell: ({ row }) => {
+            return <div>{row.original.address.phone}</div>
+        }
     },
     {
         accessorKey: "address",
         header: "Address",
-        cell: ({ row }) => (
-            <div>{row.original.address.addressName}</div>
-        )
+        cell: ({ row }) => {
+            return <div className="truncate max-w-[250px]">{row.original.address.addressName}</div>
+        }
     },
     {
         accessorKey: "payment",

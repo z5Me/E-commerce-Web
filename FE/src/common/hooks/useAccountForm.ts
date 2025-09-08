@@ -12,9 +12,10 @@ type IUseAccountFormProps = {
     openEdit: boolean;
     setOpenEdit: (value: boolean) => void;
     setOpenAddAddress: (value: boolean) => void;
+    setWarningLabelAddress: (value: boolean) => void;
 };
 
-export const useAccountForm = ({ dataUser, openEdit, setOpenEdit, setOpenAddAddress }: IUseAccountFormProps) => {
+export const useAccountForm = ({ dataUser, openEdit, setOpenEdit, setOpenAddAddress, setWarningLabelAddress }: IUseAccountFormProps) => {
     //redux
     const dispatch = useDispatch<AppDispatch>();
     const errorUser = useSelector((state: any) => state.user.error);
@@ -43,21 +44,27 @@ export const useAccountForm = ({ dataUser, openEdit, setOpenEdit, setOpenAddAddr
 
     //submit
     const onSubmit = (value: any) => {
+        if (dataUser && dataUser.address?.length === 0) {
+            setWarningLabelAddress(true);
+            return toast.warning('Vui lòng cung cấp thông tin địa chỉ');
+        } else {
+            setWarningLabelAddress(false);
+        };
         const data = {
             ...value,
             _id: dataUser._id,
             address: dataUser.address || []
         }
         console.log(data);
-        dispatch(saveUserInformation(data)).unwrap()
-            .then(() => {
-                setOpenEdit(false);
-                scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-                toast.success('Lưu thông tin thành công');
-            })
-            .catch(() => {
-                console.log('error:', errorUser);
-            })
+        // dispatch(saveUserInformation(data)).unwrap()
+        //     .then(() => {
+        //         setOpenEdit(false);
+        //         scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        //         toast.success('Lưu thông tin thành công');
+        //     })
+        //     .catch(() => {
+        //         console.log('error:', errorUser);
+        //     })
     }
 
     //close form address

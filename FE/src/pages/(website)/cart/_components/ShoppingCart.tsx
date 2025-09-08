@@ -4,7 +4,7 @@ import type { IVoucher } from '@/common/types/voucher';
 import ProductInCart from '@/components/ProductInCart';
 import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
-import { clearCart, getSingleCart, removeVoucher } from '@/store/thunks/cartThunk';
+import { calculateShipping, clearCart, getSingleCart, removeVoucher } from '@/store/thunks/cartThunk';
 import { reSignIn } from '@/store/thunks/userThunk';
 import { getAllVoucher } from '@/store/thunks/voucherThunk';
 import { Tag } from 'lucide-react';
@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import PriceList from './PriceList';
 import VoucherWarehouse from './VoucherWarehouse';
+import Empty_Cart from '@/assets/cart.png';
 
 const ShoppingCart = () => {
     //Theo dõi chiều ngang của web
@@ -34,7 +35,16 @@ const ShoppingCart = () => {
 
     useEffect(() => {
         if (dataUser && dataUser._id) {
-            dispatch(getSingleCart({ idUser: dataUser._id }));
+            dispatch(getSingleCart({ idUser: dataUser._id })).unwrap()
+                .then(() => {
+                    const filterAddress = dataUser.address.filter((add: any) => add.selected === true);
+                    dispatch(calculateShipping({ destination: { lat: filterAddress[0].lat, lng: filterAddress[0].lng }, idUser: dataUser._id }))
+                })
+                .catch((error) => {
+                    toast.error(error);
+                    console.log('Lỗi khi getSingleCart', error);
+                });
+
         } else {
             dispatch(reSignIn()).unwrap()
                 .catch(() => {
@@ -79,11 +89,18 @@ const ShoppingCart = () => {
                     <p className="text-base">({cart && cart.products.length})</p>
                 </div>
                 <div className="flex flex-col py-5 gap-y-6">
-                    {cart && cart.products && cart.products.map((item: IItemCart) => (
-                        <div key={item._id} className='pb-6 border-b border-b-primary/10'>
-                            <ProductInCart item={item} cart={cart} dataUser={dataUser} />
+                    {cart && cart.products && cart.products.length > 0
+                        ?
+                        cart.products.map((item: IItemCart) => (
+                            <div key={item._id} className='pb-6 border-b border-b-primary/10'>
+                                <ProductInCart item={item} cart={cart} dataUser={dataUser} />
+                            </div>
+                        ))
+                        :
+                        <div className='w-full grid items-center justify-center py-4'>
+                            <img src={Empty_Cart} alt="Empty_cart" className='max-w-[150px]' />
                         </div>
-                    ))}
+                    }
                 </div>
 
                 <div className="flex sm:flex-row flex-col-reverse justify-between sm:items-center items-end gap-4 pb-5">

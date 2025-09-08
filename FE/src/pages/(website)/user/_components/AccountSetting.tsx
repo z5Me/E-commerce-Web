@@ -12,6 +12,9 @@ const AccountSetting = () => {
     const [openEdit, setOpenEdit] = useState<boolean>(false);
     const [openAddAddress, setOpenAddAddress] = useState<boolean>(false);
 
+    //Warning Address
+    const [warningLabelAddress, setWarningLabelAddress] = useState<boolean>(false);
+
     //data of user in redux
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
 
@@ -19,8 +22,9 @@ const AccountSetting = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     //Xử lý form
-    const { register, handleSubmit, errors, selectedGender, onSubmit, reset } = useAccountForm({ dataUser, openEdit, setOpenEdit, setOpenAddAddress, });
+    const { register, handleSubmit, errors, selectedGender, onSubmit, reset } = useAccountForm({ dataUser, openEdit, setOpenEdit, setOpenAddAddress, setWarningLabelAddress });
     const [prevImage, setPreviewImage] = useState<string | null>(null);
+
 
     return (
         <form
@@ -181,7 +185,7 @@ const AccountSetting = () => {
                 </div>
             </div>
             <div className='flex flex-col w-full gap-1'>
-                <label htmlFor="address">Address</label>
+                <label className={`${warningLabelAddress && 'text-danger'} after:content-["*"] after:ml-0.5 after:text-danger`} htmlFor="address">Address</label>
                 <div
                     onClick={() => {
                         if (openEdit) {
@@ -195,7 +199,7 @@ const AccountSetting = () => {
                     <MapPinPlus size={20} />
                     <p>Add address</p>
                 </div>
-                {openAddAddress && <GoogleMap setOpenAddAddress={setOpenAddAddress} dataUser={dataUser} />}
+                {openAddAddress && <GoogleMap setOpenAddAddress={setOpenAddAddress} dataUser={dataUser} setWarningLabelAddress={setWarningLabelAddress} />}
                 {(dataUser.address && dataUser.address.length > 0) &&
                     <>
                         {dataUser.address.map((item: any, index: number) => (

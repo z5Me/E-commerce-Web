@@ -3,7 +3,10 @@ import Product from '../models/Product';
 import Variant from '../models/Variant';
 import Voucher from '../models/Voucher';
 import VoucherUsage from '../models/VoucherUsage';
-import { caculateTotalCart, caculateTotalProduct } from '../utils/helperCart';
+import { caculateTotalCart, caculateTotalProduct, calculateShippingFeeKm, haversineDistanceKm } from '../utils/helperCart';
+
+const originLat = process.env.ORIGIN_LAT;
+const originLng = process.env.ORIGIN_LNG;
 
 export const getSingleCart = async (req, res) => {
     const { idUser } = req.query;
@@ -353,5 +356,28 @@ export const removeVoucher = async (req, res) => {
     } catch (error) {
         console.log('Lỗi ở removeVoucher', error);
         return res.status(500).json({ message: 'Internal Server', error: error.message });
+    }
+}
+
+export const calculateShipping = async (req, res) => {
+    const { destination, idUser } = req.body;
+    try {
+        if (!destination.lat || !destination.lng) return res.status(400).json({ error: 'Thiếu lat/lng' });
+
+        const getCart = await Cart.findOne({ idUser });
+        if (!getCart) return res.status(404).json({ error: 'Cart not found' });
+
+        const distanceKM = haversineDistanceKm(originLat, originLng, destination.lat, destination.lng);
+
+        const fee = calculateShippingFeeKm(distanceKM);
+        if (!fee) return res.status(409).json({ error: 'Error when calculate shipping' });
+
+        getCart.shippingFee = fee;
+        await getCart.save();
+
+        return res.status(200).json({ distanceKM, ShippingFee: fee });
+    } catch (error) {
+        console.log('Lỗi ở caculateShipping', error);
+        return res.status(500).json({ message: 'Internal server', error: error.message });
     }
 }

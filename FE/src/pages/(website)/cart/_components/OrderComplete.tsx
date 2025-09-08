@@ -7,7 +7,7 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import LazyLottiePlayer from './LazyLottiePlayer';
 import { useLoading } from '@/contexts/LoadingScreen';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 const OrderComplete = () => {
     const animationRef = useRef<any>(null);
@@ -17,6 +17,8 @@ const OrderComplete = () => {
     const productsListRef = useRef<HTMLDivElement>(null);
     const [showPlayer, setShowPlayer] = useState<boolean>(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { orderCode } = location.state || '' //Làm tiếp đoạn này, lấy orderCode gắn vào chỗ chuyển trang, để khi chuyển trang đến thì tìm kiếm order theo orderCode đó luôn
 
     const dispatch = useAppDispatch();
     const orderStatus = useSelector((state: any) => state.order.status, shallowEqual);
@@ -35,7 +37,7 @@ const OrderComplete = () => {
     // kiểm tra change để điều hướng về cart nếu không thỏa mãn url
     const changePage = useSelector((state: any) => state.cart.changePage, shallowEqual);
     useEffect(() => {
-        console.log(changePage)
+        // console.log(changePage)
         if (changePage !== '/cart/order') {
             setTimeout(() => {
                 navigate('/cart');
@@ -45,6 +47,10 @@ const OrderComplete = () => {
         }
         return;
     }, []);
+
+    const handleOrderTrack = () => {
+        navigate('/user/order');
+    }
 
     return (
         <div className='flex flex-col min-h-[1000px] w-full items-center relative'>
@@ -108,7 +114,13 @@ const OrderComplete = () => {
                 </div>
                 <div className='flex justify-between gap-2 min-w-[250px] *:cursor-pointer'>
                     <div>
-                        <div ref={buymoreRef} className='mt-16 opacity-0 px-4 py-2 transition-all duration-300 bg-primary hover:bg-white border border-primary rounded-full text-white hover:text-primary'>Buy more</div>
+                        <div
+                            onClick={() => handleOrderTrack()}
+                            ref={buymoreRef}
+                            className='mt-16 opacity-0 px-4 py-2 transition-all duration-300 bg-primary hover:bg-white border border-primary rounded-full text-white hover:text-primary'
+                        >
+                            Buy more
+                        </div>
                     </div>
                     <div>
                         <div ref={ordertrackRef} className='mt-16 opacity-0 px-4 py-2 transition-all duration-300 bg-primary hover:bg-white border border-primary rounded-full text-white hover:text-primary'>Order track</div>

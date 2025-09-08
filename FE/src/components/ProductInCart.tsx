@@ -3,7 +3,7 @@ import type { IAttributeValue } from '@/common/types/attributeValue'
 import type { ICart } from '@/common/types/cart'
 import type { IItemCart } from '@/common/types/itemCart'
 import type { IUser } from '@/common/types/user'
-import { debounce } from '@/lib/utils'
+import { debounce, VietNamPrice } from '@/lib/utils'
 import { useAppDispatch } from '@/store/store'
 import { removeAProduct, updateQuantity } from '@/store/thunks/cartThunk'
 import { Trash2 } from 'lucide-react'
@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { ChangeQuantity } from './ChangeQuantity'
 import DiscountIcon from './Discount'
+import { useDialog } from '@/contexts/DialogContext'
 
 type Props = {
     item: IItemCart,
@@ -24,7 +25,7 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
     const dispatch = useAppDispatch();
     const [quantity, setQuantity] = useState<number>(item.quantity);
     const firstRender = useRef(true); //Ngăn chạy useEffect khi mới mount
-    // console.log('item: ', cart);
+    const { showDialog } = useDialog();
 
     const debouncedUpdateQuantity = useMemo(() =>
         debounce((value: number) => {
@@ -66,7 +67,15 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
                             {checkout ?
                                 <p>x{quantity}</p>
                                 :
-                                <div onClick={() => dispatch(removeAProduct({ idUser: dataUser._id as string, idVariant: item.variant._id }))} className="flex justify-end hover:text-danger cursor-pointer">
+                                <div
+                                    onClick={() => showDialog({
+                                        description: 'Sản phẩm sẽ bị xóa khỏi giỏ hàng',
+                                        onConfirm() {
+                                            dispatch(removeAProduct({ idUser: dataUser._id as string, idVariant: item.variant._id }))
+                                        },
+                                    })}
+                                    className="flex justify-end hover:text-danger cursor-pointer"
+                                >
                                     <Trash2 size={20} />
                                 </div>
                             }
@@ -84,7 +93,7 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
                             ?
                             <div className='w-full flex justify-between'>
                                 <p>Price:</p>
-                                <span className="text-primary">{((item.variant.price ?? 0) - (item.variant.discount ?? 0))}</span>
+                                <span className="text-primary">{VietNamPrice((item.variant.price ?? 0) - (item.variant.discount ?? 0))}<span className='underline'>đ</span> </span>
                             </div>
                             :
                             <DiscountIcon
@@ -101,7 +110,7 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
                             {checkout ?
                                 <div className='flex w-full justify-between sm:text-2xl text-base font-bold'>
                                     <p>Total</p>
-                                    <p className=''>${item.variant.price * quantity}</p>
+                                    <p className=''>{VietNamPrice(item.variant.price * quantity)}<span className='underline'>đ</span></p>
                                 </div>
                                 :
                                 <ChangeQuantity

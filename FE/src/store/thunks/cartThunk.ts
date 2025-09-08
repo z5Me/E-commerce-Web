@@ -79,3 +79,14 @@ export const removeVoucher = createAsyncThunk('cart/removeVoucher', async (data:
         return rejectWithValue(error.response.data.error);
     }
 })
+
+export const calculateShipping = createAsyncThunk('cart/calculateShipping', async ({ destination, idUser }: { destination: { lat: string, lng: string }, idUser: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/cart/calculateShipping`, { destination, idUser });
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở cart/calculateShipping', error);
+        return rejectWithValue(error.response.data.error);
+    }
+})

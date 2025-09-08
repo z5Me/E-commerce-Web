@@ -5,7 +5,7 @@ import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Save, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value: boolean) => void, dataUser: IUser }) => {
+const GoogleMap = ({ setOpenAddAddress, dataUser, setWarningLabelAddress }: { setOpenAddAddress: (value: boolean) => void, dataUser: IUser, setWarningLabelAddress?: (value: boolean) => void }) => {
     const [position, setPosition] = useState({ lat: 21.0283334, lng: 105.854041 });
     const [address, setAddress] = useState("");
     const [inputAddress, setInputAddress] = useState("");
@@ -26,45 +26,54 @@ const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value:
     const [debouncedQuery, setDebouncedQuery] = useState("");
     const dispatch = useDispatch<AppDispatch>();
     const errorUser = useSelector((state: any) => state.user.error);
+    const isChoosenSuggest = useRef(false);
 
     //tìm kiếm sau khi người dùng ngừng gõ 300ms
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedQuery(inputAddress);
-        }, 300);
+        if (isChoosenSuggest && isChoosenSuggest.current === false) {
+            const timer = setTimeout(() => {
+                setDebouncedQuery(inputAddress);
+            }, 300);
 
-        return () => clearTimeout(timer);
+            return () => clearTimeout(timer);
+        }
+        return;
     }, [inputAddress]);
 
     useEffect(() => {
-        const fetchSuggestions = async () => {
-            if (!debouncedQuery) {
-                setSuggestions([]);
-                return;
-            }
+        if (isChoosenSuggest && isChoosenSuggest.current === false) {
+            const fetchSuggestions = async () => {
+                if (!debouncedQuery) {
+                    setSuggestions([]);
+                    return;
+                }
 
-            try {
-                const res = await axios.get(
-                    `https://nominatim.openstreetmap.org/search?format=json&countrycodes=vn&q=${encodeURIComponent(
-                        debouncedQuery
-                    )}`
-                );
-                setSuggestions(res.data.slice(0, 5)); // giới hạn 5 gợi ý
-            } catch (err) {
-                console.error("Lỗi gợi ý:", err);
-            }
-        };
+                try {
+                    const res = await axios.get(
+                        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=vn&q=${encodeURIComponent(
+                            debouncedQuery
+                        )}`
+                    );
+                    setSuggestions(res.data.slice(0, 5)); // giới hạn 5 gợi ý
+                } catch (err) {
+                    console.error("Lỗi gợi ý:", err);
+                }
+            };
 
-        fetchSuggestions();
+            fetchSuggestions();
+        }
+        return;
     }, [debouncedQuery]);
 
     //Xử lý tìm kiếm khi gõ địa chỉ
     const handleInputChange = (e: any) => {
+        isChoosenSuggest.current = false;
         setInputAddress(e.target.value);
     };
 
     //Xử lý khi chọn 1 gợi ý
     const handleSuggestionClick = (place: any) => {
+        isChoosenSuggest.current = true;
         const newPos = { lat: parseFloat(place.lat), lng: parseFloat(place.lon) };
         setPosition(newPos);
         setAddress(place.display_name);
@@ -101,6 +110,7 @@ const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value:
             );
             setAddress(res.data.display_name);
             setInputAddress(res.data.display_name); // Hiển thị lại trong input
+            isChoosenSuggest.current = true;
             // setSuggestions([]);
         } catch (err) {
             console.error("Không lấy được địa chỉ từ tọa độ (fetchAddress)");
@@ -145,6 +155,7 @@ const GoogleMap = ({ setOpenAddAddress, dataUser }: { setOpenAddAddress: (value:
         })).unwrap()
             .then(() => {
                 toast.success('Lưu địa chỉ thành công');
+                setWarningLabelAddress && setWarningLabelAddress(false);
             })
             .catch((e) => {
                 toast.error(e);
