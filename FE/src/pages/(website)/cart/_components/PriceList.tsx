@@ -1,8 +1,6 @@
 import { useChangeStatusCart } from "@/common/hooks/useChangeStatusCart";
 import type { IAddress } from "@/common/types/address";
 import type { ICart } from "@/common/types/cart";
-import type { IUser } from "@/common/types/user";
-import { OTP } from "@/components/OTP";
 import { useDialog } from "@/contexts/DialogContext";
 import { VietNamPrice } from "@/lib/utils";
 import { setChangePage } from "@/store/slices/cartSlice";

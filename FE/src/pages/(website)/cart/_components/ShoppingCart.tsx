@@ -1,3 +1,4 @@
+import Empty_Cart from '@/assets/cart.png';
 import useScreenWidth from '@/common/hooks/useScreenWidth';
 import type { IItemCart } from '@/common/types/itemCart';
 import type { IVoucher } from '@/common/types/voucher';
@@ -8,20 +9,19 @@ import { calculateShipping, clearCart, getSingleCart, removeVoucher } from '@/st
 import { reSignIn } from '@/store/thunks/userThunk';
 import { getAllVoucher } from '@/store/thunks/voucherThunk';
 import { Tag } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import PriceList from './PriceList';
 import VoucherWarehouse from './VoucherWarehouse';
-import Empty_Cart from '@/assets/cart.png';
 
 const ShoppingCart = () => {
     //Theo dõi chiều ngang của web
     const screenWidth = useScreenWidth();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    // const firstRender = useRef(true);
+    const firstRender = useRef(true);
     //Dữ liệu giỏ hàng của người dùng
     const cart = useSelector((state: any) => state.cart.cartData, shallowEqual);
     //Dữ liệu của người dùng
@@ -35,27 +35,35 @@ const ShoppingCart = () => {
 
     useEffect(() => {
         if (dataUser && dataUser._id) {
-            dispatch(getSingleCart({ idUser: dataUser._id })).unwrap()
-                .then(() => {
-                    const filterAddress = dataUser.address.filter((add: any) => add.selected === true);
-                    dispatch(calculateShipping({ destination: { lat: filterAddress[0].lat, lng: filterAddress[0].lng }, idUser: dataUser._id }))
-                })
-                .catch((error) => {
-                    toast.error(error);
-                    console.log('Lỗi khi getSingleCart', error);
-                });
-
-        } else {
-            dispatch(reSignIn()).unwrap()
-                .catch(() => {
-                    toast.warning('Phiên đăng nhập đã hết hạn');
-                    showDialog({
-                        title: 'Rời khỏi trang?',
-                        description: 'Một vài tính năng cần bạn đăng nhập để tiếp tục sử dụng',
-                        onConfirm: () => navigate('/auth'),
-                        onCancel: () => navigate(-1)
+            if (firstRender && firstRender.current) {
+                dispatch(getSingleCart({ idUser: dataUser._id })).unwrap()
+                    .then(() => {
+                        const filterAddress = dataUser.address.filter((add: any) => add.selected === true);
+                        filterAddress && dispatch(calculateShipping({ destination: { lat: filterAddress[0].lat, lng: filterAddress[0].lng }, idUser: dataUser._id })).unwrap()
+                            .then()
+                            .catch((error) => {
+                                console.log('Lỗi ở calculateShipping', error);
+                                navigate(-1);
+                            })
+                    })
+                    .catch((error) => {
+                        toast.error(error);
+                        console.log('Lỗi khi getSingleCart', error);
                     });
-                });
+                firstRender.current = false;
+            }
+        } else {
+            // Nếu reload trang thì đã có header gọi reSignIn
+            // dispatch(reSignIn()).unwrap()
+            //     .catch(() => {
+            //         toast.warning('Phiên đăng nhập đã hết hạn');
+            //         showDialog({
+            //             title: 'Rời khỏi trang?',
+            //             description: 'Một vài tính năng cần bạn đăng nhập để tiếp tục sử dụng',
+            //             onConfirm: () => navigate('/auth'),
+            //             onCancel: () => navigate(-1)
+            //         });
+            //     });
         }
     }, [dataUser]);
 

@@ -13,6 +13,7 @@ const cartSlice = createSlice({
             totalProduct: 0,
             discountProduct: 0,
             discountVoucher: 0,
+            shippingFee: 0,
             total: 0,
         },
         status: 'idle',
@@ -184,7 +185,11 @@ const cartSlice = createSlice({
             .addCase(calculateShipping.fulfilled, (state, action) => {
                 state.status = 'calculateShipping.fulfilled';
                 state.error = '';
-                // state.cartData
+                state.cartData.shippingFee = action.payload.ShippingFee;
+            })
+            .addCase(calculateShipping.rejected, (state, action) => {
+                state.status = 'calculateShipping.rejected';
+                state.error = action.payload as string;
             })
     },
 })

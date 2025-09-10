@@ -26,7 +26,6 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
     const [quantity, setQuantity] = useState<number>(item.quantity);
     const firstRender = useRef(true); //Ngăn chạy useEffect khi mới mount
     const { showDialog } = useDialog();
-
     const debouncedUpdateQuantity = useMemo(() =>
         debounce((value: number) => {
             if (cart.idUser && item.product._id && item.variant._id) {
@@ -39,6 +38,13 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
             }
         }, 500)
         , [dataUser._id, item.product._id, item.variant._id, dispatch]);
+
+    useEffect(() => {
+        if (firstRender.current) {
+            return;
+        }
+        setQuantity(item.quantity);
+    }, [item]);
 
     useEffect(() => {
         if (firstRender.current) {
@@ -93,7 +99,7 @@ const ProductInCart = ({ item, checkout = false, cart, dataUser }: Props) => {
                             ?
                             <div className='w-full flex justify-between'>
                                 <p>Price:</p>
-                                <span className="text-primary">{VietNamPrice((item.variant.price ?? 0) - (item.variant.discount ?? 0))}<span className='underline'>đ</span> </span>
+                                <span className="text-primary">{VietNamPrice((item.variant.price ?? 0))}<span className='underline'>đ</span> </span>
                             </div>
                             :
                             <DiscountIcon

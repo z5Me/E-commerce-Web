@@ -5,7 +5,7 @@ import { TextareaForm } from '@/components/TextareaForm';
 import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
 import { generateInvoice, updateStatus } from '@/store/thunks/orderThunk';
-import { Check, ClipboardList, Download, History, Hourglass, PackagePlus, Truck, X } from 'lucide-react';
+import { Check, Download, History, Hourglass, PackagePlus, Truck, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
