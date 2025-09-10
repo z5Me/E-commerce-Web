@@ -10,6 +10,10 @@ export type IOrder = {
     products: IItemCart[],
     payment: 'cod' | 'momo',
     status?: 'pending' | 'processing' | 'shipping' | 'complete' | 'cancel',
+    totalProduct: number,
+    discountProduct: number,
+    discountVoucher: number,
+    shippingFee: number,
     total: number,
     updateStatus?: IUpdateStatus[],
     createdAt?: Date

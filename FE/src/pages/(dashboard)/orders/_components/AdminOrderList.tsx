@@ -21,7 +21,7 @@ const AdminOrderList = () => {
             <div className="grid w-full">
                 <h1 className="sm:text-2xl text-lg font-bold">Order list</h1>
                 <div className="w-full overflow-x-auto pb-10">
-                    <DataTable columns={columns} data={data} filterColumn="orderCode" filterPlaceholder="Filter by Order Code..." statusOptions={statusOptions} />
+                    <DataTable columns={columns} data={[...data].reverse()} filterColumn="orderCode" filterPlaceholder="Filter by Order Code..." statusOptions={statusOptions} />
                 </div>
             </div>
         </div>

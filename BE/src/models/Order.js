@@ -43,6 +43,22 @@ const OrderShcema = new mongoose.Schema({
         enum: ['pending', 'processing', 'shipping', 'complete', 'cancel'],
         default: 'pending'
     },
+    totalProduct: {
+        type: Number,
+        default: 0
+    },
+    discountProduct: {
+        type: Number,
+        default: 0
+    },
+    discountVoucher: {
+        type: Number,
+        default: 0
+    },
+    shippingFee: {
+        type: Number,
+        default: 0
+    },
     total: {
         type: Number,
         required: true

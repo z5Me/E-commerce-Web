@@ -51,6 +51,10 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
                 address: filterAddress[0],
                 products: cart.products,
                 payment: payment as "cod" | "momo",
+                totalProduct: cart.totalProduct,
+                discountProduct: cart.discountProduct,
+                discountVoucher: cart.discountVoucher,
+                shippingFee: cart.shippingFee,
                 total: cart.total,
                 updateStatus: [{
                     title: 'Chờ xác nhận',
@@ -66,7 +70,7 @@ const PriceList = ({ cart, terms, payment }: { cart: ICart, terms?: boolean, pay
                     }
                 }]
             }
-
+            // console.log('data', data);
             dispatch(createOrder(data)).unwrap()
                 .then((data) => {
                     dispatch(setChangePage(url))

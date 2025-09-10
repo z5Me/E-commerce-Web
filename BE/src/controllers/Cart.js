@@ -368,8 +368,9 @@ export const calculateShipping = async (req, res) => {
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
 
         const distanceKM = haversineDistanceKm(originLat, originLng, destination.lat, destination.lng);
-
+        console.log('distanceKM', distanceKM);
         const fee = calculateShippingFeeKm(distanceKM);
+        console.log('fee', fee);
         if (!fee) return res.status(409).json({ error: 'Error when calculate shipping' });
 
         getCart.shippingFee = fee;

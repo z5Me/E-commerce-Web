@@ -1,7 +1,8 @@
 import { useGetParams } from "@/common/hooks/useGetParams";
-import type { IItemCart } from "@/common/types/itemCart";
+import type { IOrder } from "@/common/types/order";
 import type { IUpdateStatus } from "@/common/types/updateStatus";
 import DeliveryAddress from "@/components/DeliveryAddress";
+import OrderItems from "@/components/OrderItems";
 import { formatVietnamTime } from "@/lib/utils";
 import { useAppDispatch } from "@/store/store";
 import { getOrderByOrderCode } from "@/store/thunks/orderThunk";
@@ -15,7 +16,7 @@ const OrderDetails = () => {
     const dispatch = useAppDispatch();
     const { orderCode } = useGetParams(['orderCode']);
     const allOrder = useSelector((state: any) => state.order.orderData, shallowEqual);
-    const [data, setData] = useState<any>();
+    const [data, setData] = useState<IOrder>();
     const navigate = useNavigate();
     // console.log('allOrder', allOrder)
     useEffect(() => {
@@ -99,61 +100,12 @@ const OrderDetails = () => {
             }
             <div className="border rounded-md grid gap-4 px-3 py-4">
                 <p className="font-bold">Order Item</p>
-                <div className="grid gap-4">
-                    {data && data.products.length > 0
-                        ?
-                        <>
-                            {data.products.map((item: IItemCart) => {
-                                console.log('item: ', item)
-                                return (
-                                    <div key={item._id} className="flex justify-between items-start gap-4 sm:text-base text-sm">
-                                        <div className="aspect-square sm:max-w-[120px] max-w-[100px] w-full rounded-md border overflow-hidden">
-                                            <img className="object-contain w-full h-full aspect-square" src={item.variant.image} alt={item.product.name} />
-                                        </div>
-                                        <div className="flex-1 h-full">
-                                            <div className="flex flex-col gap-2 justify-between h-full">
-                                                <div className="flex flex-col">
-                                                    <p>Categories</p>
-                                                    <p className="font-bold">{item.product.name}</p>
-                                                </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {item.variant.values.map((item) => (
-                                                        <p key={item._id} className="flex gap-1 items-center justify-center">
-                                                            {item.name}
-                                                        </p>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-4 flex-wrap items-center h-fit justify-end">
-                                            <div>
-                                                <div className="border rounded-md py-1 px-4 sm:text-sm text-xs font-bold">{item.quantity} x ${item.variant.price}</div>
-                                            </div>
-                                            <div>
-                                                <p>${item.quantity * item.variant.price}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </>
-                        :
-                        <div></div>
-                    }
-                </div>
-                <div className="flex justify-between items-center font-bold sm:text-base text-sm">
-                    <p>Payment method</p>
-                    <p className="uppercase">{data.payment}</p>
-                </div>
-                <div className="flex justify-between items-center font-bold sm:text-xl text-base">
-                    <p>Total</p>
-                    <p>${data.total}</p>
-                </div>
+                <OrderItems data={data} />
             </div>
             <div className="border rounded-md grid gap-4 px-3 py-4">
                 <p className="font-bold">Order track</p>
                 <div className="grid gap-4 sm:text-base text-sm">
-                    {data && data.updateStatus.length > 0
+                    {data && data.updateStatus && data.updateStatus.length > 0
                         ?
                         <>
                             {[...data.updateStatus].reverse().map((item: IUpdateStatus, index: number) => {
@@ -181,7 +133,7 @@ const OrderDetails = () => {
                                             </div>
                                             <div
                                                 style={{ backgroundColor: themeColor[item.status].bg }}
-                                                className="flex flex-wrap gap-x-2 px-2 rounded-sm"
+                                                className="flex flex-wrap gap-x-2 rounded-sm"
                                             >
                                                 <p className="font-bold">{item.title}</p>
                                                 <p>-</p>

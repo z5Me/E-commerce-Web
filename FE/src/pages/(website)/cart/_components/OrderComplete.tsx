@@ -123,7 +123,13 @@ const OrderComplete = () => {
                         </div>
                     </div>
                     <div>
-                        <div ref={ordertrackRef} className='mt-16 opacity-0 px-4 py-2 transition-all duration-300 bg-primary hover:bg-white border border-primary rounded-full text-white hover:text-primary'>Order track</div>
+                        <div
+                            ref={ordertrackRef}
+                            className='mt-16 opacity-0 px-4 py-2 transition-all duration-300 bg-primary hover:bg-white border border-primary rounded-full text-white hover:text-primary'
+                            onClick={() => navigate(`/user/order`, { state: { orderCode } })}
+                        >
+                            Order track
+                        </div>
                     </div>
                 </div>
                 <div ref={productsListRef} className='transition-all duration-300 hidden mt-60 opacity-0'>

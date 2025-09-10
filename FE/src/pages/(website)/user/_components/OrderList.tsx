@@ -1,15 +1,19 @@
 import useScreenWidth from '@/common/hooks/useScreenWidth';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import OrderItem from './OrderItem';
 import { useAppDispatch } from '@/store/store';
 import { getAllOrderByUserId } from '@/store/thunks/orderThunk';
+import { useLocation } from 'react-router';
 
 const OrderList = () => {
+    scrollTo({ top: 0, behavior: 'smooth' })
     const screenWidth = useScreenWidth();
     const dispatch = useAppDispatch();
+    const inputSearch = useRef<HTMLInputElement | null>(null);
+    const firstRender = useRef(true);
 
     //data of user in redux
     const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
@@ -26,6 +30,20 @@ const OrderList = () => {
     const [filterOrderCode, setFilterOrderCode] = useState<string>('');
     const [filterStatus, setFilterStatus] = useState<string>('allstatus');
 
+    //lấy thông tin và điền vào input Search and filter
+    const location = useLocation();
+    const { orderCode } = location.state || {};
+    useEffect(() => {
+        if (orderCode && firstRender && firstRender.current) {
+            firstRender.current = false;
+            setFilterOrderCode(orderCode);
+            if (inputSearch && inputSearch.current) {
+                inputSearch.current.focus();
+                inputSearch.current.select();
+            };
+        };
+    }, []);
+
     return (
         <>
             {/* Search and filter */}
@@ -34,7 +52,14 @@ const OrderList = () => {
                     <div className="flex w-full max-w-[448px] border border-primary rounded-md items-center overflow-hidden">
                         <Search size={screenWidth < 640 ? 18 : 24} className="mx-2 select-none" />
                         <div className="w-full sm:py-2 py-1">
-                            <input onChange={(e) => setFilterOrderCode(e.target.value)} type="text" className="w-full relative sm:text-base text-sm outline-0 " placeholder="Search by Order ID" />
+                            <input
+                                ref={inputSearch}
+                                defaultValue={orderCode ? orderCode : ''}
+                                onChange={(e) => setFilterOrderCode(e.target.value)}
+                                type="text"
+                                className="w-full relative sm:text-base text-sm outline-0 "
+                                placeholder="Search by Order ID"
+                            />
                         </div>
                     </div>
                 </div>
