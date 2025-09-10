@@ -1,5 +1,5 @@
 //Icons
-import { Check } from 'lucide-react';
+import { Check, Heart, HeartPlus } from 'lucide-react';
 
 //Components
 import DiscountIcon from "@/components/Discount";
@@ -16,23 +16,27 @@ import { useAppDispatch } from '@/store/store';
 import { getAllAttribute } from '@/store/thunks/attributeThunk';
 
 //Hook
+import type { IAttribute } from '@/common/types/attribute';
+import type { IAttributeValue } from '@/common/types/attributeValue';
 import React, { useEffect, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import AddToCartButton from './AddToCartButton';
-import type { IAttributeValue } from '@/common/types/attributeValue';
-import type { IAttribute } from '@/common/types/attribute';
+import { addWishList } from '@/store/thunks/userThunk';
+import { toast } from 'sonner';
 
 type Props = {
     data: IProduct,
     variants: IVariant[],
     imageList: string[],
-    mainSwiperRef: any
+    mainSwiperRef: any,
+    checkWishList: boolean
 }
 
-const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
+const InforProduct = ({ data, variants, imageList, mainSwiperRef, checkWishList }: Props) => {
     const dispatch = useAppDispatch();
     const attribute = useSelector((state: any) => state.attribute.dataAttribute, shallowEqual);
     const attributeStatus = useSelector((state: any) => state.attribute.status, shallowEqual);
+    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
 
     useEffect(() => {
         if (attributeStatus === 'idle') {
@@ -89,16 +93,36 @@ const InforProduct = ({ data, variants, imageList, mainSwiperRef }: Props) => {
 
     }, [chooseVariant]);
 
+    //Thêm vào mục sản phẩm yêu thích
+    const handleAddWishList = () => {
+        dispatch(addWishList({ idProduct: data._id as string, idUser: dataUser._id })).unwrap()
+            .then(() => {
+                toast.success('Sản phầm đã được thêm vào danh sách yêu thích');
+            })
+            .catch((error) => {
+                console.log('Lỗi ở addWishList', error);
+                return error;
+            })
+    }
+
     return (
         <>
             <div className='flex flex-col font-MJSatoshi'>
                 <div className="flex flex-col sm:gap-[14px] gap-3">
                     <p className='font-Satoshi-Bold sm:text-[40px] text-2xl text-primary'>{data.name}</p>
-                    <div className='flex gap-4 items-center'>
-                        <div className="flex text-[#FFC633] gap-[7px] ">
-                            <ShowRatingStar className="gap-[7px] sm:*:text-2xl text-lg" size={28} rating={4.5} />
+                    <div className='flex gap-x-4 items-center'>
+                        <div className='flex gap-4 items-center'>
+                            <div className="flex text-[#FFC633] gap-[7px] ">
+                                <ShowRatingStar className="gap-[7px] sm:*:text-2xl text-lg" size={28} rating={4.5} />
+                            </div>
+                            <p className="sm:text-base text-sm pt-1">4.5/<span className="text-primary/60">5</span></p>
                         </div>
-                        <p className="sm:text-base text-sm pt-1">4.5/<span className="text-primary/60">5</span></p>
+                        <div
+                            onClick={() => handleAddWishList()}
+                            className={`${checkWishList ? 'text-danger' : 'text-gray-500'} hover:text-danger cursor-pointer select-none`}
+                        >
+                            {checkWishList ? <Heart size={24} /> : <HeartPlus size={24} />}
+                        </div>
                     </div>
                     <DiscountIcon
                         className="gap-3"

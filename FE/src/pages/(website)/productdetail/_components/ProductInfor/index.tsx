@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { SwiperClass } from 'swiper/react';
 import SlideImage from './SlideImage';
 
-const ProductInfor = ({ screenWidth, data }: { screenWidth: number, data: IProduct }) => {
+const ProductInfor = ({ screenWidth, data, checkWishList }: { screenWidth: number, data: IProduct, checkWishList: boolean }) => {
     const [imageList, setImageList] = useState<string[]>([]);
     const swiperRef = useRef<SwiperClass | null>(null);
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
@@ -39,7 +39,7 @@ const ProductInfor = ({ screenWidth, data }: { screenWidth: number, data: IProdu
                 setThumbsSwiper={setThumbsSwiper}
                 mainSwiperRef={mainSwiperRef}
             />
-            <InforProduct data={data} variants={data.variants} imageList={imageList} mainSwiperRef={mainSwiperRef} />
+            <InforProduct data={data} variants={data.variants} imageList={imageList} mainSwiperRef={mainSwiperRef} checkWishList={checkWishList} />
         </div>
     )
 }

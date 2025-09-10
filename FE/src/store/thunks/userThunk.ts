@@ -97,3 +97,14 @@ export const authGoogle = createAsyncThunk('user/authGoogle', async (data, { rej
         return rejectWithValue(error.response.data.error);
     }
 })
+
+export const addWishList = createAsyncThunk('user/addWishList', async (data: { idProduct: string, idUser: string }, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(`${API}/addWishList`, data);
+
+        return response.data;
+    } catch (error: any) {
+        console.log('Lỗi ở user/addWishList', error);
+        return rejectWithValue(error.response.data.erorr);
+    }
+})

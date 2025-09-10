@@ -55,16 +55,16 @@ export const useAccountForm = ({ dataUser, openEdit, setOpenEdit, setOpenAddAddr
             _id: dataUser._id,
             address: dataUser.address || []
         }
-        console.log(data);
-        // dispatch(saveUserInformation(data)).unwrap()
-        //     .then(() => {
-        //         setOpenEdit(false);
-        //         scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        //         toast.success('Lưu thông tin thành công');
-        //     })
-        //     .catch(() => {
-        //         console.log('error:', errorUser);
-        //     })
+        // console.log(data);
+        dispatch(saveUserInformation(data)).unwrap()
+            .then(() => {
+                setOpenEdit(false);
+                scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                toast.success('Lưu thông tin thành công');
+            })
+            .catch(() => {
+                console.log('error:', errorUser);
+            })
     }
 
     //close form address

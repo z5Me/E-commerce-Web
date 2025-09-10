@@ -2,31 +2,25 @@
 import './productdetailcss.css';
 
 //Image
+import useScreenWidth from '@/common/hooks/useScreenWidth';
 import ProductsList from "@/components/ProductsList";
 import { getDetailProduct } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ProductInfor from './_components/ProductInfor';
 import ReviewDetail from './_components/ReviewDetail';
+import { shallowEqual, useSelector } from 'react-redux';
 
 const ProductDetail = () => {
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-
+    const screenWidth = useScreenWidth();
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }, []);
 
-    useEffect(() => {
-        const handdleResize = () => {
-            setScreenWidth(window.innerWidth)
-        }
-
-        window.addEventListener('resize', handdleResize);
-
-        return () => window.removeEventListener('resize', handdleResize);
-    }, []);
-
     const data = getDetailProduct();
+    //Check danh sách yêu thích
+    const dataUser = useSelector((state: any) => state.user.dataUser, shallowEqual);
+    const checkWishList = dataUser.wishList.some((list: any) => list.idProduct === data?._id);
 
     return (
         <section className='flex justify-center'>
@@ -54,7 +48,7 @@ const ProductDetail = () => {
                     </div>
                 </div>
                 {/* thông tin sản phẩm */}
-                {data && <ProductInfor screenWidth={screenWidth} data={data} />}
+                {data && <ProductInfor screenWidth={screenWidth} data={data} checkWishList={checkWishList} />}
                 {/* Review */}
                 {data && <ReviewDetail screenWidth={screenWidth} data={data} />}
 

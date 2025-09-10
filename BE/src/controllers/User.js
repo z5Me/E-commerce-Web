@@ -2,6 +2,7 @@ import User from "../models/User";
 import bcrypt from 'bcryptjs';
 import { generateToken } from "../utils/generateToken";
 import { OAuth2Client } from "google-auth-library";
+import Product from "../models/Product";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const defaultPassword = process.env.DEFAULT_PASSWORD;
@@ -88,7 +89,7 @@ export const saveAddress = async (req, res) => {
     try {
         const findUser = await User.findOne({ _id: req.body._id }).select('-password');
         if (!findUser) return res.status(404).json({ error: 'Không tìm thấy user' });
-        if (!findUser.phone) return res.status(401).json({ error: 'Vui lòng xác minh số điện thoại trước' });
+        // if (!findUser.phone) return res.status(401).json({ error: 'Vui lòng xác minh số điện thoại trước' });
         const newAddress = {
             receiver: findUser.userNameFile,
             phone: findUser.phone,
@@ -139,5 +140,36 @@ export const authGoogle = async (req, res) => {
     } catch (error) {
         console.log('Lỗi ở authGoogle', error);
         return res.status(500).json({ message: 'Internal Server', error: error.message })
+    }
+}
+
+export const addWishList = async (req, res) => {
+    const { idProduct, idUser } = req.body;
+    try {
+        if (!idProduct || !idUser) return res.status(409).json({ error: 'Thiếu dữ liệu' });
+
+        const findUser = await User.findOne({ _id: idUser });
+        if (!findUser) return res.status(404).json({ error: 'User not found' });
+
+        const findProduct = await Product.findOne({ _id: idProduct }).populate('variants');
+        if (!findProduct) return res.status(404).json({ error: 'Product not found' });
+
+        //kiểm tra trùng lặp trước khi add
+        const newWishList = { idProduct };
+        const findWish = findUser.wishList.findIndex(item => item.idProduct === idProduct);
+        //Phát hiện trùng lặp, loại khỏi danh sách
+        if (findWish !== -1) {
+            findUser.wishList = findUser.wishList.filter((_, index) => index !== findWish);
+            await findUser.save();
+            return res.status(200).json({ wishList: findUser.wishList });
+        }
+        //Không trùng lặp thì thêm vào danh sách
+        findUser.wishList.push(newWishList);
+        await findUser.save();
+
+        return res.status(200).json({ wishList: findUser.wishList });
+    } catch (error) {
+        console.log('Lỗi ở addWishList', error);
+        return res.status(500).json({ message: 'Internal Server', error: error.message });
     }
 }

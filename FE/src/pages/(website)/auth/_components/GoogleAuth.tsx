@@ -1,3 +1,4 @@
+import { useRouteHistory } from "@/lib/utils";
 import { useAppDispatch } from "@/store/store";
 import { authGoogle, getUserInfo, signIn } from "@/store/thunks/userThunk";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
@@ -10,6 +11,7 @@ const defaultPassword = import.meta.env.VITE_DEFAULT_PASSWORD;
 function CustomGoogleButton() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const location = useRouteHistory();
 
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse: any) => {
@@ -24,7 +26,7 @@ function CustomGoogleButton() {
                             toast.promise(promise, {
                                 loading: '...loading',
                                 success: () => {
-                                    navigate(-1);
+                                    location.length > 1 && navigate(-1);
                                     return 'Success';
                                 },
                                 error: (error) => {

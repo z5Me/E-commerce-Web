@@ -6,7 +6,6 @@ import ProductInCart from '@/components/ProductInCart';
 import { useDialog } from '@/contexts/DialogContext';
 import { useAppDispatch } from '@/store/store';
 import { calculateShipping, clearCart, getSingleCart, removeVoucher } from '@/store/thunks/cartThunk';
-import { reSignIn } from '@/store/thunks/userThunk';
 import { getAllVoucher } from '@/store/thunks/voucherThunk';
 import { Tag } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -39,11 +38,12 @@ const ShoppingCart = () => {
                 dispatch(getSingleCart({ idUser: dataUser._id })).unwrap()
                     .then(() => {
                         const filterAddress = dataUser.address.filter((add: any) => add.selected === true);
+                        if (!filterAddress || filterAddress.length === 0) return;
                         filterAddress && dispatch(calculateShipping({ destination: { lat: filterAddress[0].lat, lng: filterAddress[0].lng }, idUser: dataUser._id })).unwrap()
-                            .then()
                             .catch((error) => {
                                 console.log('Lỗi ở calculateShipping', error);
                                 navigate(-1);
+                                toast.warning('Vui lòng thử lại sau hoặc reload lại trang!');
                             })
                     })
                     .catch((error) => {

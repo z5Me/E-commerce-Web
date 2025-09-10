@@ -1,5 +1,5 @@
 import express from 'express';
-import { authGoogle, reSignIn, saveAddress, saveUserInformation, SignIn, SignUp } from '../controllers/User';
+import { addWishList, authGoogle, reSignIn, saveAddress, saveUserInformation, SignIn, SignUp } from '../controllers/User';
 import { protect } from '../middlewares/protect';
 
 const userRouter = express.Router();
@@ -10,5 +10,6 @@ userRouter.get('/reSignin', protect, reSignIn)
 userRouter.post('/saveUserInformation', saveUserInformation);
 userRouter.post('/saveAddress', saveAddress);
 userRouter.post('/authGoogle', authGoogle);
+userRouter.post('/addWishList', addWishList);
 
 export default userRouter;

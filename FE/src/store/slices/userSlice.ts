@@ -1,7 +1,7 @@
 import type { IUser } from '@/common/types/user';
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
-import { authGoogle, reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
+import { addWishList, authGoogle, reSignIn, saveAddress, saveUserInformation, signIn, signUp } from '../thunks/userThunk';
 
 const EXPIRES_IN = import.meta.env.VITE_JWT_EXPIRES_IN;
 
@@ -16,6 +16,7 @@ const initialState: IUser = {
     gender: '',
     birthday: undefined,
     password: '',
+    wishList: [],
     role: undefined,
 }
 
@@ -149,6 +150,20 @@ const userSlice = createSlice({
             })
             .addCase(saveAddress.rejected, (state, action) => {
                 state.status = 'saveAddress.rejected';
+                state.error = action.payload as string;
+            })
+
+            .addCase(addWishList.pending, (state) => {
+                state.status = 'pending';
+                state.error = '';
+            })
+            .addCase(addWishList.fulfilled, (state, action) => {
+                state.status = 'addWishList.fulfilled';
+                state.error = '';
+                state.dataUser.wishList = action.payload.wishList;
+            })
+            .addCase(addWishList.rejected, (state, action) => {
+                state.status = 'addWishList.rejected';
                 state.error = action.payload as string;
             })
     }

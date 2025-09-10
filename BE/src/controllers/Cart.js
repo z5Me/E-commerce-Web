@@ -3,10 +3,7 @@ import Product from '../models/Product';
 import Variant from '../models/Variant';
 import Voucher from '../models/Voucher';
 import VoucherUsage from '../models/VoucherUsage';
-import { caculateTotalCart, caculateTotalProduct, calculateShippingFeeKm, haversineDistanceKm } from '../utils/helperCart';
-
-const originLat = process.env.ORIGIN_LAT;
-const originLng = process.env.ORIGIN_LNG;
+import { caculateTotalCart, calculateShippingFeeKm, haversineDistanceKm } from '../utils/helperCart';
 
 export const getSingleCart = async (req, res) => {
     const { idUser } = req.query;
@@ -361,17 +358,19 @@ export const removeVoucher = async (req, res) => {
 
 export const calculateShipping = async (req, res) => {
     const { destination, idUser } = req.body;
+    const originLat = process.env.ORIGIN_LAT;
+    const originLng = process.env.ORIGIN_LNG;
     try {
         if (!destination.lat || !destination.lng) return res.status(400).json({ error: 'Thiếu lat/lng' });
 
         const getCart = await Cart.findOne({ idUser });
         if (!getCart) return res.status(404).json({ error: 'Cart not found' });
-
         const distanceKM = haversineDistanceKm(originLat, originLng, destination.lat, destination.lng);
         console.log('distanceKM', distanceKM);
+        if (isNaN(distanceKM)) return res.status(400).json({ error: 'Error when calculate KMRoad' });
         const fee = calculateShippingFeeKm(distanceKM);
         console.log('fee', fee);
-        if (!fee) return res.status(409).json({ error: 'Error when calculate shipping' });
+        if (isNaN(fee)) return res.status(409).json({ error: 'Error when calculate shipping' });
 
         getCart.shippingFee = fee;
         await getCart.save();

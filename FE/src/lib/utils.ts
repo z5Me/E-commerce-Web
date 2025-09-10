@@ -6,7 +6,7 @@ import axios from "axios";
 import { clsx, type ClassValue } from "clsx"
 import { useEffect, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -219,4 +219,15 @@ export const caculateTotalCart = (cart: ICart) => {
   }
 
   return { totalProduct, discountProduct, discountVoucher, total, allData }
+}
+
+export function useRouteHistory() {
+  const location = useLocation();
+  const [history, setHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    setHistory((prev: any) => [...prev, location.pathname]);
+  }, [location]);
+
+  return history
 }

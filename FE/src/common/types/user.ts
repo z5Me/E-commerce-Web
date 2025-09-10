@@ -17,5 +17,6 @@ export type IUser = {
     gender?: 'male' | 'female' | 'other' | '';
     birthday?: any;
     password?: string;
+    wishList: [];
     role?: 'user' | 'admin';
 };
